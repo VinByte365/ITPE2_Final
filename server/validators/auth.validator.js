@@ -13,6 +13,18 @@ export const updateRoleSchema = z.object({
   role: z.enum(['admin', 'faculty', 'student']),
 });
 
+export const updateMeSchema = z
+  .object({
+    firstName: z.string().trim().min(1, 'First name is required.').max(60).optional(),
+    lastName: z.string().trim().min(1, 'Last name is required.').max(60).optional(),
+    studentNumber: z
+      .string()
+      .trim()
+      .regex(/^[A-Za-z0-9-]{4,20}$/, 'Student number must be 4 to 20 characters (letters, digits, hyphens).')
+      .optional(),
+  })
+  .strict();
+
 const studentNumberSchema = z
   .string()
   .trim()

@@ -190,6 +190,35 @@ export async function requestPasswordReset(email) {
   return { accepted: true };
 }
 
+export async function updateMyProfile(userId, currentProfile, updates) {
+  const isAdmin = currentProfile?.role === 'admin';
+  const changes = {};
+
+  if (updates.firstName !== undefined) changes.firstName = updates.firstName;
+  if (updates.lastName !== undefined) changes.lastName = updates.lastName;
+
+  if (updates.studentNumber !== undefined) {
+    if (currentProfile?.studentNumber && !isAdmin) {
+      throw new AppError(403, 'FORBIDDEN', 'Student number cannot be changed once set.');
+    }
+    // Check for duplicate
+    const existing = await findProfileByStudentNumber(updates.studentNumber);
+    if (existing && existing.id !== userId) {
+      throw new AppError(409, 'DUPLICATE_RECORD', 'That student number is already registered.');
+    }
+    changes.studentNumber = updates.studentNumber;
+  }
+
+  // Recompute full_name if names changed
+  if (changes.firstName !== undefined || changes.lastName !== undefined) {
+    const newFirst = changes.firstName ?? currentProfile?.firstName ?? '';
+    const newLast = changes.lastName ?? currentProfile?.lastName ?? '';
+    changes.fullName = `${newFirst} ${newLast}`.trim();
+  }
+
+  const updated = await updateProfile(userId, changes);
+  return updated;
+}
 export function publicUser(user) {
   return {
     id: user.id,

@@ -126,3 +126,10 @@ Append-only. Newest entry **at the bottom**. Never edit old entries; add a corre
 - **Decisions / assumptions:** Added `POST /auth/register` route with `registerLimiter` (5/hour/IP). Returns 201 with `{profile, requiresEmailConfirmation, pendingApproval}`, sets no cookies. Validation (422) and rate limiting verified. End-to-end signup blocked by Supabase email rate limit (too many test signups); validation path confirmed working.
 - **Surprises / problems:** Supabase email rate limit still active from earlier test signups. Full E2E signup test deferred.
 - **Next task:** AUTH-09 (Extend login, /auth/me, PATCH /auth/me)
+
+### 2026-10-31 · cline · agent
+- **Finished:** AUTH-09
+- **In progress:** none
+- **Decisions / assumptions:** Extended auth routes: GET /auth/me returns new profile fields (via mapProfile), added PATCH /auth/me with updateMeSchema validation. Service method updateMyProfile allows firstName/lastName/studentNumber updates, blocks student number changes once set (non-admin), checks duplicates, recomputes full_name. Role/approval status not editable. Server boots, lint/build/test pass.
+- **Surprises / problems:** none.
+- **Next task:** AUTH-10 (Admin approvals)

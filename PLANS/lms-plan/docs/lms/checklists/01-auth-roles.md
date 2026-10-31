@@ -20,7 +20,7 @@ Depends on: 00. Specs: `../specs/01-data-model.md` (001), `../specs/02-api.md` (
   - Files: `server/services/auth.service.js`, `server/repositories/profiles.repository.js` · Done when: student → approved; faculty → role `faculty` + `pending`; `full_name` filled; duplicate email → `409`; duplicate student number → `409`; failure after sign-up is logged with the user id
 - [x] AUTH-08 Route `POST /auth/register` with rate limit and the response shape in the API spec (@cline, 2026-10-31)
   - Files: `server/routes/auth.routes.js` · Done when: returns `201`, sets no cookies, 6th request/hour/IP returns `429`
-- [ ] AUTH-09 Extend login, `/auth/me` and add `PATCH /auth/me`
+- [x] AUTH-09 Extend login, `/auth/me` and add `PATCH /auth/me` (@cline, 2026-10-31)
   - Files: `server/routes/auth.routes.js`, `server/services/auth.service.js` · Done when: new profile fields returned; users cannot change role, approval status or (once set) student number
 - [ ] AUTH-10 Admin approvals: filters on `GET /admin/profiles`, `approvalStatus` on `PATCH`
   - Files: `server/repositories/profiles.repository.js`, `server/routes/admin.routes.js`, validators · Done when: admin can approve/reject faculty; last-admin and self-demotion protections still pass

@@ -8,11 +8,13 @@ import {
   register,
   requestPasswordReset,
   signIn,
+  updateMyProfile,
 } from '../services/auth.service.js';
 import {
   forgotPasswordSchema,
   loginSchema,
   registerSchema,
+  updateMeSchema,
 } from '../validators/auth.validator.js';
 
 const router = Router();
@@ -82,6 +84,16 @@ router.post('/logout', (req, res) => {
   clearAuthCookies(res);
   res.json({ data: { ok: true } });
 });
+
+router.patch(
+  '/me',
+  requireAuth,
+  asyncHandler(async (req, res) => {
+    const updates = updateMeSchema.parse(req.body);
+    const updated = await updateMyProfile(req.auth.user.id, req.auth.profile, updates);
+    res.json({ data: { profile: updated } });
+  }),
+);
 
 router.get(
   '/me',
