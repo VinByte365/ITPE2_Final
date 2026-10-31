@@ -70,3 +70,10 @@ Append-only. Newest entry **at the bottom**. Never edit old entries; add a corre
 - **Decisions / assumptions:** Added `STORAGE_TOPIC_BUCKET` (default `topic-files`), `STORAGE_UPLOAD_BUCKET` (default `quiz-uploads`), `SIGNED_URL_TTL_SECONDS` (120), `MAX_FILE_MB` (25), `MAX_IMAGE_MB` (5), `DEFAULT_TIMEZONE` (`Asia/Manila`) to `.env.example` and `server/config/env.js` (`env.storage.*`, `env.defaultTimezone`), validated with defaults via `parsePositiveNumber`/`read`. Verified `env.js` loads with the existing `.env` (storage + tz resolved). Server still boots with old `.env` (all new vars default).
 - **Surprises / problems:** none.
 - **Next task:** HK-08
+
+### 2026-10-31 · cline · agent
+- **Finished:** HK-09 (HK-08 and HK-V1 blocked)
+- **In progress:** HK-08 (blocked on Supabase credentials)
+- **Decisions / assumptions:** Added `server/scripts/setup-storage.js` (creates private buckets `topic-files` and `quiz-uploads` idempotently via service role; re-running harmless) and wired `storage:setup` in `package.json`. Script runs cleanly (exits 1 only because service creds are unset). HK-08 and HK-V1 left ⛔ — they require a configured Supabase project; scripts are unchanged, verify on a real project.
+- **Surprises / problems:** No Supabase project configured in this environment, so db:schema/db:seed/make:admin/dev:all and storage bucket creation could not be exercised.
+- **Next task:** HK-V1 (after HK-08 is unblocked) — or phase 01 (AUTH-01) which is code work independent of the live Supabase verification.

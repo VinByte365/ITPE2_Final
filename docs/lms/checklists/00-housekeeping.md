@@ -17,9 +17,9 @@ Goal: a clean repo, verified facts, and the tooling (migrations, tests, progress
   - Files: `package.json` (`docs:progress`: `node docs/lms/progress.mjs`) · Done when: `npm run docs:progress` rewrites `checklists/PROGRESS.md` with correct counts
 - [x] HK-07 Environment additions (@cline, 2026-10-31)
   - Files: `.env.example`, `server/config/env.js` · Done when: `STORAGE_TOPIC_BUCKET`, `STORAGE_UPLOAD_BUCKET`, `SIGNED_URL_TTL_SECONDS` (120), `MAX_FILE_MB` (25), `MAX_IMAGE_MB` (5), `DEFAULT_TIMEZONE` (`Asia/Manila`) are documented and validated with defaults; the server still boots with the old `.env`
-- [ ] HK-08 Confirm the current app runs locally end to end
+- [ ] HK-08 Confirm the current app runs locally end to end — ⛔ blocked: requires a configured Supabase project (DATABASE_URL + SUPABASE_SERVICE_ROLE_KEY); none present in this environment. Script logic for db:schema/db:seed/make:admin/dev:all is unchanged; verify on a real project.
   - Files: `README.md` (fix steps if wrong) · Done when: `db:schema`, `db:seed`, `make:admin`, `dev:all` all work on a fresh Supabase project; result written in `HANDOFF-LOG.md`
-- [ ] HK-09 Storage bucket setup script
+- [x] HK-09 Storage bucket setup script (@cline, 2026-10-31)
   - Files: `server/scripts/setup-storage.js`, `package.json` (`storage:setup`) · Done when: creates private buckets `topic-files` and `quiz-uploads` idempotently with the service role; re-running is harmless
 - [x] HK-10 Add `docs/lms/` to the repo and link it from the root `README.md` (@cline, 2026-10-31)
   - Files: `README.md` · Done when: a short "LMS work in progress" section links to `docs/lms/README.md`

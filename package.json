@@ -13,6 +13,7 @@
     "db:migrate": "node server/scripts/migrate.js",
     "db:seed": "node server/scripts/seed.js",
     "make:admin": "node server/scripts/make-admin.js",
+    "storage:setup": "node server/scripts/setup-storage.js",
     "build": "vite build",
     "test": "node --test",
     "docs:progress": "node docs/lms/progress.mjs",
