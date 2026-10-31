@@ -132,9 +132,9 @@ VITE_API_BASE_URL=https://your-api.example/api/v1
 
 | Role | Access |
 | --- | --- |
-| `viewer` | Can sign in and read their own profile; no admin API access |
-| `editor` | Read/write modules, presenters, videos, and publish states |
-| `admin` | Everything an editor can do, plus hard deletes and profile roles |
+| `student` | Can sign in, read their own profile, enroll in subjects, take quizzes |
+| `faculty` | Create and manage subjects, topics, quizzes, and grade submissions |
+| `admin` | Everything a faculty member can do, plus user approvals and role management |
 
 Admin API access requires a Supabase Auth access token, sent either as the
 HttpOnly cookie created by `POST /api/v1/auth/login` or as

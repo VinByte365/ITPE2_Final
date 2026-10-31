@@ -147,3 +147,17 @@ Append-only. Newest entry **at the bottom**. Never edit old entries; add a corre
 - **Decisions / assumptions:** Created originGuard middleware (foreign origin → ORIGIN_NOT_ALLOWED 403, non-JSON content type → 403, same-origin/no-origin passes). Wired into app.js before compression. Added 8 unit tests. All 31 tests pass.
 - **Surprises / problems:** none.
 - **Next task:** AUTH-13 (src/api/client.js frontend)
+
+### 2026-10-31 · cline · agent
+- **Finished:** AUTH-13, AUTH-14, AUTH-15, AUTH-16, AUTH-17, AUTH-18
+- **In progress:** none
+- **Decisions / assumptions:** Frontend auth layer: src/api/client.js (fetch wrapper with 401 single-flight refresh, ApiError with code/details/requestId, uploadToSignedUrl), src/api/auth.js, AuthContext/useAuth (loading/anonymous/authenticated states, login/logout/refreshProfile), ProtectedRoute (role check, pending faculty redirect, ?next= same-origin), auth pages (Login, Register with student/faculty toggle, Forgot password, Pending approval), role-aware SiteHeader (Login/Register vs Dashboard+name+Logout), Admin users page (/admin/users with approve/reject/role change). Route tree updated in App.jsx with all auth + protected LMS routes. Lint and build pass.
+- **Surprises / problems:** none.
+- **Next task:** AUTH-19 (Update docs)
+
+### 2026-10-31 · cline · agent
+- **Finished:** AUTH-19 (Phase 01 complete)
+- **In progress:** none
+- **Decisions / assumptions:** Updated docs: README.md roles table (student/faculty/admin), docs/API.md (roles, admin profile PATCH with approvalStatus). All 23 AUTH tasks complete. Phase 01 done: backend auth (migration, trigger, RLS, role constants, middleware, register/login/me/PATCH, admin approvals, originGuard) + frontend (API client, AuthContext, ProtectedRoute, auth pages, role-aware header, admin users page) + tests (31 passing) + docs updated.
+- **Surprises / problems:** none.
+- **Next task:** SUBJ-01 (Phase 02: Subjects and enrollment)

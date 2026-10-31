@@ -207,7 +207,7 @@ curl -b cookies.txt http://localhost:4000/api/v1/auth/me
 ## Admin endpoints
 
 All `/admin` routes require an authenticated profile with the `admin` or
-`editor` role. Profile role management requires `admin` specifically.
+`faculty` role. Profile role management requires `admin` specifically.
 
 ### Modules
 
@@ -318,10 +318,10 @@ PATCH /admin/profiles/:id
 Update body:
 
 ```json
-{ "role": "editor" }
+{ "role": "faculty", "approvalStatus": "approved" }
 ```
 
-Allowed roles: `admin`, `editor`, `viewer`.
+Allowed roles: `admin`, `faculty`, `student`. Allowed approval statuses: `pending`, `approved`, `rejected`.
 
 Business protections:
 

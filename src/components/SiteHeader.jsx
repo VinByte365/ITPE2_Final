@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { useAuth } from '../auth/AuthContext';
 import { useContent } from '../data/ContentContext';
 import { ArrowUpRight } from './Icons';
 
@@ -17,7 +18,17 @@ const navItems = [
 export default function SiteHeader() {
   const [menuOpen, setMenuOpen] = useState(false);
   const { modules } = useContent();
+  const { status, profile, logout } = useAuth();
   const location = useLocation();
+
+  const dashboardPath =
+    profile?.role === 'admin'
+      ? '/admin/users'
+      : profile?.role === 'faculty'
+        ? '/faculty'
+        : '/student';
+
+  const isAuthenticated = status === 'authenticated';
 
   useEffect(() => {
     if (!menuOpen) return undefined;
@@ -60,11 +71,35 @@ export default function SiteHeader() {
               to={item.to}
               className={`nav-link ${item.match(location.pathname) ? 'is-active' : ''}`}
               aria-current={item.match(location.pathname) ? 'page' : undefined}
+              onClick={() => setMenuOpen(false)}
             >
               <span className="nav-index">{item.index}</span>
               {item.label}
             </Link>
           ))}
+          {isAuthenticated ? (
+            <>
+              <Link to={dashboardPath} className="nav-link" onClick={() => setMenuOpen(false)}>
+                <span className="nav-index">04</span>
+                Dashboard
+              </Link>
+              <span className="nav-link nav-user">{profile?.fullName || profile?.email}</span>
+              <button type="button" className="nav-link nav-logout" onClick={() => { setMenuOpen(false); logout(); }}>
+                Logout
+              </button>
+            </>
+          ) : (
+            <>
+              <Link to="/login" className="nav-link" onClick={() => setMenuOpen(false)}>
+                <span className="nav-index">04</span>
+                Login
+              </Link>
+              <Link to="/register" className="nav-link" onClick={() => setMenuOpen(false)}>
+                <span className="nav-index">05</span>
+                Register
+              </Link>
+            </>
+          )}
         </nav>
 
         <div className="header-meta" aria-hidden="true">
@@ -101,6 +136,33 @@ export default function SiteHeader() {
                 <ArrowUpRight />
               </Link>
             ))}
+            {isAuthenticated ? (
+              <>
+                <Link to={dashboardPath} className="mobile-nav-link" onClick={() => setMenuOpen(false)}>
+                  <span className="mobile-nav-index">04</span>
+                  <span>Dashboard</span>
+                  <ArrowUpRight />
+                </Link>
+                <button type="button" className="mobile-nav-link" onClick={() => { setMenuOpen(false); logout(); }}>
+                  <span className="mobile-nav-index">05</span>
+                  <span>Logout</span>
+                  <ArrowUpRight />
+                </button>
+              </>
+            ) : (
+              <>
+                <Link to="/login" className="mobile-nav-link" onClick={() => setMenuOpen(false)}>
+                  <span className="mobile-nav-index">04</span>
+                  <span>Login</span>
+                  <ArrowUpRight />
+                </Link>
+                <Link to="/register" className="mobile-nav-link" onClick={() => setMenuOpen(false)}>
+                  <span className="mobile-nav-index">05</span>
+                  <span>Register</span>
+                  <ArrowUpRight />
+                </Link>
+              </>
+            )}
           </nav>
           <div className="mobile-nav-meta">
             <span>Computer System &amp; Platform Technology</span>

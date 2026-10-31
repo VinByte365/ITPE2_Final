@@ -31,19 +31,19 @@ Depends on: 00. Specs: `../specs/01-data-model.md` (001), `../specs/02-api.md` (
 
 ## Frontend
 
-- [ ] AUTH-13 `src/api/client.js` (contract in `04-frontend.md`)
+- [x] AUTH-13 `src/api/client.js` (contract in `04-frontend.md`) (@cline, 2026-10-31)
   - Files: `src/api/client.js`, `src/api/auth.js` · Done when: parallel 401s trigger exactly one refresh; `ApiError` exposes code and details
-- [ ] AUTH-14 `AuthContext` and `useAuth`
+- [x] AUTH-14 `AuthContext` and `useAuth` (@cline, 2026-10-31)
   - Files: `src/auth/AuthContext.jsx`, `src/main.jsx` · Done when: page reload keeps the session; logout clears state
-- [ ] AUTH-15 `ProtectedRoute` and the new route tree
+- [x] AUTH-15 `ProtectedRoute` and the new route tree (@cline, 2026-10-31)
   - Files: `src/auth/ProtectedRoute.jsx`, `src/main.jsx` · Done when: wrong-role access redirects; `?next=` only accepts same-origin paths; pending faculty land on `/pending-approval`
-- [ ] AUTH-16 Pages: Login, Register (student/faculty toggle), Forgot password, Pending approval
+- [x] AUTH-16 Pages: Login, Register (student/faculty toggle), Forgot password, Pending approval (@cline, 2026-10-31)
   - Files: `src/auth/pages/*`, `src/layouts/AuthLayout.jsx`, `src/index.css` · Done when: field-level errors shown; works at 360 px; password show/hide; faculty sees "your account needs approval"
-- [ ] AUTH-17 Role-aware `SiteHeader`
+- [x] AUTH-17 Role-aware `SiteHeader` (@cline, 2026-10-31)
   - Files: `src/components/SiteHeader.jsx` · Done when: anonymous sees Login/Register; users see dashboard link, name and Logout; mobile menu works
-- [ ] AUTH-18 Admin users page `/admin/users` (pending faculty, change role)
+- [x] AUTH-18 Admin users page `/admin/users` (pending faculty, change role) (@cline, 2026-10-31)
   - Files: `src/pages/admin/Users.jsx` · Done when: approve/reject works and the list updates; non-admins cannot open it
-- [ ] AUTH-19 Update docs
+- [x] AUTH-19 Update docs (@cline, 2026-10-31)
   - Files: `README.md` (roles table), `docs/API.md`, `../specs/02-api.md` · Done when: docs match the real behaviour
 
 ## Phase verification
