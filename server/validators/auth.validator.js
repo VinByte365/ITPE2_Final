@@ -13,6 +13,16 @@ export const updateRoleSchema = z.object({
   role: z.enum(['admin', 'faculty', 'student']),
 });
 
+export const updateProfileAdminSchema = z
+  .object({
+    role: z.enum(['admin', 'faculty', 'student']).optional(),
+    approvalStatus: z.enum(['pending', 'approved', 'rejected']).optional(),
+  })
+  .strict()
+  .refine((data) => data.role !== undefined || data.approvalStatus !== undefined, {
+    message: 'At least one of role or approvalStatus is required.',
+  });
+
 export const updateMeSchema = z
   .object({
     firstName: z.string().trim().min(1, 'First name is required.').max(60).optional(),

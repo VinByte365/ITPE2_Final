@@ -42,7 +42,22 @@ export async function ensureProfile(user) {
   return mapProfile(rows[0]);
 }
 
-export async function listProfiles() {
+export async function listProfiles(filters = {}) {
+  const { approvalStatus, role } = filters;
+  const conditions = [];
+  const params = [];
+
+  if (approvalStatus) {
+    params.push(approvalStatus);
+    conditions.push(`p.approval_status = $${params.length}`);
+  }
+  if (role) {
+    params.push(role);
+    conditions.push(`p.role = $${params.length}`);
+  }
+
+  const where = conditions.length ? `where ${conditions.join(' and ')}` : '';
+
   const { rows } = await dbQuery(`
     select p.id,
            p.email,
@@ -57,27 +72,14 @@ export async function listProfiles() {
            u.last_sign_in_at
       from public.profiles p
       left join auth.users u on u.id = p.id
+      ${where}
      order by p.created_at asc
-  `);
+  `, params);
 
   return rows.map((row) => ({
     ...mapProfile(row),
     lastSignInAt: row.last_sign_in_at,
   }));
-}
-
-export async function updateProfileRole(id, role) {
-  const { rows } = await dbQuery(
-    `update public.profiles
-        set role = $2,
-            updated_at = now()
-      where id = $1
-      returning id, email, full_name, first_name, last_name, student_number,
-                approval_status, role, created_at, updated_at`,
-    [id, role],
-  );
-
-  return mapProfile(rows[0]);
 }
 
 export async function findProfileByStudentNumber(studentNumber) {

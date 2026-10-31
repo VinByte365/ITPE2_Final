@@ -30,7 +30,7 @@ import { findModule } from '../repositories/content.repository.js';
 import {
   countAdmins,
   findProfileById,
-  updateProfileRole,
+  updateProfile,
 } from '../repositories/profiles.repository.js';
 import { ensureUniqueSlug } from '../utils/slug.js';
 
@@ -286,30 +286,39 @@ export async function removePresenter(id) {
   return deleted;
 }
 
-export async function changeProfileRole(actor, id, role) {
+export async function changeProfileRole(actor, id, input) {
+  const { role, approvalStatus } = input;
   const target = await findProfileById(id);
 
   if (!target) throw notFound('That profile was not found.');
 
-  if (actor?.profile?.id === id && role !== 'admin') {
-    throw new AppError(
-      409,
-      'SELF_DEMOTION_BLOCKED',
-      'You cannot remove your own admin access.',
-    );
-  }
-
-  if (target.role === 'admin' && role !== 'admin') {
-    const adminCount = await countAdmins();
-
-    if (adminCount <= 1) {
+  // Role change protections
+  if (role !== undefined) {
+    if (actor?.profile?.id === id && role !== 'admin') {
       throw new AppError(
         409,
-        'LAST_ADMIN',
-        'At least one admin account must remain.',
+        'SELF_DEMOTION_BLOCKED',
+        'You cannot remove your own admin access.',
       );
+    }
+
+    if (target.role === 'admin' && role !== 'admin') {
+      const adminCount = await countAdmins();
+
+      if (adminCount <= 1) {
+        throw new AppError(
+          409,
+          'LAST_ADMIN',
+          'At least one admin account must remain.',
+        );
+      }
     }
   }
 
-  return updateProfileRole(id, role);
+  // Build update
+  const updates = {};
+  if (role !== undefined) updates.role = role;
+  if (approvalStatus !== undefined) updates.approvalStatus = approvalStatus;
+
+  return updateProfile(id, updates);
 }

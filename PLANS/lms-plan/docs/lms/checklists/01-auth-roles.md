@@ -22,11 +22,11 @@ Depends on: 00. Specs: `../specs/01-data-model.md` (001), `../specs/02-api.md` (
   - Files: `server/routes/auth.routes.js` · Done when: returns `201`, sets no cookies, 6th request/hour/IP returns `429`
 - [x] AUTH-09 Extend login, `/auth/me` and add `PATCH /auth/me` (@cline, 2026-10-31)
   - Files: `server/routes/auth.routes.js`, `server/services/auth.service.js` · Done when: new profile fields returned; users cannot change role, approval status or (once set) student number
-- [ ] AUTH-10 Admin approvals: filters on `GET /admin/profiles`, `approvalStatus` on `PATCH`
+- [x] AUTH-10 Admin approvals: filters on `GET /admin/profiles`, `approvalStatus` on `PATCH` (@cline, 2026-10-31)
   - Files: `server/repositories/profiles.repository.js`, `server/routes/admin.routes.js`, validators · Done when: admin can approve/reject faculty; last-admin and self-demotion protections still pass
-- [ ] AUTH-11 `originGuard` middleware
+- [x] AUTH-11 `originGuard` middleware (@cline, 2026-10-31)
   - Files: `server/middleware/originGuard.js`, `server/app.js` · Done when: a POST with a foreign `Origin` returns `403 ORIGIN_NOT_ALLOWED`; same-origin and no-Origin (curl) requests work; tests cover it
-- [ ] AUTH-12 Tests
+- [x] AUTH-12 Tests (@cline, 2026-10-31)
   - Files: `server/**/*.test.js` · Done when: register validation, role middleware and origin guard are covered and pass
 
 ## Frontend

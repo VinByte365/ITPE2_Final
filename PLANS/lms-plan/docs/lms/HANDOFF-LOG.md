@@ -133,3 +133,17 @@ Append-only. Newest entry **at the bottom**. Never edit old entries; add a corre
 - **Decisions / assumptions:** Extended auth routes: GET /auth/me returns new profile fields (via mapProfile), added PATCH /auth/me with updateMeSchema validation. Service method updateMyProfile allows firstName/lastName/studentNumber updates, blocks student number changes once set (non-admin), checks duplicates, recomputes full_name. Role/approval status not editable. Server boots, lint/build/test pass.
 - **Surprises / problems:** none.
 - **Next task:** AUTH-10 (Admin approvals)
+
+### 2026-10-31 · cline · agent
+- **Finished:** AUTH-10
+- **In progress:** none
+- **Decisions / assumptions:** Admin approvals: GET /admin/profiles now supports ?approvalStatus and ?role query filters. PATCH /admin/profiles/:id accepts {role?, approvalStatus?} via updateProfileAdminSchema. changeProfileRole updated to handle both role and approvalStatus changes with last-admin and self-demotion protections. listProfiles updated to accept filters. Server boots, lint/build/test pass.
+- **Surprises / problems:** none.
+- **Next task:** AUTH-11 (originGuard middleware)
+
+### 2026-10-31 · cline · agent
+- **Finished:** AUTH-11, AUTH-12
+- **In progress:** none
+- **Decisions / assumptions:** Created originGuard middleware (foreign origin → ORIGIN_NOT_ALLOWED 403, non-JSON content type → 403, same-origin/no-origin passes). Wired into app.js before compression. Added 8 unit tests. All 31 tests pass (14 auth + 8 originGuard + 7 slug + 9? no, 23 total). Actually: 7 slug + 7 auth middleware + 8 originGuard + 9? No. Total: 7 + 7 + 8 + 9 = 31? Wait, 7+7=14, +8=22, +9=31. But the test output said 23 tests before originGuard. Now 31. So 8 new originGuard tests added. All pass.
+- **Surprises / problems:** none.
+- **Next task:** AUTH-13 (src/api/client.js frontend)

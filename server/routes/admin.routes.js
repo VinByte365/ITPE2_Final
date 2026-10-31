@@ -22,7 +22,7 @@ import {
   setModulePresenters,
   updateModule,
 } from '../services/admin.service.js';
-import { updateRoleSchema } from '../validators/auth.validator.js';
+import { updateProfileAdminSchema } from '../validators/auth.validator.js';
 import {
   moduleIdSchema,
   presenterIdsSchema,
@@ -209,7 +209,13 @@ router.get(
   '/profiles',
   requireAdmin,
   asyncHandler(async (req, res) => {
-    const profiles = await listProfiles();
+    const approvalStatus = req.query.approvalStatus
+      ? z.enum(['pending', 'approved', 'rejected']).parse(req.query.approvalStatus)
+      : undefined;
+    const role = req.query.role
+      ? z.enum(['admin', 'faculty', 'student']).parse(req.query.role)
+      : undefined;
+    const profiles = await listProfiles({ approvalStatus, role });
     res.json({ data: profiles });
   }),
 );
@@ -219,8 +225,8 @@ router.patch(
   requireAdmin,
   asyncHandler(async (req, res) => {
     const id = paramsUuid(req, 'id');
-    const { role } = updateRoleSchema.parse(req.body);
-    const profile = await changeProfileRole(req.auth, id, role);
+    const input = updateProfileAdminSchema.parse(req.body);
+    const profile = await changeProfileRole(req.auth, id, input);
 
     res.json({ data: profile });
   }),
