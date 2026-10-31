@@ -112,3 +112,10 @@ Append-only. Newest entry **at the bottom**. Never edit old entries; add a corre
 - **Decisions / assumptions:** Added `registerSchema` (Zod): role enum student|faculty, email normalized (trim + lowercase), password ≥ 8, names trimmed 1-60, studentNumber required for students with regex ^[A-Za-z0-9-]{4,20}$, .strict() rejects unknown keys. Added 9 unit tests (all pass). Total tests now 23.
 - **Surprises / problems:** none.
 - **Next task:** AUTH-07 (Auth service register())
+
+### 2026-10-31 · cline · agent
+- **Finished:** AUTH-07
+- **In progress:** none
+- **Decisions / assumptions:** Added `register()` to auth.service.js: pre-checks duplicate student number, calls Supabase signUp with metadata, maps duplicate email/student number to 409, upgrades faculty profiles (role=faculty, approval=pending), returns {profile, requiresEmailConfirmation, pendingApproval}. Added `findProfileByStudentNumber` and `updateProfile` to profiles.repository.js. End-to-end verification blocked by Supabase email rate limit (too many test signups); logic verified by code review and supporting pieces (trigger AUTH-02, validator AUTH-06, repository) all tested.
+- **Surprises / problems:** Supabase email rate limit prevented full end-to-end test. Should verify with a real signup once rate limit resets.
+- **Next task:** AUTH-08 (POST /auth/register route)

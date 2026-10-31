@@ -80,6 +80,62 @@ export async function updateProfileRole(id, role) {
   return mapProfile(rows[0]);
 }
 
+export async function findProfileByStudentNumber(studentNumber) {
+  if (!studentNumber) return null;
+  const { rows } = await dbQuery(
+    `select id, email, full_name, first_name, last_name, student_number,
+            approval_status, role, created_at, updated_at
+       from public.profiles
+      where lower(student_number) = lower($1)
+      limit 1`,
+    [studentNumber],
+  );
+  return mapProfile(rows[0]);
+}
+
+export async function updateProfile(id, updates) {
+  const sets = [];
+  const params = [id];
+  let i = 2;
+
+  if (updates.role !== undefined) {
+    sets.push(`role = $${i++}`);
+    params.push(updates.role);
+  }
+  if (updates.approvalStatus !== undefined) {
+    sets.push(`approval_status = $${i++}`);
+    params.push(updates.approvalStatus);
+  }
+  if (updates.fullName !== undefined) {
+    sets.push(`full_name = $${i++}`);
+    params.push(updates.fullName);
+  }
+  if (updates.firstName !== undefined) {
+    sets.push(`first_name = $${i++}`);
+    params.push(updates.firstName);
+  }
+  if (updates.lastName !== undefined) {
+    sets.push(`last_name = $${i++}`);
+    params.push(updates.lastName);
+  }
+  if (updates.studentNumber !== undefined) {
+    sets.push(`student_number = $${i++}`);
+    params.push(updates.studentNumber);
+  }
+
+  sets.push('updated_at = now()');
+
+  const { rows } = await dbQuery(
+    `update public.profiles
+        set ${sets.join(', ')}
+      where id = $1
+      returning id, email, full_name, first_name, last_name, student_number,
+                approval_status, role, created_at, updated_at`,
+    params,
+  );
+  return mapProfile(rows[0]);
+}
+
 export async function countAdmins() {
   const { rows } = await dbQuery(
     `select count(*)::int as count

@@ -7,20 +7,6 @@ function mockReq(profile) {
   return { auth: profile ? { profile } : undefined };
 }
 
-function runMiddleware(mw, req) {
-  return new Promise((resolve) => {
-    let nextArg;
-    const res = {};
-    const next = (arg) => {
-      nextArg = arg;
-      resolve(arg);
-    };
-    // middleware may be a function or a factory result
-    const fn = typeof mw === 'function' ? mw : mw(req, res, next);
-    if (typeof fn === 'function') fn(req, res, next);
-  });
-}
-
 test('requireRole allows matching role', () => {
   const mw = requireRole('faculty');
   const req = mockReq({ role: 'faculty', approvalStatus: 'approved' });
