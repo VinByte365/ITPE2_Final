@@ -98,3 +98,10 @@ Append-only. Newest entry **at the bottom**. Never edit old entries; add a corre
 - **Decisions / assumptions:** Replaced role constants across server code: schema.sql (default student, check admin|faculty|student, RLS has_role array['admin','faculty']), routes/index.js (requireRole admin/faculty), auth.validator.js and common.js (z.enum admin/faculty/student), mappers.js (mapProfile now returns firstName, lastName, studentNumber, approvalStatus), profiles.repository.js (select/insert/return new columns). No viewer/editor string literals remain in server code. Server boots and lint/build/test pass.
 - **Surprises / problems:** none.
 - **Next task:** AUTH-05 (requireRole, requireApproved middleware)
+
+### 2026-10-31 · cline · agent
+- **Finished:** AUTH-05
+- **In progress:** none
+- **Decisions / assumptions:** Updated `requireRole` to return `ROLE_FORBIDDEN` (403) instead of generic `FORBIDDEN`. Added `requireApproved` middleware: admin bypasses approval, non-admin with `approvalStatus !== 'approved'` gets `APPROVAL_PENDING` (403). Added 7 unit tests in `server/middleware/auth.test.js` (all pass). `forbidden` import removed (unused).
+- **Surprises / problems:** none.
+- **Next task:** AUTH-06 (Register validator)

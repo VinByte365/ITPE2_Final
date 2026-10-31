@@ -1,6 +1,6 @@
 import { env } from '../config/env.js';
 import { getAccessToken } from '../lib/cookies.js';
-import { AppError, asyncHandler, forbidden, unauthorized } from '../lib/errors.js';
+import { AppError, asyncHandler, unauthorized } from '../lib/errors.js';
 import { verifyAccessToken } from '../lib/supabase.js';
 import { ensureProfile } from '../repositories/profiles.repository.js';
 
@@ -39,7 +39,26 @@ export const requireRole = (...roles) => (req, res, next) => {
 
   if (!role || !roles.includes(role)) {
     return next(
-      forbidden('This action requires a higher access level.'),
+      new AppError(403, 'ROLE_FORBIDDEN', 'This action requires a higher access level.'),
+    );
+  }
+
+  return next();
+};
+
+export const requireApproved = (req, res, next) => {
+  if (!req.auth) {
+    return next(unauthorized());
+  }
+
+  const profile = req.auth.profile;
+  if (profile?.role === 'admin') {
+    return next();
+  }
+
+  if (profile?.approvalStatus !== 'approved') {
+    return next(
+      new AppError(403, 'APPROVAL_PENDING', 'Your account is pending approval.'),
     );
   }
 
