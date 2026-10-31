@@ -77,3 +77,10 @@ Append-only. Newest entry **at the bottom**. Never edit old entries; add a corre
 - **Decisions / assumptions:** Added `server/scripts/setup-storage.js` (creates private buckets `topic-files` and `quiz-uploads` idempotently via service role; re-running harmless) and wired `storage:setup` in `package.json`. Script runs cleanly (exits 1 only because service creds are unset). HK-08 and HK-V1 left ⛔ — they require a configured Supabase project; scripts are unchanged, verify on a real project.
 - **Surprises / problems:** No Supabase project configured in this environment, so db:schema/db:seed/make:admin/dev:all and storage bucket creation could not be exercised.
 - **Next task:** HK-V1 (after HK-08 is unblocked) — or phase 01 (AUTH-01) which is code work independent of the live Supabase verification.
+
+### 2026-10-31 · cline · agent
+- **Finished:** HK-08, HK-V1 (Housekeeping phase 00 complete except HK-03 push)
+- **In progress:** HK-03 push (still blocked on permissions)
+- **Decisions / assumptions:** HK-08 verified end-to-end on a real Supabase project: db:schema ✅, db:migrate ✅ (0 migrations), db:seed ✅ (16 modules, 32 presenters, 26 videos), storage:setup ✅ (topic-files and quiz-uploads buckets created), make:admin ✅ (user promoted), dev:all ✅ (site loads at localhost:5173). HK-V1 verified: npm install → db:schema → db:migrate → npm test → npm run lint → npm run build all pass. HK-03 remains ⛔ (push 403).
+- **Surprises / problems:** Initial SUPABASE_URL had /rest/v1/ suffix causing malformed storage paths; corrected. Service role key was initially invalid; re-copied from dashboard.
+- **Next task:** AUTH-01 (001_lms_profiles.sql migration) — Phase 01 begins.
