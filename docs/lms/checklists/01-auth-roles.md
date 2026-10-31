@@ -14,7 +14,7 @@ Depends on: 00. Specs: `../specs/01-data-model.md` (001), `../specs/02-api.md` (
   - Files: `server/middleware/auth.js`, `server/routes/admin.routes.js`, `server/validators/*`, `server/scripts/make-admin.js`, `server/utils/mappers.js`, `docs/API.md` · Done when: grep finds no `viewer`/`editor` in server code; profile mapper returns `firstName`, `lastName`, `studentNumber`, `approvalStatus`
 - [x] AUTH-05 Middleware `requireRole`, `requireApproved` (@cline, 2026-10-31)
   - Files: `server/middleware/auth.js` · Done when: unit tests show correct `403` codes `ROLE_FORBIDDEN` and `APPROVAL_PENDING`; admin bypasses approval
-- [ ] AUTH-06 Register validator (Zod)
+- [x] AUTH-06 Register validator (Zod) (@cline, 2026-10-31)
   - Files: `server/validators/auth.validator.js` · Done when: email normalized, password ≥ 8 chars, names trimmed 1 to 60, student requires `studentNumber` matching `^[A-Za-z0-9-]{4,20}$`, `role` limited to `student|faculty`, unknown keys rejected
 - [ ] AUTH-07 Auth service `register()`
   - Files: `server/services/auth.service.js`, `server/repositories/profiles.repository.js` · Done when: student → approved; faculty → role `faculty` + `pending`; `full_name` filled; duplicate email → `409`; duplicate student number → `409`; failure after sign-up is logged with the user id

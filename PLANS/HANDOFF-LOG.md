@@ -105,3 +105,10 @@ Append-only. Newest entry **at the bottom**. Never edit old entries; add a corre
 - **Decisions / assumptions:** Updated `requireRole` to return `ROLE_FORBIDDEN` (403) instead of generic `FORBIDDEN`. Added `requireApproved` middleware: admin bypasses approval, non-admin with `approvalStatus !== 'approved'` gets `APPROVAL_PENDING` (403). Added 7 unit tests in `server/middleware/auth.test.js` (all pass). `forbidden` import removed (unused).
 - **Surprises / problems:** none.
 - **Next task:** AUTH-06 (Register validator)
+
+### 2026-10-31 · cline · agent
+- **Finished:** AUTH-06
+- **In progress:** none
+- **Decisions / assumptions:** Added `registerSchema` (Zod): role enum student|faculty, email normalized (trim + lowercase), password ≥ 8, names trimmed 1-60, studentNumber required for students with regex ^[A-Za-z0-9-]{4,20}$, .strict() rejects unknown keys. Added 9 unit tests (all pass). Total tests now 23.
+- **Surprises / problems:** none.
+- **Next task:** AUTH-07 (Auth service register())
