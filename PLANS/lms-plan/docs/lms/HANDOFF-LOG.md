@@ -119,3 +119,10 @@ Append-only. Newest entry **at the bottom**. Never edit old entries; add a corre
 - **Decisions / assumptions:** Added `register()` to auth.service.js: pre-checks duplicate student number, calls Supabase signUp with metadata, maps duplicate email/student number to 409, upgrades faculty profiles (role=faculty, approval=pending), returns {profile, requiresEmailConfirmation, pendingApproval}. Added `findProfileByStudentNumber` and `updateProfile` to profiles.repository.js. End-to-end verification blocked by Supabase email rate limit (too many test signups); logic verified by code review and supporting pieces (trigger AUTH-02, validator AUTH-06, repository) all tested.
 - **Surprises / problems:** Supabase email rate limit prevented full end-to-end test. Should verify with a real signup once rate limit resets.
 - **Next task:** AUTH-08 (POST /auth/register route)
+
+### 2026-10-31 · cline · agent
+- **Finished:** AUTH-08
+- **In progress:** none
+- **Decisions / assumptions:** Added `POST /auth/register` route with `registerLimiter` (5/hour/IP). Returns 201 with `{profile, requiresEmailConfirmation, pendingApproval}`, sets no cookies. Validation (422) and rate limiting verified. End-to-end signup blocked by Supabase email rate limit (too many test signups); validation path confirmed working.
+- **Surprises / problems:** Supabase email rate limit still active from earlier test signups. Full E2E signup test deferred.
+- **Next task:** AUTH-09 (Extend login, /auth/me, PATCH /auth/me)
