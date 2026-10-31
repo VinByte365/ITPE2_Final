@@ -15,7 +15,7 @@ Goal: a clean repo, verified facts, and the tooling (migrations, tests, progress
   - Files: `package.json` (`test`: `node --test`), `server/utils/slug.test.js` · Done when: `npm test` runs and passes with at least one real test
 - [x] HK-06 Progress script wired in (@cline, 2026-10-31)
   - Files: `package.json` (`docs:progress`: `node docs/lms/progress.mjs`) · Done when: `npm run docs:progress` rewrites `checklists/PROGRESS.md` with correct counts
-- [ ] HK-07 Environment additions
+- [x] HK-07 Environment additions (@cline, 2026-10-31)
   - Files: `.env.example`, `server/config/env.js` · Done when: `STORAGE_TOPIC_BUCKET`, `STORAGE_UPLOAD_BUCKET`, `SIGNED_URL_TTL_SECONDS` (120), `MAX_FILE_MB` (25), `MAX_IMAGE_MB` (5), `DEFAULT_TIMEZONE` (`Asia/Manila`) are documented and validated with defaults; the server still boots with the old `.env`
 - [ ] HK-08 Confirm the current app runs locally end to end
   - Files: `README.md` (fix steps if wrong) · Done when: `db:schema`, `db:seed`, `make:admin`, `dev:all` all work on a fresh Supabase project; result written in `HANDOFF-LOG.md`

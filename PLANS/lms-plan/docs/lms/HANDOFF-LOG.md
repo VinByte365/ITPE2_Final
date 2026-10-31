@@ -63,3 +63,10 @@ Append-only. Newest entry **at the bottom**. Never edit old entries; add a corre
 - **Decisions / assumptions:** Migration runner (`server/scripts/migrate.js` + `db:migrate`), test runner (`npm test`, 7 slug tests), progress script wired (`npm run docs:progress` → `docs/lms/checklists/PROGRESS.md`, 6/155 done), and `docs/lms/` added to the repo with a README link. `lint`, `build` and `test` all pass.
 - **Surprises / problems:** `docs/lms/` is now a third copy alongside the two `PLANS/` copies; keep them in sync until the PLANS layer is retired.
 - **Next task:** HK-07 (environment additions) — or HK-03 push (still blocked on permissions).
+
+### 2026-10-31 · cline · agent
+- **Finished:** HK-07
+- **In progress:** none
+- **Decisions / assumptions:** Added `STORAGE_TOPIC_BUCKET` (default `topic-files`), `STORAGE_UPLOAD_BUCKET` (default `quiz-uploads`), `SIGNED_URL_TTL_SECONDS` (120), `MAX_FILE_MB` (25), `MAX_IMAGE_MB` (5), `DEFAULT_TIMEZONE` (`Asia/Manila`) to `.env.example` and `server/config/env.js` (`env.storage.*`, `env.defaultTimezone`), validated with defaults via `parsePositiveNumber`/`read`. Verified `env.js` loads with the existing `.env` (storage + tz resolved). Server still boots with old `.env` (all new vars default).
+- **Surprises / problems:** none.
+- **Next task:** HK-08
