@@ -35,3 +35,24 @@ Append-only. Newest entry **at the bottom**. Never edit old entries; add a corre
 - **Decisions / assumptions:** Added `structure.txt` to `.gitignore`. Removed two unused tracked stray screenshots (`src/assets/css/IMG_8692.JPG`, `IMG_8693.JPG`) via `git rm` (recoverable from history). Verified `git ls-files .env node_modules` is empty. Checked the `class-01.jpg`/`og-cover.jpg` duplicate by MD5 (identical: BF08BAA471899FDEBEB78A36D992F745); both are referenced (`src/pages/{Home,About}Page.jsx` imports class-01; `index.html` OG meta uses /og-cover.jpg), so both kept per the "only if nothing imports the removed copy" rule.
 - **Surprises / problems:** none.
 - **Next task:** HK-03
+
+### 2026-10-31 · cline · agent
+- **Finished:** HK-03 (partially — local branch + commit only)
+- **In progress:** HK-03 push (blocked)
+- **Decisions / assumptions:** Created local branch `lms` from `master` and committed HK-01+HK-02 work as `55bb686` ("HK-01, HK-02: verify codebase facts and git hygiene", 31 files). `git push -u origin lms` failed with 403 (Takodachi48 lacks push access to VinByte365/ITPE2_Final). Commit format `TASK-ID: summary` is already documented in `README.md` and the checklists. HK-03 left unticked with ⛔ marker.
+- **Surprises / problems:** Push permission denied. User (or an authorized account) must push the `lms` branch; alternatively grant `Takodachi48` write access to the repo.
+- **Next task:** HK-04 (after HK-03 is unblocked) — or skip to HK-04 which has no git dependency.
+
+### 2026-10-31 · cline · agent
+- **Finished:** HK-04
+- **In progress:** none
+- **Decisions / assumptions:** Added `server/scripts/migrate.js` (bootstraps `public.schema_migrations`, applies `NNN_*.sql` in order, each in its own transaction, skips applied, idempotent re-runs). Added `server/db/migrations/README.md`. Wired `db:migrate` in `package.json`. Documented `db:schema` then `db:migrate` in `README.md`. Script runs cleanly (exits 1 only because `DATABASE_URL` is unset in this env).
+- **Surprises / problems:** none.
+- **Next task:** HK-05
+
+### 2026-10-31 · cline · agent
+- **Finished:** HK-05
+- **In progress:** none
+- **Decisions / assumptions:** Wired `test`: `node --test` in `package.json`. Added `server/utils/slug.test.js` with 7 real tests for `slugify` (casing, accents, ampersands, collapsing, trimming, fallback, truncation). `npm test` passes (7/7).
+- **Surprises / problems:** none.
+- **Next task:** HK-06

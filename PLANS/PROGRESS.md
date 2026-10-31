@@ -6,7 +6,7 @@ Stretch tasks are listed separately and do not count toward the total.
 <!-- progress:start -->
 | Phase | Done | Progress | In progress | Blocked | Stretch |
 | --- | --- | --- | --- | --- | --- |
-| [Phase 00 · Housekeeping](00-housekeeping.md) | 2/11 | 18% ██░░░░░░░░ | 0 | 0 | 0/0 |
+| [Phase 00 · Housekeeping](00-housekeeping.md) | 6/11 | 55% ██████░░░░ | 0 | 1 | 0/0 |
 | [Phase 01 · Auth and Roles (R1)](01-auth-roles.md) | 0/23 | 0% ░░░░░░░░░░ | 0 | 0 | 0/0 |
 | [Phase 02 · Subjects and Enrollment (R2, X1)](02-subjects-enrollment.md) | 0/18 | 0% ░░░░░░░░░░ | 0 | 0 | 0/0 |
 | [Phase 03 · Topics and Content (R3, R4, X3)](03-topics-content.md) | 0/21 | 0% ░░░░░░░░░░ | 0 | 0 | 0/0 |
@@ -15,7 +15,7 @@ Stretch tasks are listed separately and do not count toward the total.
 | [Phase 06 · Gating and Progress (R3, X1, X2)](06-gating-progress.md) | 0/15 | 0% ░░░░░░░░░░ | 0 | 0 | 0/2 |
 | [Phase 07 · Reports and Exports (R6, R7)](07-reports-exports.md) | 0/16 | 0% ░░░░░░░░░░ | 0 | 0 | 0/0 |
 | [Phase 08 · Testing, Security and Deployment](08-testing-deploy.md) | 0/12 | 0% ░░░░░░░░░░ | 0 | 0 | 0/0 |
-| **Total** | **2/155** | **1%** | | | |
+| **Total** | **6/155** | **4%** | | | |
 <!-- progress:end -->
 
 ## Where to continue
