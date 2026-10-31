@@ -27,3 +27,6 @@ dist-ssr
 .env
 .env.*
 !.env.example
+
+# Project structure snapshot (generated, not source)
+structure.txt
