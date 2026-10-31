@@ -10,7 +10,7 @@ Depends on: 00. Specs: `../specs/01-data-model.md` (001), `../specs/02-api.md` (
   - Files: same migration (or `001b`) · Done when: creating a Supabase user with `{role:'admin'}` in metadata yields a `student`; names land in `profiles`
 - [x] AUTH-03 Rewrite legacy RLS helpers and policies that reference `editor` (@cline, 2026-10-31)
   - Files: migration · Done when: public site still loads published modules; `/admin/modules` works for admin; faculty/student get `403`
-- [ ] AUTH-04 Replace role constants everywhere on the server
+- [x] AUTH-04 Replace role constants everywhere on the server (@cline, 2026-10-31)
   - Files: `server/middleware/auth.js`, `server/routes/admin.routes.js`, `server/validators/*`, `server/scripts/make-admin.js`, `server/utils/mappers.js`, `docs/API.md` · Done when: grep finds no `viewer`/`editor` in server code; profile mapper returns `firstName`, `lastName`, `studentNumber`, `approvalStatus`
 - [ ] AUTH-05 Middleware `requireRole`, `requireApproved`
   - Files: `server/middleware/auth.js` · Done when: unit tests show correct `403` codes `ROLE_FORBIDDEN` and `APPROVAL_PENDING`; admin bypasses approval

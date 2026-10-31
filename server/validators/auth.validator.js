@@ -10,5 +10,5 @@ export const forgotPasswordSchema = z.object({
 });
 
 export const updateRoleSchema = z.object({
-  role: z.enum(['admin', 'editor', 'viewer']),
+  role: z.enum(['admin', 'faculty', 'student']),
 });

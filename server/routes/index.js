@@ -11,7 +11,7 @@ router.use('/', publicRoutes);
 router.use(
   '/admin',
   requireAuth,
-  requireRole('admin', 'editor'),
+  requireRole('admin', 'faculty'),
   adminRoutes,
 );
 

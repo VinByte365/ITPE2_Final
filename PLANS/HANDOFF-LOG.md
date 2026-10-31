@@ -91,3 +91,10 @@ Append-only. Newest entry **at the bottom**. Never edit old entries; add a corre
 - **Decisions / assumptions:** Created `server/db/migrations/001_lms_profiles.sql` (profile columns, role rename viewer→student/editor→faculty, default student, student_number unique index, updated signup trigger `handle_new_user` copying names/student_number with role=student/approved, RLS policies editor→faculty). Verified: migration runs twice (idempotent), new columns present, no viewer/editor rows, admin account intact, student_number index exists, trigger fires correctly (tested with role:admin metadata → profile is student), all 5 RLS manage policies now reference faculty. AUTH-03 done condition met: public site still loads published modules (anon RLS unchanged), /admin/modules works for admin, faculty/student blocked at Express level.
 - **Surprises / problems:** none.
 - **Next task:** AUTH-04 (role constants replacement)
+
+### 2026-10-31 · cline · agent
+- **Finished:** AUTH-04
+- **In progress:** none
+- **Decisions / assumptions:** Replaced role constants across server code: schema.sql (default student, check admin|faculty|student, RLS has_role array['admin','faculty']), routes/index.js (requireRole admin/faculty), auth.validator.js and common.js (z.enum admin/faculty/student), mappers.js (mapProfile now returns firstName, lastName, studentNumber, approvalStatus), profiles.repository.js (select/insert/return new columns). No viewer/editor string literals remain in server code. Server boots and lint/build/test pass.
+- **Surprises / problems:** none.
+- **Next task:** AUTH-05 (requireRole, requireApproved middleware)

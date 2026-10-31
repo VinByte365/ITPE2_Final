@@ -3,7 +3,8 @@ import { mapProfile } from '../utils/mappers.js';
 
 export async function findProfileById(id) {
   const { rows } = await dbQuery(
-    `select id, email, full_name, role, created_at, updated_at
+    `select id, email, full_name, first_name, last_name, student_number,
+            approval_status, role, created_at, updated_at
        from public.profiles
       where id = $1
       limit 1`,
@@ -21,13 +22,21 @@ export async function ensureProfile(user) {
   const fullName = user.user_metadata?.full_name || null;
 
   const { rows } = await dbQuery(
-    `insert into public.profiles (id, email, full_name)
-     values ($1, $2, $3)
+    `insert into public.profiles (id, email, full_name, first_name, last_name, student_number)
+     values ($1, $2, $3, $4, $5, $6)
      on conflict (id) do update
        set email = coalesce(excluded.email, public.profiles.email),
            updated_at = now()
-     returning id, email, full_name, role, created_at, updated_at`,
-    [user.id, email, fullName],
+     returning id, email, full_name, first_name, last_name, student_number,
+               approval_status, role, created_at, updated_at`,
+    [
+      user.id,
+      email,
+      fullName,
+      user.user_metadata?.first_name || null,
+      user.user_metadata?.last_name || null,
+      user.user_metadata?.student_number || null,
+    ],
   );
 
   return mapProfile(rows[0]);
@@ -38,6 +47,10 @@ export async function listProfiles() {
     select p.id,
            p.email,
            p.full_name,
+           p.first_name,
+           p.last_name,
+           p.student_number,
+           p.approval_status,
            p.role,
            p.created_at,
            p.updated_at,
@@ -59,7 +72,8 @@ export async function updateProfileRole(id, role) {
         set role = $2,
             updated_at = now()
       where id = $1
-      returning id, email, full_name, role, created_at, updated_at`,
+      returning id, email, full_name, first_name, last_name, student_number,
+                approval_status, role, created_at, updated_at`,
     [id, role],
   );
 

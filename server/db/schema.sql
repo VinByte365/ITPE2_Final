@@ -1,6 +1,6 @@
 -- Systems Index database schema
 -- Run with: npm run db:schema
--- Or paste into the Supabase SQL Editor.
+-- Or paste into the Supabase dashboard SQL console.
 
 create extension if not exists pgcrypto;
 
@@ -66,7 +66,7 @@ create table if not exists public.profiles (
   id uuid primary key references auth.users(id) on delete cascade,
   email text,
   full_name text,
-  role text not null default 'viewer' check (role in ('admin', 'editor', 'viewer')),
+  role text not null default 'student' check (role in ('admin', 'faculty', 'student')),
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
@@ -182,12 +182,12 @@ create policy "Themes are publicly readable"
   to anon, authenticated
   using (true);
 
-drop policy if exists "Editors manage themes" on public.themes;
-create policy "Editors manage themes"
+drop policy if exists "Faculty manage themes" on public.themes;
+create policy "Faculty manage themes"
   on public.themes for all
   to authenticated
-  using (public.has_role(array['admin', 'editor']))
-  with check (public.has_role(array['admin', 'editor']));
+  using (public.has_role(array['admin', 'faculty']))
+  with check (public.has_role(array['admin', 'faculty']));
 
 drop policy if exists "Published modules are publicly readable" on public.modules;
 create policy "Published modules are publicly readable"
@@ -195,12 +195,12 @@ create policy "Published modules are publicly readable"
   to anon, authenticated
   using (status = 'published');
 
-drop policy if exists "Editors manage modules" on public.modules;
-create policy "Editors manage modules"
+drop policy if exists "Faculty manage modules" on public.modules;
+create policy "Faculty manage modules"
   on public.modules for all
   to authenticated
-  using (public.has_role(array['admin', 'editor']))
-  with check (public.has_role(array['admin', 'editor']));
+  using (public.has_role(array['admin', 'faculty']))
+  with check (public.has_role(array['admin', 'faculty']));
 
 drop policy if exists "Presenters are publicly readable" on public.presenters;
 create policy "Presenters are publicly readable"
@@ -208,12 +208,12 @@ create policy "Presenters are publicly readable"
   to anon, authenticated
   using (true);
 
-drop policy if exists "Editors manage presenters" on public.presenters;
-create policy "Editors manage presenters"
+drop policy if exists "Faculty manage presenters" on public.presenters;
+create policy "Faculty manage presenters"
   on public.presenters for all
   to authenticated
-  using (public.has_role(array['admin', 'editor']))
-  with check (public.has_role(array['admin', 'editor']));
+  using (public.has_role(array['admin', 'faculty']))
+  with check (public.has_role(array['admin', 'faculty']));
 
 drop policy if exists "Videos for published modules are public" on public.module_videos;
 create policy "Videos for published modules are public"
@@ -228,12 +228,12 @@ create policy "Videos for published modules are public"
     )
   );
 
-drop policy if exists "Editors manage videos" on public.module_videos;
-create policy "Editors manage videos"
+drop policy if exists "Faculty manage videos" on public.module_videos;
+create policy "Faculty manage videos"
   on public.module_videos for all
   to authenticated
-  using (public.has_role(array['admin', 'editor']))
-  with check (public.has_role(array['admin', 'editor']));
+  using (public.has_role(array['admin', 'faculty']))
+  with check (public.has_role(array['admin', 'faculty']));
 
 drop policy if exists "Presenters on published modules are public" on public.module_presenters;
 create policy "Presenters on published modules are public"
@@ -248,12 +248,12 @@ create policy "Presenters on published modules are public"
     )
   );
 
-drop policy if exists "Editors manage module presenters" on public.module_presenters;
-create policy "Editors manage module presenters"
+drop policy if exists "Faculty manage module presenters" on public.module_presenters;
+create policy "Faculty manage module presenters"
   on public.module_presenters for all
   to authenticated
-  using (public.has_role(array['admin', 'editor']))
-  with check (public.has_role(array['admin', 'editor']));
+  using (public.has_role(array['admin', 'faculty']))
+  with check (public.has_role(array['admin', 'faculty']));
 
 drop policy if exists "Users can read their own profile" on public.profiles;
 create policy "Users can read their own profile"

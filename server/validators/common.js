@@ -34,7 +34,7 @@ export const optionalHttpUrlSchema = z.preprocess(
 
 export const moduleStatusSchema = z.enum(['draft', 'published', 'archived']);
 
-export const roleSchema = z.enum(['admin', 'editor', 'viewer']);
+export const roleSchema = z.enum(['admin', 'faculty', 'student']);
 
 export const idOrSlugSchema = z
   .string()
