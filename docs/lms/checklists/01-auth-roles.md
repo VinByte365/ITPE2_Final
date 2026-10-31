@@ -4,11 +4,11 @@ Depends on: 00. Specs: `../specs/01-data-model.md` (001), `../specs/02-api.md` (
 
 ## Backend
 
-- [ ] AUTH-01 Migration `001_lms_profiles.sql`: profile columns, role rename, default, student-number index
+- [x] AUTH-01 Migration `001_lms_profiles.sql`: profile columns, role rename, default, student-number index (@cline, 2026-10-31)
   - Files: `server/db/migrations/001_lms_profiles.sql` · Done when: runs twice without error; no `viewer`/`editor` rows remain; role check allows only `admin|faculty|student`; the existing admin account still logs in
-- [ ] AUTH-02 Update the signup trigger to copy names and student number from metadata, always role `student`
+- [x] AUTH-02 Update the signup trigger to copy names and student number from metadata, always role `student` (@cline, 2026-10-31)
   - Files: same migration (or `001b`) · Done when: creating a Supabase user with `{role:'admin'}` in metadata yields a `student`; names land in `profiles`
-- [ ] AUTH-03 Rewrite legacy RLS helpers and policies that reference `editor`
+- [x] AUTH-03 Rewrite legacy RLS helpers and policies that reference `editor` (@cline, 2026-10-31)
   - Files: migration · Done when: public site still loads published modules; `/admin/modules` works for admin; faculty/student get `403`
 - [ ] AUTH-04 Replace role constants everywhere on the server
   - Files: `server/middleware/auth.js`, `server/routes/admin.routes.js`, `server/validators/*`, `server/scripts/make-admin.js`, `server/utils/mappers.js`, `docs/API.md` · Done when: grep finds no `viewer`/`editor` in server code; profile mapper returns `firstName`, `lastName`, `studentNumber`, `approvalStatus`

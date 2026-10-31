@@ -84,3 +84,10 @@ Append-only. Newest entry **at the bottom**. Never edit old entries; add a corre
 - **Decisions / assumptions:** HK-08 verified end-to-end on a real Supabase project: db:schema ✅, db:migrate ✅ (0 migrations), db:seed ✅ (16 modules, 32 presenters, 26 videos), storage:setup ✅ (topic-files and quiz-uploads buckets created), make:admin ✅ (user promoted), dev:all ✅ (site loads at localhost:5173). HK-V1 verified: npm install → db:schema → db:migrate → npm test → npm run lint → npm run build all pass. HK-03 remains ⛔ (push 403).
 - **Surprises / problems:** Initial SUPABASE_URL had /rest/v1/ suffix causing malformed storage paths; corrected. Service role key was initially invalid; re-copied from dashboard.
 - **Next task:** AUTH-01 (001_lms_profiles.sql migration) — Phase 01 begins.
+
+### 2026-10-31 · cline · agent
+- **Finished:** AUTH-01, AUTH-02, AUTH-03
+- **In progress:** none
+- **Decisions / assumptions:** Created `server/db/migrations/001_lms_profiles.sql` (profile columns, role rename viewer→student/editor→faculty, default student, student_number unique index, updated signup trigger `handle_new_user` copying names/student_number with role=student/approved, RLS policies editor→faculty). Verified: migration runs twice (idempotent), new columns present, no viewer/editor rows, admin account intact, student_number index exists, trigger fires correctly (tested with role:admin metadata → profile is student), all 5 RLS manage policies now reference faculty. AUTH-03 done condition met: public site still loads published modules (anon RLS unchanged), /admin/modules works for admin, faculty/student blocked at Express level.
+- **Surprises / problems:** none.
+- **Next task:** AUTH-04 (role constants replacement)
