@@ -4,15 +4,15 @@ Depends on: 01. Specs: `../specs/01-data-model.md` (002), `../specs/02-api.md` (
 
 ## Backend
 
-- [ ] SUBJ-01 Migration `002_subjects_enrollments.sql` (RLS enabled, no policies)
+- [x] SUBJ-01 Migration `002_subjects_enrollments.sql` (RLS enabled, no policies) (@cline, 2026-10-31)
   - Files: `server/db/migrations/002_subjects_enrollments.sql` · Done when: idempotent; anon-key REST read of both tables returns nothing
-- [ ] SUBJ-02 Join-code generator
+- [x] SUBJ-02 Join-code generator (@cline, 2026-10-31)
   - Files: `server/utils/joinCode.js`, `joinCode.test.js` · Done when: 8 chars from the allowed alphabet; uses `crypto.randomInt`; tests check alphabet, length, and distribution sanity
-- [ ] SUBJ-03 Subject validators
+- [x] SUBJ-03 Subject validators (@cline, 2026-10-31)
   - Files: `server/validators/subject.validator.js` · Done when: code upper-cased and pattern-checked; term enum; school year `YYYY-YYYY` with consecutive years; passing percent integer 1 to 100
-- [ ] SUBJ-04 Subject repository, service, routes (faculty CRUD) and `requireSubjectOwner`
+- [x] SUBJ-04 Subject repository, service, routes (faculty CRUD) and `requireSubjectOwner` (@cline, 2026-10-31)
   - Files: `server/repositories/subjects.repository.js`, `server/services/subjects.service.js`, `server/routes/faculty.routes.js`, `server/routes/index.js`, `server/middleware/auth.js` · Done when: faculty list only their own subjects; another faculty gets `404`; admin can read all; duplicate (code, term, year) → `409`
-- [ ] SUBJ-05 Join-code regeneration and enrollment open/close
+- [x] SUBJ-05 Join-code regeneration and enrollment open/close (@cline, 2026-10-31)
   - Files: service and routes · Done when: old code stops working immediately; unique violation retried
 - [ ] SUBJ-06 Student enrollment endpoint
   - Files: `server/routes/student.routes.js`, `server/services/enrollments.service.js`, repository · Done when: valid code enrolls; invalid → `404 JOIN_CODE_INVALID`; closed → `403 ENROLLMENT_CLOSED`; duplicate → `409`; removed students can rejoin; rate limit active

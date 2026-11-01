@@ -161,3 +161,10 @@ Append-only. Newest entry **at the bottom**. Never edit old entries; add a corre
 - **Decisions / assumptions:** Updated docs: README.md roles table (student/faculty/admin), docs/API.md (roles, admin profile PATCH with approvalStatus). All 23 AUTH tasks complete. Phase 01 done: backend auth (migration, trigger, RLS, role constants, middleware, register/login/me/PATCH, admin approvals, originGuard) + frontend (API client, AuthContext, ProtectedRoute, auth pages, role-aware header, admin users page) + tests (31 passing) + docs updated.
 - **Surprises / problems:** none.
 - **Next task:** SUBJ-01 (Phase 02: Subjects and enrollment)
+
+### 2026-10-31 · cline · agent
+- **Finished:** SUBJ-01, SUBJ-02, SUBJ-03, SUBJ-04, SUBJ-05
+- **In progress:** none
+- **Decisions / assumptions:** Created migration 002_subjects_enrollments.sql (subjects + enrollments tables, RLS no policies, idempotent, verified). Join-code generator (8 chars, crypto.randomInt, 5 tests). Subject validators (code, term, school year, passing percent). Repository + service + faculty routes (CRUD, join-code regen, enrollment toggle, archive, roster, remove student) + requireSubjectOwner/requireEnrolled middleware. Server boots, lint/build/test pass (36 tests).
+- **Surprises / problems:** none.
+- **Next task:** SUBJ-06 (student enrollment endpoint)

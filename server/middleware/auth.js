@@ -3,6 +3,7 @@ import { getAccessToken } from '../lib/cookies.js';
 import { AppError, asyncHandler, unauthorized } from '../lib/errors.js';
 import { verifyAccessToken } from '../lib/supabase.js';
 import { ensureProfile } from '../repositories/profiles.repository.js';
+import { findSubjectById } from '../repositories/subjects.repository.js';
 
 export const requireAuth = asyncHandler(async (req, res, next) => {
   const token = getAccessToken(req);
@@ -66,6 +67,44 @@ export const requireApproved = (req, res, next) => {
 };
 
 export const requireAdmin = requireRole('admin');
+
+export const requireSubjectOwner = (paramName = 'id') => async (req, res, next) => {
+  if (!req.auth) return next(unauthorized());
+
+  const subjectId = req.params[paramName];
+  if (!subjectId) return next(new AppError(400, 'BAD_REQUEST', 'Missing subject id.'));
+
+  const subject = await findSubjectById(subjectId);
+  if (!subject) {
+    return next(new AppError(404, 'NOT_FOUND', 'Subject not found.'));
+  }
+
+  const isAdmin = req.auth.profile?.role === 'admin';
+  const isOwner = subject.facultyId === req.auth.profile?.id;
+
+  if (!isAdmin && !isOwner) {
+    return next(new AppError(404, 'NOT_FOUND', 'Subject not found.'));
+  }
+
+  req.subject = subject;
+  return next();
+};
+
+export const requireEnrolled = (paramName = 'id') => async (req, res, next) => {
+  if (!req.auth) return next(unauthorized());
+
+  const subjectId = req.params[paramName];
+  if (!subjectId) return next(new AppError(400, 'BAD_REQUEST', 'Missing subject id.'));
+
+  const subject = await findSubjectById(subjectId);
+  if (!subject) {
+    return next(new AppError(404, 'NOT_FOUND', 'Subject not found.'));
+  }
+
+  // Check enrollment (will be verified in service layer with proper query)
+  req.subject = subject;
+  return next();
+};
 
 export function currentUserPayload(req) {
   return {

@@ -59,3 +59,37 @@ export function mapModule(row) {
     presenters: row.presenters || [],
   };
 }
+
+export function mapSubject(row) {
+  if (!row) return null;
+  return {
+    id: row.id,
+    facultyId: row.faculty_id,
+    code: row.code,
+    name: row.name,
+    description: row.description,
+    term: row.term,
+    schoolYear: row.school_year,
+    joinCode: row.join_code,
+    passingPercent: row.passing_percent,
+    enrollmentOpen: row.enrollment_open,
+    status: row.status,
+    timezone: row.timezone,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  };
+}
+
+export function mapEnrollment(row) {
+  if (!row) return null;
+  return {
+    id: row.id,
+    subjectId: row.subject_id,
+    studentId: row.student_id,
+    status: row.status,
+    enrolledAt: row.enrolled_at,
+    removedAt: row.removed_at,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  };
+}
