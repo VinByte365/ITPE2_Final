@@ -16,6 +16,32 @@ import {
   updateSubject,
 } from '../services/subjects.service.js';
 import {
+  bulkCreateTopics,
+  createTopic,
+  deleteTopic,
+  listTopics,
+  reorderTopics,
+  updateTopic,
+} from '../services/topics.service.js';
+import {
+  createContentBlock,
+  deleteContentBlock,
+  getUploadUrl,
+  listContent,
+  reorderContentBlocks,
+  updateContentBlock,
+} from '../services/content.service.js';
+import {
+  contentBlockSchema,
+  updateContentBlockSchema,
+} from '../validators/content.validator.js';
+import {
+  createTopicSchema,
+  updateTopicSchema,
+  bulkTopicsSchema,
+  reorderTopicsSchema,
+} from '../validators/topic.validator.js';
+import {
   createSubjectSchema,
   updateSubjectSchema,
 } from '../validators/subject.validator.js';
@@ -133,6 +159,151 @@ router.patch(
     const isAdmin = req.auth.profile?.role === 'admin';
     const subject = await toggleEnrollment(req.auth.profile.id, req.params.id, open, isAdmin);
     res.json({ data: subject });
+  }),
+);
+
+// GET /faculty/subjects/:id/topics
+router.get(
+  '/subjects/:id/topics',
+  requireSubjectOwner('id'),
+  asyncHandler(async (req, res) => {
+    const isAdmin = req.auth.profile?.role === 'admin';
+    const topics = await listTopics(req.auth.profile.id, req.params.id, isAdmin);
+    res.json({ data: topics });
+  }),
+);
+
+// POST /faculty/subjects/:id/topics
+router.post(
+  '/subjects/:id/topics',
+  requireSubjectOwner('id'),
+  asyncHandler(async (req, res) => {
+    const input = createTopicSchema.parse(req.body);
+    const isAdmin = req.auth.profile?.role === 'admin';
+    const topic = await createTopic(req.auth.profile.id, req.params.id, input, isAdmin);
+    res.status(201).json({ data: topic });
+  }),
+);
+
+// POST /faculty/subjects/:id/topics/bulk
+router.post(
+  '/subjects/:id/topics/bulk',
+  requireSubjectOwner('id'),
+  asyncHandler(async (req, res) => {
+    const input = bulkTopicsSchema.parse(req.body);
+    const isAdmin = req.auth.profile?.role === 'admin';
+    const topics = await bulkCreateTopics(req.auth.profile.id, req.params.id, input, isAdmin);
+    res.status(201).json({ data: topics });
+  }),
+);
+
+// PUT /faculty/subjects/:id/topics/order
+router.put(
+  '/subjects/:id/topics/order',
+  requireSubjectOwner('id'),
+  asyncHandler(async (req, res) => {
+    const { topicIds } = reorderTopicsSchema.parse(req.body);
+    const isAdmin = req.auth.profile?.role === 'admin';
+    const topics = await reorderTopics(req.auth.profile.id, req.params.id, topicIds, isAdmin);
+    res.json({ data: topics });
+  }),
+);
+
+// PATCH /faculty/topics/:id
+router.patch(
+  '/topics/:id',
+  asyncHandler(async (req, res) => {
+    const topicId = uuidSchema.parse(req.params.id);
+    const input = updateTopicSchema.parse(req.body);
+    const isAdmin = req.auth.profile?.role === 'admin';
+    const updated = await updateTopic(req.auth.profile.id, topicId, input, isAdmin);
+    res.json({ data: updated });
+  }),
+);
+
+// DELETE /faculty/topics/:id
+router.delete(
+  '/topics/:id',
+  asyncHandler(async (req, res) => {
+    const topicId = uuidSchema.parse(req.params.id);
+    const isAdmin = req.auth.profile?.role === 'admin';
+    const result = await deleteTopic(req.auth.profile.id, topicId, isAdmin);
+    res.json({ data: result });
+  }),
+);
+
+// GET /faculty/topics/:id/content
+router.get(
+  '/topics/:id/content',
+  asyncHandler(async (req, res) => {
+    const topicId = uuidSchema.parse(req.params.id);
+    const isAdmin = req.auth.profile?.role === 'admin';
+    const blocks = await listContent(req.auth.profile.id, topicId, isAdmin);
+    res.json({ data: blocks });
+  }),
+);
+
+// POST /faculty/topics/:id/content
+router.post(
+  '/topics/:id/content',
+  asyncHandler(async (req, res) => {
+    const topicId = uuidSchema.parse(req.params.id);
+    const input = contentBlockSchema.parse(req.body);
+    const isAdmin = req.auth.profile?.role === 'admin';
+    const block = await createContentBlock(req.auth.profile.id, topicId, input, isAdmin);
+    res.status(201).json({ data: block });
+  }),
+);
+
+// PATCH /faculty/content/:id
+router.patch(
+  '/content/:id',
+  asyncHandler(async (req, res) => {
+    const blockId = uuidSchema.parse(req.params.id);
+    const input = updateContentBlockSchema.parse(req.body);
+    const isAdmin = req.auth.profile?.role === 'admin';
+    const block = await updateContentBlock(req.auth.profile.id, blockId, input, isAdmin);
+    res.json({ data: block });
+  }),
+);
+
+// DELETE /faculty/content/:id
+router.delete(
+  '/content/:id',
+  asyncHandler(async (req, res) => {
+    const blockId = uuidSchema.parse(req.params.id);
+    const isAdmin = req.auth.profile?.role === 'admin';
+    const result = await deleteContentBlock(req.auth.profile.id, blockId, isAdmin);
+    res.json({ data: result });
+  }),
+);
+
+// PUT /faculty/topics/:id/content/order
+router.put(
+  '/topics/:id/content/order',
+  asyncHandler(async (req, res) => {
+    const topicId = uuidSchema.parse(req.params.id);
+    const { blockIds } = z.object({ blockIds: z.array(uuidSchema) }).parse(req.body);
+    const isAdmin = req.auth.profile?.role === 'admin';
+    const blocks = await reorderContentBlocks(req.auth.profile.id, topicId, blockIds, isAdmin);
+    res.json({ data: blocks });
+  }),
+);
+
+// POST /faculty/topics/:id/content/upload-url
+router.post(
+  '/topics/:id/content/upload-url',
+  asyncHandler(async (req, res) => {
+    const topicId = uuidSchema.parse(req.params.id);
+    const { fileName, mime, size, kind } = z.object({
+      fileName: z.string().min(1),
+      mime: z.string().min(1),
+      size: z.number().int().positive(),
+      kind: z.string().optional().default('presentation'),
+    }).parse(req.body);
+    const isAdmin = req.auth.profile?.role === 'admin';
+    const result = await getUploadUrl(req.auth.profile.id, topicId, kind, { fileName, mime, size }, isAdmin);
+    res.json({ data: result });
   }),
 );
 

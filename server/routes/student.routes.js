@@ -8,6 +8,12 @@ import {
 } from '../services/subjects.service.js';
 import { enrollLimiter } from '../middleware/rateLimit.js';
 import { enrollSchema } from '../validators/subject.validator.js';
+import { uuidSchema } from '../validators/common.js';
+import {
+  completeTopic,
+  getStudentTopic,
+  listStudentTopics,
+} from '../services/student-topics.service.js';
 
 const router = Router();
 
@@ -43,6 +49,36 @@ router.get(
     const subject = req.subject;
     // Include passing percent etc. (already in subject)
     res.json({ data: subject });
+  }),
+);
+
+// GET /student/subjects/:id/topics
+router.get(
+  '/subjects/:id/topics',
+  requireEnrolled('id'),
+  asyncHandler(async (req, res) => {
+    const topics = await listStudentTopics(req.auth.profile.id, req.params.id);
+    res.json({ data: topics });
+  }),
+);
+
+// GET /student/topics/:id
+router.get(
+  '/topics/:id',
+  asyncHandler(async (req, res) => {
+    const topicId = uuidSchema.parse(req.params.id);
+    const topic = await getStudentTopic(req.auth.profile.id, topicId);
+    res.json({ data: topic });
+  }),
+);
+
+// POST /student/topics/:id/complete
+router.post(
+  '/topics/:id/complete',
+  asyncHandler(async (req, res) => {
+    const topicId = uuidSchema.parse(req.params.id);
+    const result = await completeTopic(req.auth.profile.id, topicId);
+    res.json({ data: result });
   }),
 );
 

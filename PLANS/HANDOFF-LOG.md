@@ -182,3 +182,10 @@ Append-only. Newest entry **at the bottom**. Never edit old entries; add a corre
 - **Decisions / assumptions:** Frontend subjects: Faculty dashboard (subject cards with student count), Create subject page, Roster page (sorted by surname, remove student), Student dashboard (enrolled subjects), Join subject page (auto-uppercase code input). Updated API docs. Added src/api/subjects.js with all subject/enrollment API calls. App.jsx routes updated. Lint and build pass.
 - **Surprises / problems:** none.
 - **Next task:** SUBJ-V1 (Phase 02 verification) or TOPIC-01 (Phase 03)
+
+### 2026-11-01 · cline · agent
+- **Finished:** TOPIC-08 to TOPIC-12 gap closure before commit — content object-existence verification on create (TOPIC-09), draft gating in student topic detail, POST /student/topics/:id/complete with idempotent topic_progress (TOPIC-11), 27 new service tests using a `setDeps` fake-repository seam (TOPIC-12). 100 tests pass; lint & build pass.
+- **In progress:** none
+- **Decisions / assumptions:** Refactored topics/content/student-topics services to use a mutable `deps` container + `setDeps` so service-level tests can inject fake repositories (matches the TOPIC-07 "fake repository" convention); added `recordTopicProgress` to topics.repository.js. PROGRESS.md regenerated (56/155, 36%).
+- **Surprises / problems:** ESM module namespace objects are read-only in Node 22, so reassigning repository exports (as originally planned) failed; introduced the `setDeps` seam instead. Two PROGRESS.md copies (PLANS/ and docs/lms/checklists/) kept in sync by copying.
+- **Next task:** TOPIC-13 (MarkdownView + SlidesEmbed shared components)

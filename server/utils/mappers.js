@@ -80,6 +80,41 @@ export function mapSubject(row) {
   };
 }
 
+export function mapTopic(row) {
+  if (!row) return null;
+  return {
+    id: row.id,
+    subjectId: row.subject_id,
+    position: row.position,
+    title: row.title,
+    description: row.description,
+    availableFrom: row.available_from,
+    status: row.status,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  };
+}
+
+export function mapContentBlock(row) {
+  if (!row) return null;
+  return {
+    id: row.id,
+    topicId: row.topic_id,
+    type: row.type,
+    title: row.title,
+    body: row.body,
+    url: row.url,
+    filePath: row.file_path,
+    fileName: row.file_name,
+    fileMime: row.file_mime,
+    fileSize: row.file_size,
+    visibleToStudents: row.visible_to_students,
+    position: row.position,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  };
+}
+
 export function mapEnrollment(row) {
   if (!row) return null;
   return {

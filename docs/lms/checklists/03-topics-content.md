@@ -5,29 +5,29 @@ Note: until phase 06, student topic states are **schedule-only** (`scheduled` or
 
 ## Backend
 
-- [ ] TOPIC-01 Migration `003_topics_content.sql`
+- [x] TOPIC-01 Migration `003_topics_content.sql` (@cline, 2026-10-31)
   - Files: `server/db/migrations/003_topics_content.sql` · Done when: idempotent; deferrable unique `(subject_id, position)`; RLS enabled with no policies
-- [ ] TOPIC-02 Storage helper
+- [x] TOPIC-02 Storage helper (@cline, 2026-10-31)
   - Files: `server/lib/storage.js`, `storage.test.js` · Done when: `createUploadUrl`, `createDownloadUrl`, `objectInfo`, `removeObject`, `buildObjectPath` exist; path builder tested (no user-controlled path segments, sanitized names)
-- [ ] TOPIC-03 Upload validation helpers
+- [x] TOPIC-03 Upload validation helpers (@cline, 2026-10-31)
   - Files: `server/utils/uploads.js`, `uploads.test.js` · Done when: allow-lists by kind, size limits from env, filename sanitizer, image magic-byte check; tests cover spoofed extensions
-- [ ] TOPIC-04 Topic validators, repository, service, routes (single create, list, update, delete)
+- [x] TOPIC-04 Topic validators, repository, service, routes (single create, list, update, delete) (@cline, 2026-10-31)
   - Files: `server/validators/topic.validator.js`, `server/repositories/topics.repository.js`, `server/services/topics.service.js`, `server/routes/faculty.routes.js` · Done when: position appended; owner checks via subject; delete rule left for TOPIC-07
-- [ ] TOPIC-05 Schedule generator (pure) and bulk create endpoint
+- [x] TOPIC-05 Schedule generator (pure) and bulk create endpoint (@cline, 2026-10-31)
   - Files: `server/utils/schedule.js`, `schedule.test.js`, service, route · Done when: BR-13 satisfied and tested for Manila midnight, weekdays, month/year boundaries, count 1 and 40; bulk insert in one transaction; positions continue after existing topics
-- [ ] TOPIC-06 Reorder endpoint
+- [x] TOPIC-06 Reorder endpoint (@cline, 2026-10-31)
   - Files: service, route · Done when: transactional with the deferred unique constraint; rejects id lists that are not exactly the subject's topics
-- [ ] TOPIC-07 Publish/unpublish and delete rules
+- [x] TOPIC-07 Publish/unpublish and delete rules (@cline, 2026-10-31)
   - Files: service · Done when: `409 TOPIC_HAS_ATTEMPTS` is returned once attempts exist (stubbed until phase 04, covered by a test using a fake repository)
-- [ ] TOPIC-08 Content block validators, repository, service, routes
+- [x] TOPIC-08 Content block validators, repository, service, routes (@cline, 2026-11-01)
   - Files: `server/validators/content.validator.js`, `server/repositories/content-blocks.repository.js`, services, routes · Done when: per-type rules (text/summary/notes need a body; presentation needs url or file; video needs url); URLs pass `utils/url.js`; ordered by `position`
-- [ ] TOPIC-09 Upload-URL endpoint and file verification on create
+- [x] TOPIC-09 Upload-URL endpoint and file verification on create (@cline, 2026-11-01)
   - Files: routes, service · Done when: wrong type/size rejected before a URL is issued; create verifies the object exists and the path prefix; deleting a block deletes the object
-- [ ] TOPIC-10 Student topic list
+- [x] TOPIC-10 Student topic list (@cline, 2026-11-01)
   - Files: `server/services/student-topics.service.js`, routes · Done when: returns published topics only with `state` ∈ {`scheduled`,`open`}, `availableFrom`; sorted by position
-- [ ] TOPIC-11 Student topic detail, download URL, complete
+- [x] TOPIC-11 Student topic detail, download URL, complete (@cline, 2026-11-01)
   - Files: service, routes · Done when: `403 TOPIC_NOT_AVAILABLE` for future topics (with `availableFrom`); faculty-only blocks and drafts never returned; `POST complete` records `topic_progress` idempotently
-- [ ] TOPIC-12 Tests
+- [x] TOPIC-12 Tests (@cline, 2026-11-01)
   - Files: `server/**/*.test.js` · Done when: scheduling, ownership, enrollment and access rules covered
 
 ## Frontend
