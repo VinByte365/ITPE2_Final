@@ -15,6 +15,11 @@ import RegisterPage from './auth/pages/RegisterPage';
 import ForgotPasswordPage from './auth/pages/ForgotPasswordPage';
 import PendingApprovalPage from './auth/pages/PendingApprovalPage';
 import Placeholder from './auth/pages/Placeholder';
+import FacultyDashboard from './pages/faculty/Dashboard';
+import SubjectNew from './pages/faculty/SubjectNew';
+import Roster from './pages/faculty/Roster';
+import StudentDashboard from './pages/student/Dashboard';
+import JoinSubject from './pages/student/JoinSubject';
 import UsersPage from './pages/admin/Users';
 
 export default function App() {
@@ -55,17 +60,17 @@ export default function App() {
             <Route path="/topics/:id" element={<ModuleDetailPage />} />
             <Route path="/about" element={<AboutPage />} />
 
-            <Route path="/student" element={<ProtectedRoute roles={['student']}><Placeholder title="Student dashboard" /></ProtectedRoute>} />
-            <Route path="/student/join" element={<ProtectedRoute roles={['student']}><Placeholder title="Join subject" /></ProtectedRoute>} />
+            <Route path="/student" element={<ProtectedRoute roles={['student']}><StudentDashboard /></ProtectedRoute>} />
+            <Route path="/student/join" element={<ProtectedRoute roles={['student']}><JoinSubject /></ProtectedRoute>} />
             <Route path="/student/subjects/:id" element={<ProtectedRoute roles={['student']}><Placeholder title="Subject topics" /></ProtectedRoute>} />
             <Route path="/student/topics/:id" element={<ProtectedRoute roles={['student']}><Placeholder title="Topic view" /></ProtectedRoute>} />
             <Route path="/student/subjects/:id/grades" element={<ProtectedRoute roles={['student']}><Placeholder title="My grades" /></ProtectedRoute>} />
 
-            <Route path="/faculty" element={<ProtectedRoute roles={['faculty']}><Placeholder title="Faculty dashboard" /></ProtectedRoute>} />
-            <Route path="/faculty/subjects/new" element={<ProtectedRoute roles={['faculty']}><Placeholder title="New subject" /></ProtectedRoute>} />
+            <Route path="/faculty" element={<ProtectedRoute roles={['faculty']}><FacultyDashboard /></ProtectedRoute>} />
+            <Route path="/faculty/subjects/new" element={<ProtectedRoute roles={['faculty']}><SubjectNew /></ProtectedRoute>} />
             <Route path="/faculty/subjects/:id" element={<ProtectedRoute roles={['faculty']}><Placeholder title="Subject overview" /></ProtectedRoute>} />
             <Route path="/faculty/subjects/:id/settings" element={<ProtectedRoute roles={['faculty']}><Placeholder title="Subject settings" /></ProtectedRoute>} />
-            <Route path="/faculty/subjects/:id/students" element={<ProtectedRoute roles={['faculty']}><Placeholder title="Roster" /></ProtectedRoute>} />
+            <Route path="/faculty/subjects/:id/students" element={<ProtectedRoute roles={['faculty']}><Roster /></ProtectedRoute>} />
             <Route path="/faculty/subjects/:id/topics" element={<ProtectedRoute roles={['faculty']}><Placeholder title="Topics" /></ProtectedRoute>} />
             <Route path="/faculty/topics/:id" element={<ProtectedRoute roles={['faculty']}><Placeholder title="Topic editor" /></ProtectedRoute>} />
             <Route path="/faculty/topics/:id/quiz" element={<ProtectedRoute roles={['faculty']}><Placeholder title="Quiz builder" /></ProtectedRoute>} />

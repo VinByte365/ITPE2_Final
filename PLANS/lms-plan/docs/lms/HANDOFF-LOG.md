@@ -175,3 +175,10 @@ Append-only. Newest entry **at the bottom**. Never edit old entries; add a corre
 - **Decisions / assumptions:** Student enrollment endpoint with rate limiting (enrollLimiter 10/10min), invalid/closed/duplicate handling, rejoin support. Roster sorted by surname, remove student sets status=removed (access revoked, attempts preserved). Passing percent update validated (1-100). Added 10 subject validator tests. requireEnrolled middleware now checks active enrollment. Server boots, lint/build/test pass (46 tests).
 - **Surprises / problems:** none.
 - **Next task:** SUBJ-10 (Faculty dashboard frontend)
+
+### 2026-10-31 · cline · agent
+- **Finished:** SUBJ-10, SUBJ-11, SUBJ-12, SUBJ-13, SUBJ-14
+- **In progress:** none
+- **Decisions / assumptions:** Frontend subjects: Faculty dashboard (subject cards with student count), Create subject page, Roster page (sorted by surname, remove student), Student dashboard (enrolled subjects), Join subject page (auto-uppercase code input). Updated API docs. Added src/api/subjects.js with all subject/enrollment API calls. App.jsx routes updated. Lint and build pass.
+- **Surprises / problems:** none.
+- **Next task:** SUBJ-V1 (Phase 02 verification) or TOPIC-01 (Phase 03)

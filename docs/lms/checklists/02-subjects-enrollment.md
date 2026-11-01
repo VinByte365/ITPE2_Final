@@ -25,15 +25,15 @@ Depends on: 01. Specs: `../specs/01-data-model.md` (002), `../specs/02-api.md` (
 
 ## Frontend
 
-- [ ] SUBJ-10 Faculty dashboard `/faculty`
+- [x] SUBJ-10 Faculty dashboard `/faculty` (@cline, 2026-10-31)
   - Files: `src/pages/faculty/Dashboard.jsx`, `src/api/subjects.js` · Done when: cards show code, name, term, school year, student count, join code with copy button; empty state invites creating a subject
-- [ ] SUBJ-11 Create subject and settings pages
+- [x] SUBJ-11 Create subject and settings pages (@cline, 2026-10-31)
   - Files: `src/pages/faculty/SubjectNew.jsx`, `SubjectSettings.jsx`, `src/components/PassingPercentControl.jsx` · Done when: 50/75 presets plus custom; warning text from BR-02; regenerate code and open/close enrollment with confirmation; archive works
-- [ ] SUBJ-12 Roster page `/faculty/subjects/:id/students`
+- [x] SUBJ-12 Roster page `/faculty/subjects/:id/students` (@cline, 2026-10-31)
   - Files: `src/pages/faculty/Roster.jsx` · Done when: sorted list with student number; remove with confirmation
-- [ ] SUBJ-13 Student dashboard and join page
+- [x] SUBJ-13 Student dashboard and join page (@cline, 2026-10-31)
   - Files: `src/pages/student/Dashboard.jsx`, `JoinSubject.jsx` · Done when: code input auto-uppercases, trims, accepts paste; friendly errors for each failure code; joined subject appears immediately
-- [ ] SUBJ-14 Update `../specs/02-api.md` and `docs/API.md`
+- [x] SUBJ-14 Update `../specs/02-api.md` and `docs/API.md` (@cline, 2026-10-31)
   - Files: docs · Done when: endpoints match the real behaviour
 
 ## Phase verification
