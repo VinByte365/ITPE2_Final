@@ -3,7 +3,7 @@ import { getAccessToken } from '../lib/cookies.js';
 import { AppError, asyncHandler, unauthorized } from '../lib/errors.js';
 import { verifyAccessToken } from '../lib/supabase.js';
 import { ensureProfile } from '../repositories/profiles.repository.js';
-import { findSubjectById } from '../repositories/subjects.repository.js';
+import { findEnrollment, findSubjectById } from '../repositories/subjects.repository.js';
 
 export const requireAuth = asyncHandler(async (req, res, next) => {
   const token = getAccessToken(req);
@@ -101,8 +101,14 @@ export const requireEnrolled = (paramName = 'id') => async (req, res, next) => {
     return next(new AppError(404, 'NOT_FOUND', 'Subject not found.'));
   }
 
-  // Check enrollment (will be verified in service layer with proper query)
+  // Check active enrollment
+  const enrollment = await findEnrollment(subjectId, req.auth.profile.id);
+  if (!enrollment || enrollment.status !== 'active') {
+    return next(new AppError(403, 'NOT_ENROLLED', 'You are not enrolled in this subject.'));
+  }
+
   req.subject = subject;
+  req.enrollment = enrollment;
   return next();
 };
 

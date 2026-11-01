@@ -14,13 +14,13 @@ Depends on: 01. Specs: `../specs/01-data-model.md` (002), `../specs/02-api.md` (
   - Files: `server/repositories/subjects.repository.js`, `server/services/subjects.service.js`, `server/routes/faculty.routes.js`, `server/routes/index.js`, `server/middleware/auth.js` · Done when: faculty list only their own subjects; another faculty gets `404`; admin can read all; duplicate (code, term, year) → `409`
 - [x] SUBJ-05 Join-code regeneration and enrollment open/close (@cline, 2026-10-31)
   - Files: service and routes · Done when: old code stops working immediately; unique violation retried
-- [ ] SUBJ-06 Student enrollment endpoint
+- [x] SUBJ-06 Student enrollment endpoint (@cline, 2026-10-31)
   - Files: `server/routes/student.routes.js`, `server/services/enrollments.service.js`, repository · Done when: valid code enrolls; invalid → `404 JOIN_CODE_INVALID`; closed → `403 ENROLLMENT_CLOSED`; duplicate → `409`; removed students can rejoin; rate limit active
-- [ ] SUBJ-07 Student subject list/detail, faculty roster, remove student
+- [x] SUBJ-07 Student subject list/detail, faculty roster, remove student (@cline, 2026-10-31)
   - Files: service and routes · Done when: roster sorted by surname; removed student loses access but attempts remain in the database
-- [ ] SUBJ-08 Passing percent update through `PATCH /faculty/subjects/:id`
+- [x] SUBJ-08 Passing percent update through `PATCH /faculty/subjects/:id` (@cline, 2026-10-31)
   - Files: service, validator · Done when: values outside 1 to 100 rejected; nothing is stored except the percent (BR-02)
-- [ ] SUBJ-09 Tests
+- [x] SUBJ-09 Tests (@cline, 2026-10-31)
   - Files: `server/**/*.test.js` · Done when: ownership, enrollment rules and code generation covered
 
 ## Frontend

@@ -6,6 +6,7 @@ import {
   enrollStudent,
   listStudentSubjects,
 } from '../services/subjects.service.js';
+import { enrollLimiter } from '../middleware/rateLimit.js';
 import { enrollSchema } from '../validators/subject.validator.js';
 
 const router = Router();
@@ -16,6 +17,7 @@ router.use(requireAuth, requireRole('admin', 'student'));
 // POST /student/enrollments
 router.post(
   '/enrollments',
+  enrollLimiter,
   asyncHandler(async (req, res) => {
     const { joinCode } = enrollSchema.parse(req.body);
     const result = await enrollStudent(req.auth.profile.id, joinCode);

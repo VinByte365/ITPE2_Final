@@ -168,3 +168,10 @@ Append-only. Newest entry **at the bottom**. Never edit old entries; add a corre
 - **Decisions / assumptions:** Created migration 002_subjects_enrollments.sql (subjects + enrollments tables, RLS no policies, idempotent, verified). Join-code generator (8 chars, crypto.randomInt, 5 tests). Subject validators (code, term, school year, passing percent). Repository + service + faculty routes (CRUD, join-code regen, enrollment toggle, archive, roster, remove student) + requireSubjectOwner/requireEnrolled middleware. Server boots, lint/build/test pass (36 tests).
 - **Surprises / problems:** none.
 - **Next task:** SUBJ-06 (student enrollment endpoint)
+
+### 2026-10-31 · cline · agent
+- **Finished:** SUBJ-06, SUBJ-07, SUBJ-08, SUBJ-09
+- **In progress:** none
+- **Decisions / assumptions:** Student enrollment endpoint with rate limiting (enrollLimiter 10/10min), invalid/closed/duplicate handling, rejoin support. Roster sorted by surname, remove student sets status=removed (access revoked, attempts preserved). Passing percent update validated (1-100). Added 10 subject validator tests. requireEnrolled middleware now checks active enrollment. Server boots, lint/build/test pass (46 tests).
+- **Surprises / problems:** none.
+- **Next task:** SUBJ-10 (Faculty dashboard frontend)
