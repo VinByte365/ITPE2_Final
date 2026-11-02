@@ -196,3 +196,10 @@ Append-only. Newest entry **at the bottom**. Never edit old entries; add a corre
 - **Decisions / assumptions:** Added react-markdown (listed in specs/04-frontend.md). Added GET /student/topics/:id/content route (listStudentContent) to support TopicView blocks. TOPIC-V1..V4 left unticked (manual QA).
 - **Surprises / problems:** None blocking.
 - **Next task:** TOPIC-V1 (manual verification) or Phase 04 QUIZ-01.
+
+### 2026-11-01 · cline · agent
+- **Finished:** QUIZ-01 (migration 004_quizzes_attempts.sql: quizzes, questions, attempts; partial unique index for one open attempt per student per quiz; RLS no policies; idempotent).
+- **In progress:** none
+- **Decisions / assumptions:** Followed data-model spec sketch; partial unique index ttempts_open_unique_idx on (quiz_id, student_id) where status in (in_progress, pending_review).
+- **Surprises / problems:** none.
+- **Next task:** QUIZ-02 (pure grading module).

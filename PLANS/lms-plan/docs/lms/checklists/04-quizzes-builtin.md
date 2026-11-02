@@ -5,7 +5,7 @@ Until phase 06, "access to quiz" uses the schedule-only check from phase 03; GAT
 
 ## Backend
 
-- [ ] QUIZ-01 Migration `004_quizzes_attempts.sql`
+- [x] QUIZ-01 Migration `004_quizzes_attempts.sql` (@cline, 2026-11-01)
   - Files: `server/db/migrations/004_quizzes_attempts.sql` · Done when: idempotent; partial unique index allows only one open attempt per student per quiz; RLS enabled with no policies
 - [ ] QUIZ-02 Pure grading module
   - Files: `server/services/grading.js`, `grading.test.js` · Done when: `normalizeText`, `gradeQuestion`, `gradeAttempt`, `isPassed` implemented per BR-01/BR-09; tests include boundary 7.5/10 at 75, 0 total, accented text, extra spaces, decimals points
