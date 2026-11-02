@@ -32,6 +32,11 @@ import {
   updateContentBlock,
 } from '../services/content.service.js';
 import {
+  getQuiz,
+  upsertQuizMeta,
+} from '../services/quizzes.service.js';
+
+import {
   contentBlockSchema,
   updateContentBlockSchema,
 } from '../validators/content.validator.js';
@@ -306,5 +311,28 @@ router.post(
     res.json({ data: result });
   }),
 );
+
+// GET /faculty/topics/:id/quiz
+router.get(
+  '/topics/:id/quiz',
+  asyncHandler(async (req, res) => {
+    const topicId = uuidSchema.parse(req.params.id);
+    const isAdmin = req.auth.profile?.role === 'admin';
+    const quiz = await getQuiz(req.auth.profile.id, topicId, isAdmin);
+    res.json({ data: quiz });
+  }),
+);
+
+// PUT /faculty/topics/:id/quiz
+router.put(
+  '/topics/:id/quiz',
+  asyncHandler(async (req, res) => {
+    const topicId = uuidSchema.parse(req.params.id);
+    const isAdmin = req.auth.profile?.role === 'admin';
+    const quiz = await upsertQuizMeta(req.auth.profile.id, topicId, req.body || {}, isAdmin);
+    res.json({ data: quiz });
+  }),
+);
+
 
 export default router;

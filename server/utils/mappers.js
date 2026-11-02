@@ -128,3 +128,40 @@ export function mapEnrollment(row) {
     updatedAt: row.updated_at,
   };
 }
+export function mapQuiz(row) {
+  if (!row) return null;
+  return {
+    id: row.id,
+    topicId: row.topic_id,
+    title: row.title,
+    mode: row.mode,
+    instructions: row.instructions,
+    totalItems: row.total_items,
+    externalUrl: row.external_url,
+    attachmentPath: row.attachment_path,
+    attachmentName: row.attachment_name,
+    attachmentMime: row.attachment_mime,
+    maxAttempts: row.max_attempts,
+    showAnswers: row.show_answers,
+    status: row.status,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  };
+}
+
+export function mapQuestion(row) {
+  if (!row) return null;
+  return {
+    id: row.id,
+    quizId: row.quiz_id,
+    position: row.position,
+    type: row.type,
+    prompt: row.prompt,
+    options: row.options,
+    correctOptionId: row.correct_option_id,
+    acceptedAnswers: row.accepted_answers,
+    points: row.points,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  };
+}

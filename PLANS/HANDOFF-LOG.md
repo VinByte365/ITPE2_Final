@@ -217,3 +217,10 @@ Append-only. Newest entry **at the bottom**. Never edit old entries; add a corre
 - **Decisions / assumptions:** Used Zod discriminated union by type; importPayloadSchema caps at 20 questions.
 - **Surprises / problems:** none.
 - **Next task:** QUIZ-04 (quiz meta service and routes).
+
+### 2026-11-01 · cline · agent
+- **Finished:** QUIZ-04 (quiz meta service + routes GET/PUT /faculty/topics/:id/quiz; quizzes.repository; mappers mapQuiz; mode locked once attempts exist).
+- **In progress:** none
+- **Decisions / assumptions:** Mode lock returns 409 QUIZ_HAS_ATTEMPTS when attempts exist.
+- **Surprises / problems:** none.
+- **Next task:** QUIZ-05 (question CRUD and reorder).
