@@ -203,3 +203,10 @@ Append-only. Newest entry **at the bottom**. Never edit old entries; add a corre
 - **Decisions / assumptions:** Followed data-model spec sketch; partial unique index ttempts_open_unique_idx on (quiz_id, student_id) where status in (in_progress, pending_review).
 - **Surprises / problems:** none.
 - **Next task:** QUIZ-02 (pure grading module).
+
+### 2026-11-01 · cline · agent
+- **Finished:** QUIZ-02 (pure grading module: normalizeText, gradeQuestion, gradeAttempt, isPassed, computePercent; 20 tests).
+- **In progress:** none
+- **Decisions / assumptions:** BR-01 formula used exactly (hundredths comparison); BR-09 NFKC normalization.
+- **Surprises / problems:** none.
+- **Next task:** QUIZ-03 (quiz and question validators).
