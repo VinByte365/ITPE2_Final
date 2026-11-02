@@ -1,6 +1,6 @@
 // server/repositories/quizzes.repository.js
-import { dbQuery } from '../db/pool.js';
-import { mapQuiz } from '../utils/mappers.js';
+import { dbQuery, withTransaction } from '../db/pool.js';
+import { mapQuestion, mapQuiz } from '../utils/mappers.js';
 
 export async function findQuizById(id) {
   const { rows } = await dbQuery(
@@ -98,4 +98,110 @@ export async function hasAttempts(quizId) {
 export async function deleteQuiz(id) {
   const { rows } = await dbQuery(`delete from public.quizzes where id = $1 returning id`, [id]);
   return rows[0] ? rows[0].id : null;
+}
+// ---------------------------------------------------------------------------
+// Questions
+// ---------------------------------------------------------------------------
+
+export async function countQuestions(quizId) {
+  const { rows } = await dbQuery(
+    `select count(*)::int as c from public.questions where quiz_id = $1`,
+    [quizId],
+  );
+  return rows[0]?.c || 0;
+}
+
+export async function listQuestionsByQuiz(quizId) {
+  const { rows } = await dbQuery(
+    `select id, quiz_id, position, type, prompt, options, correct_option_id,
+            accepted_answers, points, created_at, updated_at
+       from public.questions where quiz_id = $1 order by position asc`,
+    [quizId],
+  );
+  return rows.map(mapQuestion);
+}
+
+export async function findQuestionById(id) {
+  const { rows } = await dbQuery(
+    `select id, quiz_id, position, type, prompt, options, correct_option_id,
+            accepted_answers, points, created_at, updated_at
+       from public.questions where id = $1 limit 1`,
+    [id],
+  );
+  return mapQuestion(rows[0]);
+}
+
+export async function createQuestion(data) {
+  const { rows } = await dbQuery(
+    `insert into public.questions
+       (quiz_id, position, type, prompt, options, correct_option_id,
+        accepted_answers, points)
+     values ($1,$2,$3,$4,$5,$6,$7,$8)
+     returning id, quiz_id, position, type, prompt, options, correct_option_id,
+               accepted_answers, points, created_at, updated_at`,
+    [
+      data.quizId,
+      data.position,
+      data.type,
+      data.prompt,
+      data.options ? JSON.stringify(data.options) : null,
+      data.correctOptionId ?? null,
+      data.acceptedAnswers ?? null,
+      data.points ?? 1,
+    ],
+  );
+  return mapQuestion(rows[0]);
+}
+
+export async function updateQuestion(id, data) {
+  const sets = [];
+  const params = [id];
+  let i = 2;
+  const fieldMap = {
+    prompt: "prompt",
+    options: "options",
+    correctOptionId: "correct_option_id",
+    acceptedAnswers: "accepted_answers",
+    points: "points",
+    position: "position",
+  };
+  for (const [key, column] of Object.entries(fieldMap)) {
+    if (data[key] !== undefined) {
+      sets.push(`${column} = $${i++}`);
+      if (key === "options") {
+        params.push(data[key] === null ? null : JSON.stringify(data[key]));
+      } else {
+        params.push(data[key]);
+      }
+    }
+  }
+  if (sets.length === 0) return findQuestionById(id);
+  sets.push("updated_at = now()");
+  const { rows } = await dbQuery(
+    `update public.questions set ${sets.join(", ")} where id = $1
+     returning id, quiz_id, position, type, prompt, options, correct_option_id,
+               accepted_answers, points, created_at, updated_at`,
+    params,
+  );
+  return mapQuestion(rows[0]);
+}
+
+export async function deleteQuestion(id) {
+  const { rows } = await dbQuery(
+    `delete from public.questions where id = $1 returning id`,
+    [id],
+  );
+  return rows[0] ? rows[0].id : null;
+}
+
+export async function reorderQuestions(quizId, questionIds) {
+  return withTransaction(async (client) => {
+    for (let i = 0; i < questionIds.length; i++) {
+      await client.query(
+        `update public.questions set position = $1 where id = $2 and quiz_id = $3`,
+        [i + 1, questionIds[i], quizId],
+      );
+    }
+    return true;
+  });
 }

@@ -13,7 +13,7 @@ Until phase 06, "access to quiz" uses the schedule-only check from phase 03; GAT
   - Files: `server/validators/quiz.validator.js` · Done when: choice needs 2 to 6 options and one correct; text needs ≥ 1 accepted answer; prompt length limits; `points` > 0; import payload schema reports row-level errors
 - [x] QUIZ-04 Quiz meta service and routes (`GET/PUT /faculty/topics/:id/quiz`) (@cline, 2026-11-01)
   - Files: `server/repositories/quizzes.repository.js`, `server/services/quizzes.service.js`, routes · Done when: one quiz per topic; mode locked once attempts exist
-- [ ] QUIZ-05 Question CRUD and reorder
+- [x] QUIZ-05 Question CRUD and reorder (@cline, 2026-11-01)
   - Files: repository, service, routes · Done when: server generates option ids; 21st question rejected; reorder transactional
 - [ ] QUIZ-06 Publish rules
   - Files: service · Done when: built quiz publish with 9 or 21 questions → `422 QUIZ_QUESTION_COUNT`; deleting a question from a published quiz at 10 is rejected; publishing a quiz makes TOPIC-07 deletion rules apply

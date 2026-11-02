@@ -68,3 +68,97 @@ export async function upsertQuizMeta(facultyId, topicId, data, isAdmin) {
   });
   return created;
 }
+export async function listQuestions(facultyId, quizId, isAdmin) {
+  const quiz = await deps.quizzesRepo.findQuizById(quizId);
+  if (!quiz) throw new AppError(404, "NOT_FOUND", "Quiz not found.");
+  await checkTopicOwner(quiz.topicId, facultyId, isAdmin);
+  return deps.quizzesRepo.listQuestionsByQuiz(quizId);
+}
+
+function genOptionId() {
+  return Math.random().toString(36).slice(2, 10);
+}
+
+export async function createQuestion(facultyId, quizId, data, isAdmin) {
+  const quiz = await deps.quizzesRepo.findQuizById(quizId);
+  if (!quiz) throw new AppError(404, "NOT_FOUND", "Quiz not found.");
+  await checkTopicOwner(quiz.topicId, facultyId, isAdmin);
+
+  const count = await deps.quizzesRepo.countQuestions(quizId);
+  if (count >= 20) {
+    throw new AppError(422, "QUIZ_QUESTION_COUNT", "A quiz can have at most 20 questions.");
+  }
+
+  let options = null;
+  let correctOptionId = null;
+  if (data.type === "choice") {
+    options = (data.options || []).map((o) => ({ id: genOptionId(), label: o.label }));
+    if (typeof data.correctOptionIndex === "number" && options[data.correctOptionIndex]) {
+      correctOptionId = options[data.correctOptionIndex].id;
+    }
+  }
+
+  const position = count + 1;
+  const created = await deps.quizzesRepo.createQuestion({
+    quizId,
+    position,
+    type: data.type,
+    prompt: data.prompt,
+    options,
+    correctOptionId,
+    acceptedAnswers: data.acceptedAnswers || null,
+    points: data.points,
+  });
+  return created;
+}
+
+export async function updateQuestion(facultyId, questionId, data, isAdmin) {
+  const question = await deps.quizzesRepo.findQuestionById(questionId);
+  if (!question) throw new AppError(404, "NOT_FOUND", "Question not found.");
+  const quiz = await deps.quizzesRepo.findQuizById(question.quizId);
+  if (!quiz) throw new AppError(404, "NOT_FOUND", "Quiz not found.");
+  await checkTopicOwner(quiz.topicId, facultyId, isAdmin);
+
+  const updates = { ...data };
+  if (data.type === "choice" && Array.isArray(data.options)) {
+    const newOptions = data.options.map((o) => {
+      const existing = (question.options || []).find((x) => x.label === o.label);
+      return { id: existing ? existing.id : genOptionId(), label: o.label };
+    });
+    updates.options = newOptions;
+    if (typeof data.correctOptionIndex === "number" && newOptions[data.correctOptionIndex]) {
+      updates.correctOptionId = newOptions[data.correctOptionIndex].id;
+    }
+  }
+  delete updates.correctOptionIndex;
+
+  const updated = await deps.quizzesRepo.updateQuestion(questionId, updates);
+  return updated;
+}
+
+export async function deleteQuestion(facultyId, questionId, isAdmin) {
+  const question = await deps.quizzesRepo.findQuestionById(questionId);
+  if (!question) throw new AppError(404, "NOT_FOUND", "Question not found.");
+  const quiz = await deps.quizzesRepo.findQuizById(question.quizId);
+  if (!quiz) throw new AppError(404, "NOT_FOUND", "Quiz not found.");
+  await checkTopicOwner(quiz.topicId, facultyId, isAdmin);
+
+  // published built quiz cannot drop below 10
+  if (quiz.status === "published" && quiz.mode === "built") {
+    const count = await deps.quizzesRepo.countQuestions(quiz.id);
+    if (count <= 10) {
+      throw new AppError(422, "QUIZ_QUESTION_COUNT", "Cannot delete: published quiz must keep at least 10 questions.");
+    }
+  }
+
+  await deps.quizzesRepo.deleteQuestion(questionId);
+  return { deleted: true };
+}
+
+export async function reorderQuestions(facultyId, quizId, questionIds, isAdmin) {
+  const quiz = await deps.quizzesRepo.findQuizById(quizId);
+  if (!quiz) throw new AppError(404, "NOT_FOUND", "Quiz not found.");
+  await checkTopicOwner(quiz.topicId, facultyId, isAdmin);
+  await deps.quizzesRepo.reorderQuestions(quizId, questionIds);
+  return deps.quizzesRepo.listQuestionsByQuiz(quizId);
+}

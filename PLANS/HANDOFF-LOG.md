@@ -224,3 +224,10 @@ Append-only. Newest entry **at the bottom**. Never edit old entries; add a corre
 - **Decisions / assumptions:** Mode lock returns 409 QUIZ_HAS_ATTEMPTS when attempts exist.
 - **Surprises / problems:** none.
 - **Next task:** QUIZ-05 (question CRUD and reorder).
+
+### 2026-11-01 · cline · agent
+- **Finished:** QUIZ-05 (question CRUD and reorder: repository functions, service with server-generated option ids, 20-question cap, published-quiz deletion guard; routes).
+- **In progress:** none
+- **Decisions / assumptions:** Option ids generated server-side as random 8-char strings; reorder transactional.
+- **Surprises / problems:** none.
+- **Next task:** QUIZ-06 (publish rules).

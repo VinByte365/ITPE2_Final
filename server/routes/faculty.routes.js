@@ -32,7 +32,12 @@ import {
   updateContentBlock,
 } from '../services/content.service.js';
 import {
+  createQuestion,
+  deleteQuestion,
   getQuiz,
+  listQuestions,
+  reorderQuestions,
+  updateQuestion,
   upsertQuizMeta,
 } from '../services/quizzes.service.js';
 
@@ -51,6 +56,10 @@ import {
   updateSubjectSchema,
 } from '../validators/subject.validator.js';
 import { uuidSchema } from '../validators/common.js';
+import {
+  createQuestionSchema,
+  updateQuestionSchema,
+} from '../validators/quiz.validator.js';
 
 const router = Router();
 
@@ -331,6 +340,65 @@ router.put(
     const isAdmin = req.auth.profile?.role === 'admin';
     const quiz = await upsertQuizMeta(req.auth.profile.id, topicId, req.body || {}, isAdmin);
     res.json({ data: quiz });
+  }),
+);
+
+
+// GET /faculty/quizzes/:id/questions
+router.get(
+  '/quizzes/:id/questions',
+  asyncHandler(async (req, res) => {
+    const quizId = uuidSchema.parse(req.params.id);
+    const isAdmin = req.auth.profile?.role === 'admin';
+    const questions = await listQuestions(req.auth.profile.id, quizId, isAdmin);
+    res.json({ data: questions });
+  }),
+);
+
+// POST /faculty/quizzes/:id/questions
+router.post(
+  '/quizzes/:id/questions',
+  asyncHandler(async (req, res) => {
+    const quizId = uuidSchema.parse(req.params.id);
+    const input = createQuestionSchema.parse(req.body);
+    const isAdmin = req.auth.profile?.role === 'admin';
+    const question = await createQuestion(req.auth.profile.id, quizId, input, isAdmin);
+    res.status(201).json({ data: question });
+  }),
+);
+
+// PATCH /faculty/questions/:id
+router.patch(
+  '/questions/:id',
+  asyncHandler(async (req, res) => {
+    const questionId = uuidSchema.parse(req.params.id);
+    const input = updateQuestionSchema.parse(req.body);
+    const isAdmin = req.auth.profile?.role === 'admin';
+    const question = await updateQuestion(req.auth.profile.id, questionId, input, isAdmin);
+    res.json({ data: question });
+  }),
+);
+
+// DELETE /faculty/questions/:id
+router.delete(
+  '/questions/:id',
+  asyncHandler(async (req, res) => {
+    const questionId = uuidSchema.parse(req.params.id);
+    const isAdmin = req.auth.profile?.role === 'admin';
+    const result = await deleteQuestion(req.auth.profile.id, questionId, isAdmin);
+    res.json({ data: result });
+  }),
+);
+
+// PUT /faculty/quizzes/:id/questions/order
+router.put(
+  '/quizzes/:id/questions/order',
+  asyncHandler(async (req, res) => {
+    const quizId = uuidSchema.parse(req.params.id);
+    const { questionIds } = z.object({ questionIds: z.array(uuidSchema) }).parse(req.body);
+    const isAdmin = req.auth.profile?.role === 'admin';
+    const questions = await reorderQuestions(req.auth.profile.id, quizId, questionIds, isAdmin);
+    res.json({ data: questions });
   }),
 );
 
