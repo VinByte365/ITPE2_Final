@@ -210,3 +210,10 @@ Append-only. Newest entry **at the bottom**. Never edit old entries; add a corre
 - **Decisions / assumptions:** BR-01 formula used exactly (hundredths comparison); BR-09 NFKC normalization.
 - **Surprises / problems:** none.
 - **Next task:** QUIZ-03 (quiz and question validators).
+
+### 2026-11-01 · cline · agent
+- **Finished:** QUIZ-03 (quiz and question validators: choice 2-6 options + one correct, text >=1 accepted answer, prompt limits, points > 0, import payload; 13 tests).
+- **In progress:** none
+- **Decisions / assumptions:** Used Zod discriminated union by type; importPayloadSchema caps at 20 questions.
+- **Surprises / problems:** none.
+- **Next task:** QUIZ-04 (quiz meta service and routes).

@@ -9,7 +9,7 @@ Until phase 06, "access to quiz" uses the schedule-only check from phase 03; GAT
   - Files: `server/db/migrations/004_quizzes_attempts.sql` · Done when: idempotent; partial unique index allows only one open attempt per student per quiz; RLS enabled with no policies
 - [x] QUIZ-02 Pure grading module (@cline, 2026-11-01)
   - Files: `server/services/grading.js`, `grading.test.js` · Done when: `normalizeText`, `gradeQuestion`, `gradeAttempt`, `isPassed` implemented per BR-01/BR-09; tests include boundary 7.5/10 at 75, 0 total, accented text, extra spaces, decimals points
-- [ ] QUIZ-03 Quiz and question validators
+- [x] QUIZ-03 Quiz and question validators (@cline, 2026-11-01)
   - Files: `server/validators/quiz.validator.js` · Done when: choice needs 2 to 6 options and one correct; text needs ≥ 1 accepted answer; prompt length limits; `points` > 0; import payload schema reports row-level errors
 - [ ] QUIZ-04 Quiz meta service and routes (`GET/PUT /faculty/topics/:id/quiz`)
   - Files: `server/repositories/quizzes.repository.js`, `server/services/quizzes.service.js`, routes · Done when: one quiz per topic; mode locked once attempts exist
