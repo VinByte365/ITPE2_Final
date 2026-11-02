@@ -32,15 +32,15 @@ Note: until phase 06, student topic states are **schedule-only** (`scheduled` or
 
 ## Frontend
 
-- [ ] TOPIC-13 Shared components `MarkdownView` and `SlidesEmbed`
+- [x] TOPIC-13 Shared components `MarkdownView` and `SlidesEmbed` (@cline, 2026-11-01)
   - Files: `src/components/MarkdownView.jsx`, `SlidesEmbed.jsx` (extract from `ModuleDetailPage.jsx`) · Done when: no raw HTML rendering; Google Slides link embedded, PDF embedded, `.pptx` offered as download; the legacy module page still works
-- [ ] TOPIC-14 Faculty topics page
+- [x] TOPIC-14 Faculty topics page (@cline, 2026-11-01)
   - Files: `src/pages/faculty/Topics.jsx`, `src/api/topics.js` · Done when: list with date, status badge and content/quiz indicators; add one; bulk dialog (count, start date, weekday checkboxes, preview of generated dates before saving); up/down reorder; publish toggle
-- [ ] TOPIC-15 Topic editor
+- [x] TOPIC-15 Topic editor (@cline, 2026-11-01)
   - Files: `src/pages/faculty/TopicEditor.jsx`, `src/components/FileUpload.jsx` · Done when: edit title, description, date; add/edit/delete/reorder blocks of each type; markdown preview; upload with progress and size/type errors; faculty-only toggle for notes
-- [ ] TOPIC-16 Student subject page
+- [x] TOPIC-16 Student subject page (@cline, 2026-11-01)
   - Files: `src/pages/student/SubjectTopics.jsx`, `src/components/TopicCard.jsx`, `StatusBadge.jsx` · Done when: scheduled topics are grayed, labelled "Opens {date}", not clickable; open topics link through; passing % visible
-- [ ] TOPIC-17 Student topic page
+- [x] TOPIC-17 Student topic page (@cline, 2026-11-01)
   - Files: `src/pages/student/TopicView.jsx` · Done when: blocks rendered in order; presentation viewable; video links work; "Mark as done" (or automatic call) for quiz-less topics; friendly screen for `TOPIC_NOT_AVAILABLE`
 
 ## Phase verification

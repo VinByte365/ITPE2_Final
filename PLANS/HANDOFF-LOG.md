@@ -189,3 +189,10 @@ Append-only. Newest entry **at the bottom**. Never edit old entries; add a corre
 - **Decisions / assumptions:** Refactored topics/content/student-topics services to use a mutable `deps` container + `setDeps` so service-level tests can inject fake repositories (matches the TOPIC-07 "fake repository" convention); added `recordTopicProgress` to topics.repository.js. PROGRESS.md regenerated (56/155, 36%).
 - **Surprises / problems:** ESM module namespace objects are read-only in Node 22, so reassigning repository exports (as originally planned) failed; introduced the `setDeps` seam instead. Two PROGRESS.md copies (PLANS/ and docs/lms/checklists/) kept in sync by copying.
 - **Next task:** TOPIC-13 (MarkdownView + SlidesEmbed shared components)
+
+### 2026-11-01 · cline · agent
+- **Finished:** TOPIC-13 to TOPIC-17 (frontend): MarkdownView (react-markdown, no raw HTML) + SlidesEmbed (Google Slides embed, PDF embed, pptx download); src/api/topics.js; FacultyTopics (list, add one, bulk dialog with date preview, reorder, publish toggle); TopicEditor (details + content blocks, markdown preview, upload with progress, faculty-only toggle); SubjectTopics (grayed scheduled, TopicCard, StatusBadge); TopicView (blocks rendered, Mark as done, friendly TOPIC_NOT_AVAILABLE). Plus student content endpoint. 100 tests pass; lint (0 errors) & build pass.
+- **In progress:** none
+- **Decisions / assumptions:** Added react-markdown (listed in specs/04-frontend.md). Added GET /student/topics/:id/content route (listStudentContent) to support TopicView blocks. TOPIC-V1..V4 left unticked (manual QA).
+- **Surprises / problems:** None blocking.
+- **Next task:** TOPIC-V1 (manual verification) or Phase 04 QUIZ-01.

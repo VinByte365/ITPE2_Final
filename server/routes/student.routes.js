@@ -9,6 +9,7 @@ import {
 import { enrollLimiter } from '../middleware/rateLimit.js';
 import { enrollSchema } from '../validators/subject.validator.js';
 import { uuidSchema } from '../validators/common.js';
+import { listStudentContent } from '../services/content.service.js';
 import {
   completeTopic,
   getStudentTopic,
@@ -72,7 +73,15 @@ router.get(
   }),
 );
 
-// POST /student/topics/:id/complete
+// GET /student/topics/:id/content
+router.get(
+  '/topics/:id/content',
+  asyncHandler(async (req, res) => {
+    const topicId = uuidSchema.parse(req.params.id);
+    const blocks = await listStudentContent(req.auth.profile.id, topicId);
+    res.json({ data: blocks });
+  }),
+);
 router.post(
   '/topics/:id/complete',
   asyncHandler(async (req, res) => {
