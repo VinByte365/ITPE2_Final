@@ -162,3 +162,25 @@ export async function reorderQuestions(facultyId, quizId, questionIds, isAdmin) 
   await deps.quizzesRepo.reorderQuestions(quizId, questionIds);
   return deps.quizzesRepo.listQuestionsByQuiz(quizId);
 }
+
+export async function updateQuizStatus(facultyId, quizId, status, isAdmin) {
+  const quiz = await deps.quizzesRepo.findQuizById(quizId);
+  if (!quiz) throw new AppError(404, "NOT_FOUND", "Quiz not found.");
+  await checkTopicOwner(quiz.topicId, facultyId, isAdmin);
+
+  if (status === "published") {
+    if (quiz.mode === "built") {
+      const count = await deps.quizzesRepo.countQuestions(quizId);
+      if (count < 10 || count > 20) {
+        throw new AppError(422, "QUIZ_QUESTION_COUNT", "A built quiz needs 10 to 20 questions to publish.");
+      }
+    } else if (quiz.mode === "uploaded") {
+      if (!quiz.totalItems || quiz.totalItems < 1) {
+        throw new AppError(422, "QUIZ_QUESTION_COUNT", "An uploaded quiz needs totalItems to publish.");
+      }
+    }
+  }
+
+  const updated = await deps.quizzesRepo.updateQuiz(quizId, { status });
+  return updated;
+}

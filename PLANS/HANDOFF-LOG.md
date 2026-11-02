@@ -231,3 +231,10 @@ Append-only. Newest entry **at the bottom**. Never edit old entries; add a corre
 - **Decisions / assumptions:** Option ids generated server-side as random 8-char strings; reorder transactional.
 - **Surprises / problems:** none.
 - **Next task:** QUIZ-06 (publish rules).
+
+### 2026-11-01 · cline · agent
+- **Finished:** QUIZ-06 (publish rules: built quiz needs 10-20 questions, uploaded needs totalItems; PATCH /faculty/quizzes/:id; deletion guard already in QUIZ-05).
+- **In progress:** none
+- **Decisions / assumptions:** Publish via PATCH status; invalid count ? 422 QUIZ_QUESTION_COUNT.
+- **Surprises / problems:** none.
+- **Next task:** QUIZ-07 (bulk question import endpoint).

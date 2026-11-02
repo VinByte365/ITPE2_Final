@@ -38,6 +38,7 @@ import {
   listQuestions,
   reorderQuestions,
   updateQuestion,
+  updateQuizStatus,
   upsertQuizMeta,
 } from '../services/quizzes.service.js';
 
@@ -399,6 +400,19 @@ router.put(
     const isAdmin = req.auth.profile?.role === 'admin';
     const questions = await reorderQuestions(req.auth.profile.id, quizId, questionIds, isAdmin);
     res.json({ data: questions });
+  }),
+);
+
+
+// PATCH /faculty/quizzes/:id
+router.patch(
+  '/quizzes/:id',
+  asyncHandler(async (req, res) => {
+    const quizId = uuidSchema.parse(req.params.id);
+    const { status } = z.object({ status: z.enum(['draft', 'published']) }).parse(req.body);
+    const isAdmin = req.auth.profile?.role === 'admin';
+    const quiz = await updateQuizStatus(req.auth.profile.id, quizId, status, isAdmin);
+    res.json({ data: quiz });
   }),
 );
 

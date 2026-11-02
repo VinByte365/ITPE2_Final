@@ -15,7 +15,7 @@ Until phase 06, "access to quiz" uses the schedule-only check from phase 03; GAT
   - Files: `server/repositories/quizzes.repository.js`, `server/services/quizzes.service.js`, routes · Done when: one quiz per topic; mode locked once attempts exist
 - [x] QUIZ-05 Question CRUD and reorder (@cline, 2026-11-01)
   - Files: repository, service, routes · Done when: server generates option ids; 21st question rejected; reorder transactional
-- [ ] QUIZ-06 Publish rules
+- [x] QUIZ-06 Publish rules (@cline, 2026-11-01)
   - Files: service · Done when: built quiz publish with 9 or 21 questions → `422 QUIZ_QUESTION_COUNT`; deleting a question from a published quiz at 10 is rejected; publishing a quiz makes TOPIC-07 deletion rules apply
 - [ ] QUIZ-07 Bulk question import endpoint
   - Files: service, route · Done when: atomic; any invalid row rejects everything with `details` per row; total over 20 rejected
