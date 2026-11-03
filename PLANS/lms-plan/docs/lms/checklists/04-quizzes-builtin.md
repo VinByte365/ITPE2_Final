@@ -19,7 +19,7 @@ Until phase 06, "access to quiz" uses the schedule-only check from phase 03; GAT
   - Files: service · Done when: built quiz publish with 9 or 21 questions → `422 QUIZ_QUESTION_COUNT`; deleting a question from a published quiz at 10 is rejected; publishing a quiz makes TOPIC-07 deletion rules apply
 - [x] QUIZ-07 Bulk question import endpoint (@cline, 2026-11-01)
   - Files: service, route · Done when: atomic; any invalid row rejects everything with `details` per row; total over 20 rejected
-- [ ] QUIZ-08 Student start/resume attempt
+- [x] QUIZ-08 Student start/resume attempt (@cline, 2026-11-01)
   - Files: `server/services/attempts.service.js`, routes · Done when: returns questions without answer keys; resumes `in_progress`; `max_attempts` enforced; unpublished quiz refused; student must be enrolled and topic accessible
 - [ ] QUIZ-09 Submit and grade
   - Files: service, routes · Done when: server-side grading stores raw answers, `score`, `total`, status `graded`; second submit → `409 ATTEMPT_ALREADY_SUBMITTED`; response has `percent`, `passed`, `passingPercent`; `review` only when `show_answers` is true

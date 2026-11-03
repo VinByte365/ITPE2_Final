@@ -245,3 +245,10 @@ Append-only. Newest entry **at the bottom**. Never edit old entries; add a corre
 - **Decisions / assumptions:** Validation uses questionSchema per row; errors array returned in AppError.details.
 - **Surprises / problems:** none.
 - **Next task:** QUIZ-08 (student start/resume attempt).
+
+### 2026-11-01 · cline · agent
+- **Finished:** QUIZ-08 (student start/resume attempt: enrollment, gating, max_attempts, unpublished refused, answer keys stripped).
+- **In progress:** none
+- **Decisions / assumptions:** Topic accessibility uses schedule check (availableFrom).
+- **Surprises / problems:** mappers.js syntax fixed (mapQuestion/mapAttempt).
+- **Next task:** QUIZ-09 (submit and grade).

@@ -165,3 +165,26 @@ export function mapQuestion(row) {
     updatedAt: row.updated_at,
   };
 }
+
+export function mapAttempt(row) {
+  if (!row) return null;
+  return {
+    id: row.id,
+    quizId: row.quiz_id,
+    studentId: row.student_id,
+    attemptNo: row.attempt_no,
+    source: row.source,
+    status: row.status,
+    answers: row.answers,
+    score: row.score,
+    total: row.total,
+    imagePath: row.image_path,
+    feedback: row.feedback,
+    gradedBy: row.graded_by,
+    gradedAt: row.graded_at,
+    startedAt: row.started_at,
+    submittedAt: row.submitted_at,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  };
+}

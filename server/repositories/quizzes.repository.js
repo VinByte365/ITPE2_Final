@@ -1,6 +1,6 @@
 // server/repositories/quizzes.repository.js
 import { dbQuery, withTransaction } from '../db/pool.js';
-import { mapQuestion, mapQuiz } from '../utils/mappers.js';
+import { mapAttempt, mapQuestion, mapQuiz } from '../utils/mappers.js';
 
 export async function findQuizById(id) {
   const { rows } = await dbQuery(
@@ -239,4 +239,101 @@ export async function createQuestionsBulk(quizId, items) {
     }
     return results;
   });
+}
+
+// ---------------------------------------------------------------------------
+// Attempts
+// ---------------------------------------------------------------------------
+
+export async function findAttemptById(id) {
+  const { rows } = await dbQuery(
+    `select id, quiz_id, student_id, attempt_no, source, status, answers, score, total,
+            image_path, feedback, graded_by, graded_at, started_at, submitted_at,
+            created_at, updated_at
+       from public.attempts where id = $1 limit 1`,
+    [id],
+  );
+  return mapAttempt(rows[0]);
+}
+
+export async function findInProgressAttempt(quizId, studentId) {
+  const { rows } = await dbQuery(
+    `select id, quiz_id, student_id, attempt_no, source, status, answers, score, total,
+            image_path, feedback, graded_by, graded_at, started_at, submitted_at,
+            created_at, updated_at
+       from public.attempts
+      where quiz_id = $1 and student_id = $2 and status = ''in_progress''
+      order by started_at desc limit 1`,
+    [quizId, studentId],
+  );
+  return mapAttempt(rows[0]);
+}
+
+export async function countAttempts(quizId, studentId) {
+  const { rows } = await dbQuery(
+    `select count(*)::int as c from public.attempts where quiz_id = $1 and student_id = $2`,
+    [quizId, studentId],
+  );
+  return rows[0]?.c || 0;
+}
+
+export async function listAttemptsByStudentQuiz(quizId, studentId) {
+  const { rows } = await dbQuery(
+    `select id, quiz_id, student_id, attempt_no, source, status, answers, score, total,
+            image_path, feedback, graded_by, graded_at, started_at, submitted_at,
+            created_at, updated_at
+       from public.attempts where quiz_id = $1 and student_id = $2
+      order by attempt_no asc`,
+    [quizId, studentId],
+  );
+  return rows.map(mapAttempt);
+}
+
+export async function createAttempt(data) {
+  const { rows } = await dbQuery(
+    `insert into public.attempts
+       (quiz_id, student_id, attempt_no, source, status, answers)
+     values ($1,$2,$3,$4,$5,$6)
+     returning id, quiz_id, student_id, attempt_no, source, status, answers, score, total,
+               image_path, feedback, graded_by, graded_at, started_at, submitted_at,
+               created_at, updated_at`,
+    [data.quizId, data.studentId, data.attemptNo, data.source, data.status, data.answers ? JSON.stringify(data.answers) : null],
+  );
+  return mapAttempt(rows[0]);
+}
+
+export async function updateAttempt(id, data) {
+  const sets = [];
+  const params = [id];
+  let i = 2;
+  const fieldMap = {
+    status: "status",
+    answers: "answers",
+    score: "score",
+    total: "total",
+    submittedAt: "submitted_at",
+    feedback: "feedback",
+    gradedBy: "graded_by",
+    gradedAt: "graded_at",
+  };
+  for (const [key, column] of Object.entries(fieldMap)) {
+    if (data[key] !== undefined) {
+      sets.push(`${column} = $${i++}`);
+      if (key === "answers") {
+        params.push(data[key] === null ? null : JSON.stringify(data[key]));
+      } else {
+        params.push(data[key]);
+      }
+    }
+  }
+  if (sets.length === 0) return findAttemptById(id);
+  sets.push("updated_at = now()");
+  const { rows } = await dbQuery(
+    `update public.attempts set ${sets.join(", ")} where id = $1
+     returning id, quiz_id, student_id, attempt_no, source, status, answers, score, total,
+               image_path, feedback, graded_by, graded_at, started_at, submitted_at,
+               created_at, updated_at`,
+    params,
+  );
+  return mapAttempt(rows[0]);
 }
