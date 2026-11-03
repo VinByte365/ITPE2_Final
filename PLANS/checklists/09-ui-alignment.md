@@ -10,7 +10,7 @@ inline styles. Closing this phase makes the LMS visually continuous with the pub
 
 ## Lint
 
-- [ ] UI-01 Restore a clean lint run
+- [x] UI-01 Restore a clean lint run (@lms-worker, 2026-11-03)
   - Files: `server/services/attempts.service.js`, `src/components/QuestionImport.jsx`, `src/components/UploadSubmission.jsx`, `src/pages/faculty/GradingQueue.jsx` · Done when: `npm.cmd run lint` reports 0 errors; remaining warnings are fixed or recorded in `DECISIONS.md`
 
 ## Design system

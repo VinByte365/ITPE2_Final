@@ -35,7 +35,6 @@ function rowToQuestion(row) {
 }
 
 export default function QuestionImport({ quizId, onImported }) {
-  const [rows, setRows] = useState([]);
   const [questions, setQuestions] = useState([]);
   const [errors, setErrors] = useState([]);
   const [importing, setImporting] = useState(false);
@@ -50,7 +49,6 @@ export default function QuestionImport({ quizId, onImported }) {
       skipEmptyLines: true,
       complete: (result) => {
         const parsed = (result.data || []).map(rowToQuestion);
-        setRows(result.data || []);
         setQuestions(parsed);
         // basic validation: prompt required
         const errs = [];
@@ -71,7 +69,7 @@ export default function QuestionImport({ quizId, onImported }) {
     try {
       await importQuestions(quizId, questions);
       onImported?.();
-      setRows([]); setQuestions([]); setErrors([]);
+      setQuestions([]); setErrors([]);
     } catch (err) { setError(err?.message || "Import failed."); }
     finally { setImporting(false); }
   };

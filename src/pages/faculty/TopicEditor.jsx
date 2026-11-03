@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import MarkdownView from "../../components/MarkdownView";
 import SlidesEmbed from "../../components/SlidesEmbed";
@@ -34,16 +34,16 @@ export default function TopicEditor() {
   const [newVisible, setNewVisible] = useState(true);
   const [preview, setPreview] = useState(false);
 
-  const load = async () => {
+  const load = useCallback(async () => {
     setLoading(true); setError("");
     try {
       const content = await listTopicContent(topicId);
       setBlocks(Array.isArray(content) ? content : []);
     } catch (err) { setError(err?.message || "Failed to load content."); }
     finally { setLoading(false); }
-  };
+  }, [topicId]);
 
-  useEffect(() => { load(); }, [topicId]);
+  useEffect(() => { load(); }, [load]);
 
   const handleSaveDetails = async (e) => {
     e.preventDefault();

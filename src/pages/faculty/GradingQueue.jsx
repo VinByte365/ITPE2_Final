@@ -39,7 +39,9 @@ export default function GradingQueue() {
           setDetail(d);
           setScore(d?.attempt?.score !== null ? String(d.attempt.score) : "");
           setFeedback(d?.attempt?.feedback || "");
-        } catch {}
+        } catch {
+          // Keep the detail already on screen; the refreshed list shows the latest state.
+        }
       } else if (subs?.length > 0) {
         // select first pending
         const first = subs[0];
@@ -63,10 +65,15 @@ export default function GradingQueue() {
       try {
         const s = await getSubject(subjectId);
         setSubject(s);
-      } catch {}
+      } catch {
+        // The subject line is a header only; the queue is still usable without it.
+      }
       await loadSubmissions(false);
       setLoading(false);
     })();
+    // loadSubmissions(false) reads subjectId and statusFilter only, so re-running this
+    // effect when the selection changes would refetch the same page of submissions.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [subjectId, statusFilter]);
 
   const handleSelectSubmission = async (attId) => {

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   getStudentUploadUrl,
   submitQuizImage,
@@ -66,7 +66,8 @@ async function processImageFile(file) {
   });
 }
 
-export default function UploadSubmission({ quiz, topicId, onStatusChange }) {
+export default function UploadSubmission({ quiz, onStatusChange }) {
+  const quizId = quiz?.id;
   const [history, setHistory] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
@@ -79,28 +80,29 @@ export default function UploadSubmission({ quiz, topicId, onStatusChange }) {
   const pendingAttempt = history?.attempts?.find((a) => a.status === "pending_review");
   const latestGraded = history?.attempts?.slice().reverse().find((a) => a.status === "graded");
 
-  const loadHistory = async () => {
+  const loadHistory = useCallback(async () => {
     try {
-      const h = await getAttemptHistory(quiz.id);
+      const h = await getAttemptHistory(quizId);
       setHistory(h);
       const pending = h?.attempts?.find((a) => a.status === "pending_review");
-      if (pending) {
+      const graded = h?.attempts?.slice().reverse().find((a) => a.status === "graded");
+      const shown = pending ?? graded;
+      if (shown) {
         try {
-          const { url } = await getAttemptImageUrl(pending.id);
+          const { url } = await getAttemptImageUrl(shown.id);
           setServerImageUrl(url);
-        } catch {}
-      } else if (latestGraded) {
-        try {
-          const { url } = await getAttemptImageUrl(latestGraded.id);
-          setServerImageUrl(url);
-        } catch {}
+        } catch {
+          // The proof image is optional; the attempt above is still shown without it.
+        }
       }
-    } catch {}
-  };
+    } catch {
+      // History is informational: a failed load must not block a new submission.
+    }
+  }, [quizId]);
 
   useEffect(() => {
-    if (quiz?.id) loadHistory();
-  }, [quiz?.id]);
+    if (quizId) loadHistory();
+  }, [quizId, loadHistory]);
 
   const handleFileSelect = async (e) => {
     const file = e.target.files?.[0];

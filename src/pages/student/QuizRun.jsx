@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { startAttempt, submitAttempt, getAttemptHistory } from "../../api/quizzes";
 import { getStudentTopic } from "../../api/topics";
@@ -18,7 +18,7 @@ export default function QuizRun() {
   const [history, setHistory] = useState(null);
   const [submitting, setSubmitting] = useState(false);
 
-  const load = async () => {
+  const load = useCallback(async () => {
     setLoading(true);
     setError("");
     setBlockedState(null);
@@ -89,11 +89,11 @@ export default function QuizRun() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [paramId]);
 
   useEffect(() => {
     load();
-  }, [paramId]);
+  }, [load]);
 
   const unanswered = questions.filter((q) => {
     const a = answers[q.id];

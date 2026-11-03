@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import {
   getFacultyQuiz,
@@ -39,7 +39,7 @@ export default function QuizBuilder() {
   const [qAccepted, setQAccepted] = useState("");
   const [qPoints, setQPoints] = useState(1);
 
-  const load = async () => {
+  const load = useCallback(async () => {
     setLoading(true);
     setError("");
     try {
@@ -71,11 +71,11 @@ export default function QuizBuilder() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [topicId]);
 
   useEffect(() => {
     load();
-  }, [topicId]);
+  }, [load]);
 
   const handleCreateQuiz = async () => {
     setError("");

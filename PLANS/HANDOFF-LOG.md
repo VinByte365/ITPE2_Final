@@ -183,105 +183,105 @@ Append-only. Newest entry **at the bottom**. Never edit old entries; add a corre
 - **Surprises / problems:** none.
 - **Next task:** SUBJ-V1 (Phase 02 verification) or TOPIC-01 (Phase 03)
 
-### 2026-11-01 · cline · agent
-- **Finished:** TOPIC-08 to TOPIC-12 gap closure before commit — content object-existence verification on create (TOPIC-09), draft gating in student topic detail, POST /student/topics/:id/complete with idempotent topic_progress (TOPIC-11), 27 new service tests using a `setDeps` fake-repository seam (TOPIC-12). 100 tests pass; lint & build pass.
+### 2026-11-01 ï¿½ cline ï¿½ agent
+- **Finished:** TOPIC-08 to TOPIC-12 gap closure before commit ï¿½ content object-existence verification on create (TOPIC-09), draft gating in student topic detail, POST /student/topics/:id/complete with idempotent topic_progress (TOPIC-11), 27 new service tests using a `setDeps` fake-repository seam (TOPIC-12). 100 tests pass; lint & build pass.
 - **In progress:** none
 - **Decisions / assumptions:** Refactored topics/content/student-topics services to use a mutable `deps` container + `setDeps` so service-level tests can inject fake repositories (matches the TOPIC-07 "fake repository" convention); added `recordTopicProgress` to topics.repository.js. PROGRESS.md regenerated (56/155, 36%).
 - **Surprises / problems:** ESM module namespace objects are read-only in Node 22, so reassigning repository exports (as originally planned) failed; introduced the `setDeps` seam instead. Two PROGRESS.md copies (PLANS/ and docs/lms/checklists/) kept in sync by copying.
 - **Next task:** TOPIC-13 (MarkdownView + SlidesEmbed shared components)
 
-### 2026-11-01 · cline · agent
+### 2026-11-01 ï¿½ cline ï¿½ agent
 - **Finished:** TOPIC-13 to TOPIC-17 (frontend): MarkdownView (react-markdown, no raw HTML) + SlidesEmbed (Google Slides embed, PDF embed, pptx download); src/api/topics.js; FacultyTopics (list, add one, bulk dialog with date preview, reorder, publish toggle); TopicEditor (details + content blocks, markdown preview, upload with progress, faculty-only toggle); SubjectTopics (grayed scheduled, TopicCard, StatusBadge); TopicView (blocks rendered, Mark as done, friendly TOPIC_NOT_AVAILABLE). Plus student content endpoint. 100 tests pass; lint (0 errors) & build pass.
 - **In progress:** none
 - **Decisions / assumptions:** Added react-markdown (listed in specs/04-frontend.md). Added GET /student/topics/:id/content route (listStudentContent) to support TopicView blocks. TOPIC-V1..V4 left unticked (manual QA).
 - **Surprises / problems:** None blocking.
 - **Next task:** TOPIC-V1 (manual verification) or Phase 04 QUIZ-01.
 
-### 2026-11-01 · cline · agent
+### 2026-11-01 ï¿½ cline ï¿½ agent
 - **Finished:** QUIZ-01 (migration 004_quizzes_attempts.sql: quizzes, questions, attempts; partial unique index for one open attempt per student per quiz; RLS no policies; idempotent).
 - **In progress:** none
 - **Decisions / assumptions:** Followed data-model spec sketch; partial unique index ttempts_open_unique_idx on (quiz_id, student_id) where status in (in_progress, pending_review).
 - **Surprises / problems:** none.
 - **Next task:** QUIZ-02 (pure grading module).
 
-### 2026-11-01 · cline · agent
+### 2026-11-01 ï¿½ cline ï¿½ agent
 - **Finished:** QUIZ-02 (pure grading module: normalizeText, gradeQuestion, gradeAttempt, isPassed, computePercent; 20 tests).
 - **In progress:** none
 - **Decisions / assumptions:** BR-01 formula used exactly (hundredths comparison); BR-09 NFKC normalization.
 - **Surprises / problems:** none.
 - **Next task:** QUIZ-03 (quiz and question validators).
 
-### 2026-11-01 · cline · agent
+### 2026-11-01 ï¿½ cline ï¿½ agent
 - **Finished:** QUIZ-03 (quiz and question validators: choice 2-6 options + one correct, text >=1 accepted answer, prompt limits, points > 0, import payload; 13 tests).
 - **In progress:** none
 - **Decisions / assumptions:** Used Zod discriminated union by type; importPayloadSchema caps at 20 questions.
 - **Surprises / problems:** none.
 - **Next task:** QUIZ-04 (quiz meta service and routes).
 
-### 2026-11-01 · cline · agent
+### 2026-11-01 ï¿½ cline ï¿½ agent
 - **Finished:** QUIZ-04 (quiz meta service + routes GET/PUT /faculty/topics/:id/quiz; quizzes.repository; mappers mapQuiz; mode locked once attempts exist).
 - **In progress:** none
 - **Decisions / assumptions:** Mode lock returns 409 QUIZ_HAS_ATTEMPTS when attempts exist.
 - **Surprises / problems:** none.
 - **Next task:** QUIZ-05 (question CRUD and reorder).
 
-### 2026-11-01 · cline · agent
+### 2026-11-01 ï¿½ cline ï¿½ agent
 - **Finished:** QUIZ-05 (question CRUD and reorder: repository functions, service with server-generated option ids, 20-question cap, published-quiz deletion guard; routes).
 - **In progress:** none
 - **Decisions / assumptions:** Option ids generated server-side as random 8-char strings; reorder transactional.
 - **Surprises / problems:** none.
 - **Next task:** QUIZ-06 (publish rules).
 
-### 2026-11-01 · cline · agent
+### 2026-11-01 ï¿½ cline ï¿½ agent
 - **Finished:** QUIZ-06 (publish rules: built quiz needs 10-20 questions, uploaded needs totalItems; PATCH /faculty/quizzes/:id; deletion guard already in QUIZ-05).
 - **In progress:** none
 - **Decisions / assumptions:** Publish via PATCH status; invalid count ? 422 QUIZ_QUESTION_COUNT.
 - **Surprises / problems:** none.
 - **Next task:** QUIZ-07 (bulk question import endpoint).
 
-### 2026-11-01 · cline · agent
+### 2026-11-01 ï¿½ cline ï¿½ agent
 - **Finished:** QUIZ-07 (bulk question import endpoint: atomic, row-level error details, total-over-20 rejected; createQuestionsBulk transactional).
 - **In progress:** none
 - **Decisions / assumptions:** Validation uses questionSchema per row; errors array returned in AppError.details.
 - **Surprises / problems:** none.
 - **Next task:** QUIZ-08 (student start/resume attempt).
 
-### 2026-11-01 · cline · agent
+### 2026-11-01 ï¿½ cline ï¿½ agent
 - **Finished:** QUIZ-08 (student start/resume attempt: enrollment, gating, max_attempts, unpublished refused, answer keys stripped).
 - **In progress:** none
 - **Decisions / assumptions:** Topic accessibility uses schedule check (availableFrom).
 - **Surprises / problems:** mappers.js syntax fixed (mapQuestion/mapAttempt).
 - **Next task:** QUIZ-09 (submit and grade).
 
-### 2026-11-01 · cline · agent
+### 2026-11-01 ï¿½ cline ï¿½ agent
 - **Finished:** QUIZ-09 (submit and grade: server-side grading, raw answers, score/total, status graded; second submit ? 409; response percent/passed/passingPercent; review only when show_answers).
 - **In progress:** none
 - **Decisions / assumptions:** Submit route POST /student/attempts/:id/submit; answers payload {answers:[...]} or array.
 - **Surprises / problems:** none.
 - **Next task:** QUIZ-10 (student attempt history).
 
-### 2026-11-01 · cline · agent
+### 2026-11-01 ï¿½ cline ï¿½ agent
 - **Finished:** QUIZ-10 (student attempt history with best score and pass flag using current passing percent).
 - **In progress:** none
 - **Decisions / assumptions:** best = highest percent, ties latest; passed via BR-01.
 - **Surprises / problems:** none.
 - **Next task:** QUIZ-11 (regrade endpoint).
 
-### 2026-11-01 · cline · agent
+### 2026-11-01 ï¿½ cline ï¿½ agent
 - **Finished:** QUIZ-11 (regrade endpoint: recomputes auto attempts, reports counts, manual untouched).
 - **In progress:** none
 - **Decisions / assumptions:** Regrade route POST /faculty/quizzes/:id/regrade.
 - **Surprises / problems:** none.
 - **Next task:** QUIZ-12 (tests with fake repository).
 
-### 2026-11-01 · cline · agent
+### 2026-11-01 ï¿½ cline ï¿½ agent
 - **Finished:** QUIZ-12 (tests with fake repository: attempts service 10 tests + quizzes publish limits 3 tests).
 - **In progress:** none
 - **Decisions / assumptions:** Used setDeps seam; 138 tests pass.
 - **Surprises / problems:** none.
 - **Next task:** QUIZ-13 (faculty quiz builder frontend).
 
-### 2026-11-01 · cline · agent
+### 2026-11-01 ï¿½ cline ï¿½ agent
 - **Finished:** QUIZ-13, QUIZ-15, QUIZ-16 (frontend: QuizBuilder, QuizRun, result screen + history). src/api/quizzes.js. Routes wired.
 - **In progress:** none
 - **Decisions / assumptions:** QUIZ-14 (CSV import) and QUIZ-17 (docs) left unticked.
@@ -299,3 +299,11 @@ Append-only. Newest entry **at the bottom**. Never edit old entries; add a corre
 - **Decisions / assumptions:** Gating precedence follows BR-06 strictly (scheduled over locked). Pass/fail is never stored in DB. Student endpoints never receive answer keys. Pending manual submissions never unlock next topic.
 - **Surprises / problems:** None. All 162 unit tests pass (npm test). Vite build passes cleanly (npm run build).
 - **Next task:** RPT-05 / RPT-06 (Report preview page and export helpers in src/lib/ and src/pages/).
+
+### 2026-11-03 Â· lms-worker Â· agent
+- **Finished:** UI-01 (clean lint run: `npm.cmd run lint` reports 0 errors and 0 warnings; 162/162 tests pass; `npm.cmd run build` passes).
+- **In progress:** none.
+- **Decisions / assumptions:** No product behaviour changed. Empty catch blocks now carry a one-line comment explaining the intentional swallow (matching `content.service.js`), except none needed changing semantics: storage cleanup stays best effort, and `UploadSubmission` history loading stays non-blocking. Hook loaders became `useCallback` with exactly the dependency set the effects already had (`Roster.jsx` pattern), so fetch timing is unchanged. `GradingQueue.jsx` keeps one narrow `eslint-disable-next-line react-hooks/exhaustive-deps` with a reason: `loadSubmissions(false)` reads only `subjectId`/`statusFilter`, and adding the callback to the deps would refetch on every keystroke and selection change.
+- **Surprises / problems:** UI-01 names four files, but four of the six hook warnings lived in `QuizBuilder`, `TopicEditor`, `Topics` and `QuizRun`; they were fixed in place (same dependency set) rather than recorded as accepted warnings, so the lint output is genuinely empty. `UploadSubmission` and `GradingQueue` are not imported by any route yet (phase-05 wiring still pending), so the touched fetch paths are not reachable from the UI today. Vite still prints the pre-existing chunk-size and dynamic-import notices; they are not lint findings.
+- **Next task:** UI-02
+

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import StatusBadge from "../../components/StatusBadge";
 import { listFacultyTopics, createTopic, bulkCreateTopics, reorderTopics, updateTopic, deleteTopic } from "../../api/topics";
@@ -21,16 +21,16 @@ export default function FacultyTopics() {
   const [bulk, setBulk] = useState({ count: 8, startDate: "", meetingDays: [2, 4], titlePrefix: "Topic" });
   const [bulkPreview, setBulkPreview] = useState([]);
 
-  const load = async () => {
+  const load = useCallback(async () => {
     setLoading(true); setError("");
     try {
       const data = await listFacultyTopics(subjectId);
       setTopics(Array.isArray(data) ? data : []);
     } catch (err) { setError(err?.message || "Failed to load topics."); }
     finally { setLoading(false); }
-  };
+  }, [subjectId]);
 
-  useEffect(() => { load(); }, [subjectId]);
+  useEffect(() => { load(); }, [load]);
 
   const handleAdd = async (e) => {
     e.preventDefault();
