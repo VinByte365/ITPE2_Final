@@ -592,6 +592,89 @@ main:focus {
   margin-bottom: 1.75rem;
 }
 
+/* ==========================================================================
+   Faculty progress grid (Roster / progress view)
+   Students as rows, topics as columns, each cell a state badge.
+   ========================================================================== */
+
+.rv-grid {
+  display: grid;
+  grid-template-columns: 220px repeat(auto-fill, minmax(140px, 1fr));
+  gap: 8px;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  background: var(--paper-2);
+  margin-top: 12px;
+  overflow-x: auto;
+}
+
+.rv-cell {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--line);
+  font-size: 0.88rem;
+  line-height: 1.4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rv-cell.rv-header {
+  position: -webkit-sticky;
+  position: sticky;
+  left: 0;
+  background: var(--paper-2);
+  z-index: 1;
+  border-bottom: 2px solid var(--line-strong);
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.rv-cell.rv-topic {
+  background: var(--paper-2);
+  border-bottom: 2px solid var(--line-strong);
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  min-width: 140px;
+}
+
+.rv-row {
+  border-bottom: 1px solid var(--line);
+  display: contents;
+}
+
+.rv-row:last-child {
+  border-bottom: none;
+}
+
+.rv-cell.rv-student {
+  background: var(--paper);
+  font-weight: 600;
+  color: var(--ink);
+  min-width: 220px;
+}
+
+.rv-cell.rv-state {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px 8px;
+  cursor: default;
+}
+
+.rv-state-empty {
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+}
+
 .input {
   width: 100%;
   min-height: 46px;

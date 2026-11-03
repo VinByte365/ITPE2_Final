@@ -12,11 +12,11 @@ Stretch tasks are listed separately and do not count toward the total.
 | [Phase 03 · Topics and Content (R3, R4, X3)](03-topics-content.md) | 17/21 | 81% ████████░░ | 0 | 0 | 0/0 |
 | [Phase 04 · Built-in Quizzes (R5)](04-quizzes-builtin.md) | 17/22 | 77% ████████░░ | 0 | 0 | 0/0 |
 | [Phase 05 · Uploaded Quizzes with Manual Grading (R5, confirmed flow)](05-quizzes-uploaded.md) | 11/17 | 65% ███████░░░ | 0 | 0 | 0/0 |
-| [Phase 06 · Gating and Progress (R3, X1, X2)](06-gating-progress.md) | 9/15 | 60% ██████░░░░ | 0 | 0 | 0/2 |
+| [Phase 06 · Gating and Progress (R3, X1, X2)](06-gating-progress.md) | 10/15 | 67% ███████░░░ | 0 | 0 | 0/2 |
 | [Phase 07 · Reports and Exports (R6, R7)](07-reports-exports.md) | 3/16 | 19% ██░░░░░░░░ | 0 | 0 | 0/0 |
 | [Phase 08 · Testing, Security and Deployment](08-testing-deploy.md) | 0/12 | 0% ░░░░░░░░░░ | 0 | 0 | 0/0 |
 | [Phase 09 · UI Alignment and Lint Health](09-ui-alignment.md) | 4/10 | 40% ████░░░░░░ | 0 | 0 | 0/0 |
-| **Total** | **105/165** | **64%** | | | |
+| **Total** | **106/165** | **64%** | | | |
 <!-- progress:end -->
 
 ## Where to continue

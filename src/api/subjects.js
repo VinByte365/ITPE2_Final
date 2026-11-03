@@ -34,6 +34,10 @@ export async function getRoster(id) {
   return get(`/faculty/subjects/${id}/students`);
 }
 
+export async function getFacultyProgress(id) {
+  return get(`/faculty/subjects/${id}/progress`);
+}
+
 export async function removeStudent(subjectId, studentId) {
   return del(`/faculty/subjects/${subjectId}/students/${studentId}`);
 }
