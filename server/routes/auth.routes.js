@@ -2,18 +2,39 @@ import { Router } from 'express';
 import { clearAuthCookies, getRefreshToken, setAuthCookies } from '../lib/cookies.js';
 import { asyncHandler, unauthorized } from '../lib/errors.js';
 import { requireAuth } from '../middleware/auth.js';
-import { authLimiter, passwordResetLimiter } from '../middleware/rateLimit.js';
+import { authLimiter, passwordResetLimiter, registerLimiter } from '../middleware/rateLimit.js';
 import {
   refreshSession,
+  register,
   requestPasswordReset,
   signIn,
+  updateMyProfile,
 } from '../services/auth.service.js';
 import {
   forgotPasswordSchema,
   loginSchema,
+  registerSchema,
+  updateMeSchema,
 } from '../validators/auth.validator.js';
 
 const router = Router();
+
+router.post(
+  '/register',
+  registerLimiter,
+  asyncHandler(async (req, res) => {
+    const input = registerSchema.parse(req.body);
+    const result = await register(input);
+
+    res.status(201).json({
+      data: {
+        profile: result.profile,
+        requiresEmailConfirmation: result.requiresEmailConfirmation,
+        pendingApproval: result.pendingApproval,
+      },
+    });
+  }),
+);
 
 const expiresAt = (session) =>
   session.expires_at
@@ -63,6 +84,16 @@ router.post('/logout', (req, res) => {
   clearAuthCookies(res);
   res.json({ data: { ok: true } });
 });
+
+router.patch(
+  '/me',
+  requireAuth,
+  asyncHandler(async (req, res) => {
+    const updates = updateMeSchema.parse(req.body);
+    const updated = await updateMyProfile(req.auth.user.id, req.auth.profile, updates);
+    res.json({ data: { profile: updated } });
+  }),
+);
 
 router.get(
   '/me',

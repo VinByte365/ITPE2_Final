@@ -35,6 +35,7 @@ npm run build        # Production frontend build
 npm run lint         # ESLint
 npm run server       # Start the API without watch mode
 npm run db:schema    # Apply server/db/schema.sql to Supabase
+npm run db:migrate   # Apply pending files in server/db/migrations/ (run after db:schema)
 npm run db:seed      # Seed the 16 modules, presenters, and videos
 npm run make:admin   # Promote an existing Supabase Auth user to admin
 ```
@@ -131,9 +132,9 @@ VITE_API_BASE_URL=https://your-api.example/api/v1
 
 | Role | Access |
 | --- | --- |
-| `viewer` | Can sign in and read their own profile; no admin API access |
-| `editor` | Read/write modules, presenters, videos, and publish states |
-| `admin` | Everything an editor can do, plus hard deletes and profile roles |
+| `student` | Can sign in, read their own profile, enroll in subjects, take quizzes |
+| `faculty` | Create and manage subjects, topics, quizzes, and grade submissions |
+| `admin` | Everything a faculty member can do, plus user approvals and role management |
 
 Admin API access requires a Supabase Auth access token, sent either as the
 HttpOnly cookie created by `POST /api/v1/auth/login` or as
@@ -188,6 +189,12 @@ PATCH  /api/v1/admin/profiles/:id
 - Videos and presenter links are ordered by `position`.
 - Row-level security policies mirror the public/editor split as a second layer
   of protection.
+
+## LMS work in progress
+
+The `docs/lms/` folder contains the in-progress plan, agent rules, decisions, specs and
+checklists for repurposing this site into a small LMS (faculty create subjects/topics/quizzes;
+students join with a code and progress by passing). See [`docs/lms/README.md`](docs/lms/README.md).
 
 ## Deployment notes
 

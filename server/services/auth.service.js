@@ -1,7 +1,12 @@
 import { env } from '../config/env.js';
 import { AppError } from '../lib/errors.js';
 import { getAuthClient } from '../lib/supabase.js';
-import { ensureProfile } from '../repositories/profiles.repository.js';
+import {
+  ensureProfile,
+  findProfileById,
+  findProfileByStudentNumber,
+  updateProfile,
+} from '../repositories/profiles.repository.js';
 
 const mapSignInError = (error) => {
   const message = error?.message || '';
@@ -66,6 +71,76 @@ export async function signIn(email, password) {
   };
 }
 
+export async function register(input) {
+  const { role, email, password, firstName, lastName, studentNumber } = input;
+  const fullName = `${firstName} ${lastName}`.trim();
+
+  // Pre-check for duplicate student number to give a clear error.
+  if (studentNumber) {
+    const existing = await findProfileByStudentNumber(studentNumber);
+    if (existing) {
+      throw new AppError(409, 'DUPLICATE_RECORD', 'That student number is already registered.');
+    }
+  }
+
+  const client = getAuthClient();
+  const { data, error } = await client.auth.signUp({
+    email,
+    password,
+    options: {
+      data: {
+        first_name: firstName,
+        last_name: lastName,
+        student_number: studentNumber || null,
+        full_name: fullName,
+      },
+    },
+  });
+
+  if (error) {
+    const message = error?.message || '';
+    if (/already registered|already exists|duplicate/i.test(message)) {
+      throw new AppError(409, 'DUPLICATE_RECORD', 'That email address is already registered.');
+    }
+    // Trigger failure (e.g. constraint violation) surfaces here.
+    if (/duplicate|unique/i.test(message)) {
+      throw new AppError(409, 'DUPLICATE_RECORD', 'That student number is already registered.');
+    }
+    console.error('[auth] Registration failed:', { email, error: message });
+    throw new AppError(400, 'REGISTRATION_FAILED', 'Unable to create account. Try again.');
+  }
+
+  if (!data?.user) {
+    throw new AppError(400, 'REGISTRATION_FAILED', 'Unable to create account. Try again.');
+  }
+
+  const userId = data.user.id;
+
+  // For faculty applicants, upgrade the profile created by the trigger.
+  if (role === 'faculty') {
+    try {
+      await updateProfile(userId, {
+        role: 'faculty',
+        approvalStatus: 'pending',
+        fullName,
+        firstName,
+        lastName,
+      });
+    } catch (err) {
+      console.error('[auth] Profile upgrade failed after sign-up:', { userId, error: err.message });
+      throw new AppError(409, 'DUPLICATE_RECORD', 'Unable to complete registration. Try again.');
+    }
+  }
+
+  const profile = await findProfileById(userId);
+
+  return {
+    profile,
+    requiresEmailConfirmation: !data.session,
+    pendingApproval: role === 'faculty',
+  };
+}
+
 export async function refreshSession(refreshToken) {
   if (!refreshToken) {
     throw new AppError(
@@ -115,6 +190,35 @@ export async function requestPasswordReset(email) {
   return { accepted: true };
 }
 
+export async function updateMyProfile(userId, currentProfile, updates) {
+  const isAdmin = currentProfile?.role === 'admin';
+  const changes = {};
+
+  if (updates.firstName !== undefined) changes.firstName = updates.firstName;
+  if (updates.lastName !== undefined) changes.lastName = updates.lastName;
+
+  if (updates.studentNumber !== undefined) {
+    if (currentProfile?.studentNumber && !isAdmin) {
+      throw new AppError(403, 'FORBIDDEN', 'Student number cannot be changed once set.');
+    }
+    // Check for duplicate
+    const existing = await findProfileByStudentNumber(updates.studentNumber);
+    if (existing && existing.id !== userId) {
+      throw new AppError(409, 'DUPLICATE_RECORD', 'That student number is already registered.');
+    }
+    changes.studentNumber = updates.studentNumber;
+  }
+
+  // Recompute full_name if names changed
+  if (changes.firstName !== undefined || changes.lastName !== undefined) {
+    const newFirst = changes.firstName ?? currentProfile?.firstName ?? '';
+    const newLast = changes.lastName ?? currentProfile?.lastName ?? '';
+    changes.fullName = `${newFirst} ${newLast}`.trim();
+  }
+
+  const updated = await updateProfile(userId, changes);
+  return updated;
+}
 export function publicUser(user) {
   return {
     id: user.id,

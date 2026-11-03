@@ -56,6 +56,17 @@ export const env = {
       60 *
       1000,
   },
+  storage: {
+    topicBucket: read('STORAGE_TOPIC_BUCKET', 'topic-files'),
+    uploadBucket: read('STORAGE_UPLOAD_BUCKET', 'quiz-uploads'),
+    signedUrlTtlSeconds: parsePositiveNumber(
+      read('SIGNED_URL_TTL_SECONDS', '120'),
+      120,
+    ),
+    maxFileMb: parsePositiveNumber(read('MAX_FILE_MB', '25'), 25),
+    maxImageMb: parsePositiveNumber(read('MAX_IMAGE_MB', '5'), 5),
+  },
+  defaultTimezone: read('DEFAULT_TIMEZONE', 'Asia/Manila'),
   passwordResetRedirectUrl: read(
     'PASSWORD_RESET_REDIRECT_URL',
     'http://localhost:5173',

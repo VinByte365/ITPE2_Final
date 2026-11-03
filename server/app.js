@@ -9,6 +9,7 @@ import { env, supabaseConfigured } from './config/env.js';
 import { checkDatabase } from './db/pool.js';
 import { AppError } from './lib/errors.js';
 import { errorHandler, notFoundHandler } from './middleware/error.js';
+import { originGuard } from './middleware/originGuard.js';
 import apiRouter from './routes/index.js';
 
 function corsOrigin(origin, callback) {
@@ -71,6 +72,7 @@ export function createApp() {
       maxAge: 86_400,
     }),
   );
+  app.use(originGuard);
   app.use(compression());
   app.use(express.json({ limit: '1mb' }));
   app.use(cookieParser());
