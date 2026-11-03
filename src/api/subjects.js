@@ -42,6 +42,14 @@ export async function removeStudent(subjectId, studentId) {
   return del(`/faculty/subjects/${subjectId}/students/${studentId}`);
 }
 
+export async function getStudentScores(subjectId, studentId) {
+  return get(`/faculty/subjects/${subjectId}/students/${studentId}/scores`);
+}
+
+export async function getStudentGrades(subjectId) {
+  return get(`/student/subjects/${subjectId}/grades`);
+}
+
 export async function enroll(joinCode) {
   return post('/student/enrollments', { joinCode });
 }

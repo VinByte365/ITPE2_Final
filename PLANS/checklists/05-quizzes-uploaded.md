@@ -19,7 +19,7 @@ Flow: the student takes the quiz elsewhere, uploads an image showing the score, 
   - Files: service, routes · Done when: filter by status and student name; includes student name, topic, submitted time; detail returns a signed image URL and `totalItems`
 - [x] UPL-07 Grade endpoint
   - Files: service, route, validator · Done when: score within 0 to `totalItems` with up to 2 decimals; sets `graded`, `total`, `graded_by`, `graded_at`; re-grading allowed; only the subject's faculty (or admin); unit tests for bounds and ownership
-- [ ] UPL-08 Orphan cleanup script
+- [x] UPL-08 Orphan cleanup script (@kilo, 2026-11-04)
   - Files: `server/scripts/cleanup-orphans.js`, `package.json` (`storage:cleanup`) · Done when: lists storage objects with no matching attempt/content row older than 24 h; dry-run by default, deletes only with `--apply`
 
 ## Frontend

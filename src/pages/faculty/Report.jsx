@@ -7,6 +7,8 @@ import { useParams } from 'react-router-dom';
 import { getFacultyReport } from '../../api/reports';
 import { toTable } from '../../lib/reportTable';
 import { exportPdf } from '../../lib/exportPdf';
+import { exportXlsx } from '../../lib/exportXlsx';
+import { exportCsv } from '../../lib/exportCsv';
 import StatusBadge from '../../components/StatusBadge';
 
 export default function Report() {
@@ -101,6 +103,30 @@ export default function Report() {
       });
     } catch (err) {
       setError(err?.message || 'Failed to generate PDF.');
+    }
+  };
+
+  const handleDownloadExcel = async () => {
+    if (!report) return;
+    try {
+      await exportXlsx(report, {
+        passingPercent,
+        columns: columns.map((c) => c.key),
+      });
+    } catch (err) {
+      setError(err?.message || 'Failed to generate Excel.');
+    }
+  };
+
+  const handleDownloadCsv = () => {
+    if (!report) return;
+    try {
+      exportCsv(report, {
+        passingPercent,
+        columns: columns.map((c) => c.key),
+      });
+    } catch (err) {
+      setError(err?.message || 'Failed to generate CSV.');
     }
   };
 
@@ -245,10 +271,10 @@ export default function Report() {
           <button type="button" className="btn btn-solid" onClick={handleDownloadPdf}>
             Download PDF
           </button>
-          <button type="button" className="btn btn-solid" onClick={() => { }}>
+          <button type="button" className="btn btn-solid" onClick={handleDownloadExcel}>
             Download Excel
           </button>
-          <button type="button" className="btn" onClick={() => { }}>
+          <button type="button" className="btn" onClick={handleDownloadCsv}>
             CSV
           </button>
         </div>

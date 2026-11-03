@@ -23,14 +23,14 @@ Depends on: 06. Specs: `../specs/05-reports.md`, `../specs/03-business-rules.md`
   - Files: `src/index.css` (`@media print`) · Done when: A4 landscape; controls and site chrome hidden; header repeats on each page; rows do not split; verified in Chrome and Firefox print preview
 - [x] RPT-08 PDF export (@kilo, 2026-11-04)
   - Files: `src/lib/exportPdf.js` · Done when: lazy-loaded; same columns and order as the preview; failed in red; page numbers; file name per spec; opens correctly
-- [ ] RPT-09 Spreadsheet export (and CSV)
+- [x] RPT-09 Spreadsheet export (and CSV) (@kilo, 2026-11-04)
   - Files: `src/lib/exportXlsx.js`, `src/lib/exportCsv.js` · Done when: lazy-loaded; numbers stored as numbers; frozen header; failed fill; CSV has UTF-8 BOM and `ñ` survives; opens correctly in Excel and LibreOffice
-- [ ] RPT-10 Per-student summary page
+- [x] RPT-10 Per-student summary page (@kilo, 2026-11-04)
   - Files: `src/pages/faculty/StudentScores.jsx` · Done when: all quizzes and attempts for one student; Print, PDF and Excel buttons reuse the exporters; reachable from the roster and the report
-- [ ] RPT-11 Student grades page
+- [x] RPT-11 Student grades page (@kilo, 2026-11-04)
   - Files: `src/pages/student/Grades.jsx` · Done when: own scores, best per quiz, pass/fail, average and remark
-- [ ] RPT-12 Export tests
-  - Files: `*.test.js` · Done when: row arrays for report and per-student exports are covered; exports contain no ids or answer keys
+- [x] RPT-12 Export tests (@kilo, 2026-11-04)
+  - Files: `src/lib/export.test.js` · Done when: row arrays for report and per-student exports are covered; exports contain no ids or answer keys
 
 ## Phase verification
 

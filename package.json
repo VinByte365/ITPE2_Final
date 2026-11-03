@@ -14,6 +14,7 @@
     "db:seed": "node server/scripts/seed.js",
     "make:admin": "node server/scripts/make-admin.js",
     "storage:setup": "node server/scripts/setup-storage.js",
+    "storage:cleanup": "node server/scripts/cleanup-orphans.js",
     "build": "vite build",
     "test": "node --test",
     "docs:progress": "node PLANS/progress.mjs",
