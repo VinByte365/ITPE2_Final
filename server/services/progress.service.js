@@ -3,6 +3,22 @@
 // No database or clock reads – everything is passed as arguments.
 
 import { isPassed } from './grading.js';
+import { AppError } from '../lib/errors.js';
+import * as subjectsRepoModule from '../repositories/subjects.repository.js';
+import * as topicsRepoModule from '../repositories/topics.repository.js';
+import * as progressRepoModule from '../repositories/progress.repository.js';
+
+export const deps = {
+  subjectsRepo: subjectsRepoModule,
+  topicsRepo: topicsRepoModule,
+  progressRepo: progressRepoModule,
+};
+
+export function setDeps(overrides) {
+  if (overrides.subjectsRepo) deps.subjectsRepo = overrides.subjectsRepo;
+  if (overrides.topicsRepo) deps.topicsRepo = overrides.topicsRepo;
+  if (overrides.progressRepo) deps.progressRepo = overrides.progressRepo;
+}
 
 /**
  * Compute the state of every published topic for one student.
@@ -144,5 +160,54 @@ export function computeTopicStates({
  */
 export function isTopicAccessible(state) {
   return ['open', 'failed', 'pending_review', 'completed'].includes(state);
+}
+
+/**
+ * GATE-06: Faculty progress endpoint data.
+ * Returns each enrolled student's topic state for a subject.
+ * Uses bulk-loading repository calls (3 queries regardless of student/topic count).
+ */
+export async function getFacultyProgress(facultyId, subjectId, isAdmin) {
+  const subject = await deps.subjectsRepo.findSubjectById(subjectId);
+  if (!subject) throw new AppError(404, "NOT_FOUND", "Subject not found.");
+  if (!isAdmin && subject.facultyId !== facultyId) {
+    throw new AppError(404, "NOT_FOUND", "Subject not found.");
+  }
+
+  const enrollments = await deps.subjectsRepo.listEnrollmentsBySubject(subjectId);
+  const topics = await deps.topicsRepo.listTopicsBySubject(subjectId);
+  const published = topics.filter((t) => t.status === "published");
+
+  const [quizByTopicId, allAttempts, allProgress] = await Promise.all([
+    deps.progressRepo.listPublishedQuizzesBySubject(subjectId),
+    deps.progressRepo.listAllAttemptsBySubject(subjectId),
+    deps.progressRepo.listAllProgressBySubject(subjectId),
+  ]);
+
+  const now = new Date();
+  const students = [];
+
+  for (const enrollment of enrollments) {
+    const studentId = enrollment.studentId;
+    const studentProgress = allProgress.get(studentId) || new Set();
+    const studentAttempts = allAttempts.filter((a) => a.studentId === studentId);
+
+    const states = computeTopicStates({
+      topics: published,
+      quizByTopicId,
+      attempts: studentAttempts,
+      progressTopicIds: studentProgress,
+      passingPercent: subject.passingPercent,
+      now,
+    });
+
+    students.push({
+      studentId,
+      student: enrollment.student,
+      topics: states,
+    });
+  }
+
+  return { subject, students };
 }
 

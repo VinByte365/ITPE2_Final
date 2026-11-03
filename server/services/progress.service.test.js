@@ -1,7 +1,7 @@
 // server/services/progress.service.test.js
-import { describe, it } from 'node:test';
+import { describe, it, beforeEach } from 'node:test';
 import assert from 'node:assert/strict';
-import { computeTopicStates, isTopicAccessible } from './progress.service.js';
+import { computeTopicStates, isTopicAccessible, getFacultyProgress, setDeps } from './progress.service.js';
 
 function topic(id, position, availableFrom, title = `Topic ${position}`) {
   return { id, position, title, availableFrom, subjectId: 'subj1', status: 'published' };
@@ -341,6 +341,96 @@ describe('GATE-05: dynamic effects of setting changes (no stored state)', () => 
       progressTopicIds: new Set(), passingPercent: 75, now: baseNow,
     });
     assert.deepStrictEqual(first, second);
+  });
+});
+
+describe('GATE-06: getFacultyProgress', () => {
+  const FACULTY_ID = 'faculty-1';
+  const OTHER_FACULTY_ID = 'faculty-2';
+  const SUBJECT_ID = 'subj-1';
+  const STUDENT_1 = 'student-1';
+  const STUDENT_2 = 'student-2';
+  const TOPIC_1 = 'topic-1';
+  const TOPIC_2 = 'topic-2';
+  const QUIZ_1 = 'quiz-1';
+
+  const fakeSubjectsRepo = {
+    findSubjectById: async (id) => (id === SUBJECT_ID
+      ? { id: SUBJECT_ID, facultyId: FACULTY_ID, passingPercent: 75, status: 'active' }
+      : null),
+    listEnrollmentsBySubject: async () => [
+      {
+        studentId: STUDENT_1,
+        student: { id: STUDENT_1, firstName: 'Alice', lastName: 'Lee', studentNumber: 'S001', email: 'alice@example.com' },
+      },
+      {
+        studentId: STUDENT_2,
+        student: { id: STUDENT_2, firstName: 'Bob', lastName: 'Tan', studentNumber: 'S002', email: 'bob@example.com' },
+      },
+    ],
+  };
+
+  const fakeTopicsRepo = {
+    listTopicsBySubject: async () => [
+      { id: TOPIC_1, position: 1, title: 'Topic 1', availableFrom: '2020-01-01T00:00:00Z', subjectId: SUBJECT_ID, status: 'published' },
+      { id: TOPIC_2, position: 2, title: 'Topic 2', availableFrom: '2020-01-01T00:00:00Z', subjectId: SUBJECT_ID, status: 'published' },
+    ],
+  };
+
+  const fakeProgressRepo = {
+    listPublishedQuizzesBySubject: async () => ({ [TOPIC_1]: { id: QUIZ_1, topicId: TOPIC_1, status: 'published' } }),
+    listAllAttemptsBySubject: async () => [
+      { id: 'a1', quizId: QUIZ_1, studentId: STUDENT_1, attemptNo: 1, status: 'graded', score: 8, total: 10 },
+      { id: 'a2', quizId: QUIZ_1, studentId: STUDENT_2, attemptNo: 1, status: 'graded', score: 5, total: 10 },
+    ],
+    listAllProgressBySubject: async () => new Map([
+      [STUDENT_1, new Set([TOPIC_1])],
+    ]),
+  };
+
+  beforeEach(() => {
+    setDeps({ subjectsRepo: fakeSubjectsRepo, topicsRepo: fakeTopicsRepo, progressRepo: fakeProgressRepo });
+  });
+
+  it('throws NOT_FOUND for missing subject', async () => {
+    await assert.rejects(
+      () => getFacultyProgress(FACULTY_ID, 'no-such-subject', false),
+      (err) => err.status === 404 && err.code === 'NOT_FOUND',
+    );
+  });
+
+  it('throws NOT_FOUND for non-owner faculty', async () => {
+    await assert.rejects(
+      () => getFacultyProgress(OTHER_FACULTY_ID, SUBJECT_ID, false),
+      (err) => err.status === 404 && err.code === 'NOT_FOUND',
+    );
+  });
+
+  it('returns each student with topic states', async () => {
+    const result = await getFacultyProgress(FACULTY_ID, SUBJECT_ID, false);
+    assert.ok(result.subject);
+    assert.equal(result.subject.id, SUBJECT_ID);
+    assert.equal(result.students.length, 2);
+
+    const alice = result.students.find((s) => s.studentId === STUDENT_1);
+    const bob = result.students.find((s) => s.studentId === STUDENT_2);
+
+    assert.ok(alice);
+    assert.equal(alice.student.firstName, 'Alice');
+    assert.equal(alice.topics.length, 2);
+    assert.equal(alice.topics[0].id, TOPIC_1);
+    assert.equal(alice.topics[0].state, 'completed'); // 8/10 at 75% = pass
+    assert.equal(alice.topics[1].state, 'open'); // T2 follows T1
+
+    assert.ok(bob);
+    assert.equal(bob.student.firstName, 'Bob');
+    assert.equal(bob.topics[0].state, 'failed'); // 5/10 at 75% = fail
+    assert.equal(bob.topics[1].state, 'locked'); // T2 locked because T1 failed
+  });
+
+  it('admin can access any subject', async () => {
+    const result = await getFacultyProgress(OTHER_FACULTY_ID, SUBJECT_ID, true);
+    assert.equal(result.students.length, 2);
   });
 });
 

@@ -357,3 +357,10 @@ ode:test mock.module is not available in Node 22.12; used setDeps dependency inj
 - **Decisions / assumptions:** Added 7 unit tests to server/services/progress.service.test.js proving that changing passing %, unpublishing/publishing a quiz, regrading, and re-grading a manual attempt change topic states dynamically per BR-06, with no stored state to fix. Tests cover: passing percent raise (completed→failed, open→locked), passing percent lower (failed→completed, locked→open), quiz unpublish (completed→open), quiz publish (open→completed), regrade lower score (completed→failed), manual attempt pending_review→graded (pending_review→completed/failed), and idempotency (same inputs → same outputs).
 - **Surprises / problems:** None.
 - **Next task:** GATE-06 (faculty progress endpoint)
+
+### 2026-11-04 · @kilo · agent
+- **Finished:** GATE-06 (faculty progress endpoint)
+- **In progress:** none
+- **Decisions / assumptions:** Added getFacultyProgress() to server/services/progress.service.js — returns each enrolled student's topic state for a subject using computeTopicStates (GATE-01). Bulk-loading via GATE-02 repository functions: 3 queries (published quizzes, all attempts, all progress) plus enrollments and topics = fixed query count regardless of student/topic count (no N+1). Added GET /faculty/subjects/:id/progress route in server/routes/faculty.routes.js with equireSubjectOwner authorization (faculty owns subject, or admin). Added 4 unit tests to progress.service.test.js: NOT_FOUND for missing subject, NOT_FOUND for non-owner faculty, returns each student's topic states with correct pass/fail states, admin access.
+- **Surprises / problems:** None.
+- **Next task:** GATE-12 (faculty progress view UI)
