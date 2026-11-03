@@ -28,7 +28,7 @@ inline styles. Closing this phase makes the LMS visually continuous with the pub
 - [ ] UI-05 Responsive and keyboard sweep
   - Files: all LMS pages · Done when: usable at 360 px; focus ring visible; `aria-disabled` on non-actionable items; no horizontal scroll
 
-- [ ] UI-06 `QuizBuilder` inline styles (60)
+- [x] UI-06 `QuizBuilder` inline styles (60) (@lms-worker, 2026-11-03)
   - Files: `src/pages/faculty/QuizBuilder.jsx`, `src/index.css` · Done when: static `style={{}}` blocks are gone; only genuinely dynamic values remain inline; every class resolves
 
 - [ ] UI-07 `QuizRun` inline styles (38)

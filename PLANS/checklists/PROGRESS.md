@@ -15,8 +15,8 @@ Stretch tasks are listed separately and do not count toward the total.
 | [Phase 06 · Gating and Progress (R3, X1, X2)](06-gating-progress.md) | 6/15 | 40% ████░░░░░░ | 0 | 0 | 0/2 |
 | [Phase 07 · Reports and Exports (R6, R7)](07-reports-exports.md) | 3/16 | 19% ██░░░░░░░░ | 0 | 0 | 0/0 |
 | [Phase 08 · Testing, Security and Deployment](08-testing-deploy.md) | 0/12 | 0% ░░░░░░░░░░ | 0 | 0 | 0/0 |
-| [Phase 09 · UI Alignment and Lint Health](09-ui-alignment.md) | 3/10 | 30% ███░░░░░░░ | 0 | 0 | 0/0 |
-| **Total** | **99/165** | **60%** | | | |
+| [Phase 09 · UI Alignment and Lint Health](09-ui-alignment.md) | 4/10 | 40% ████░░░░░░ | 0 | 0 | 0/0 |
+| **Total** | **100/165** | **61%** | | | |
 <!-- progress:end -->
 
 ## Where to continue

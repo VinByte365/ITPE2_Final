@@ -328,3 +328,10 @@ Append-only. Newest entry **at the bottom**. Never edit old entries; add a corre
 - **Decisions / assumptions:** No product behaviour changed. `.page-shell` mirrors the `.shell` gutter and adds editorial vertical padding; auth screens center in a narrow column via `.auth-page` (max 34rem); markdown typography lives in `.markdown-view` (max-width 68ch); slides embed keeps a 480px iframe height via CSS.
 - **Surprises / problems:** None during execution.
 - **Next task:** UI-05 (responsive and keyboard sweep)
+
+### 2026-11-03 · @lms-worker · agent
+- **Finished:** UI-06 (QuizBuilder inline styles): removed all 60 static `style={{}}` blocks and hardcoded hex values from `src/pages/faculty/QuizBuilder.jsx`; added a `Quiz builder` CSS section to `src/index.css` (`.qb-page`, `.qb-back`, `.qb-head`, `.qb-head h1`, `.qb-head-actions`, `.qb-status` + state, `.qb-success`, `.qb-panel`, `.qb-panel h2`, `.qb-stack`, `.qb-label`, `.qb-grid`, `.qb-actions`, `.qb-count` + states, `.qb-list`, `.qb-question`, `.qb-question-prompt`, `.qb-question-meta`, `.qb-delete`, `.qb-add-form`, `.qb-add-stack`, `.qb-add-grid`, `.qb-add-label`, `.qb-options`, `.qb-option-row`). Verified: `npm.cmd run lint` 0 errors / 0 warnings, `npm.cmd run build` exit 0, `npm.cmd test` 162/162 pass; zero `style=` and zero hex remain in QuizBuilder.
+- **In progress:** none
+- **Decisions / assumptions:** No product behaviour changed. Quiz status pill and count hints now switch via state classes (`qb-status-published` / `qb-status-draft`, `qb-count-ready` / `qb-count-pending`) instead of inline ternaries; the design-system tokens carry the colours. Form controls reuse the shared `.input` class.
+- **Surprises / problems:** None during execution.
+- **Next task:** UI-07 (QuizRun inline styles, 38)

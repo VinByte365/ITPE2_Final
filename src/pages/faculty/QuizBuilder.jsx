@@ -223,27 +223,18 @@ export default function QuizBuilder() {
   if (loading) return <div className="page-shell"><p>Loading quiz...</p></div>;
 
   return (
-    <div className="page-shell" style={{ maxWidth: 840, margin: "0 auto" }}>
-      <div style={{ marginBottom: 16 }}>
-        <Link to={`/faculty/topics/${topicId}`} style={{ fontSize: 14, textDecoration: "none", color: "#4f46e5" }}>
+    <div className="page-shell qb-page">
+      <div className="qb-back">
+        <Link className="back-link" to={`/faculty/topics/${topicId}`}>
           ← Back to topic editor
         </Link>
       </div>
 
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 16, flexWrap: "wrap", gap: 8 }}>
-        <h1 style={{ margin: 0 }}>Quiz Configuration</h1>
+      <div className="qb-head">
+        <h1>Quiz Configuration</h1>
         {quiz && (
-          <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-            <span
-              style={{
-                padding: "2px 8px",
-                borderRadius: 999,
-                fontSize: 12,
-                fontWeight: 600,
-                background: quiz.status === "published" ? "#d1fae5" : "#e5e7eb",
-                color: quiz.status === "published" ? "#065f46" : "#374151",
-              }}
-            >
+          <div className="qb-head-actions">
+            <span className={`qb-status ${quiz.status === "published" ? "qb-status-published" : "qb-status-draft"}`}>
               {quiz.status.toUpperCase()}
             </span>
             <button type="button" className="btn btn-solid" onClick={handlePublish}>
@@ -253,16 +244,16 @@ export default function QuizBuilder() {
         )}
       </div>
 
-      {error && <div className="auth-error" role="alert" style={{ marginBottom: 16 }}>{error}</div>}
-      {success && <div style={{ padding: 12, borderRadius: 6, background: "#ecfdf5", color: "#065f46", marginBottom: 16 }}>{success}</div>}
+      {error && <div className="auth-error" role="alert">{error}</div>}
+      {success && <div className="qb-success">{success}</div>}
 
       {/* Meta Editor */}
-      <div style={{ padding: 20, background: "#fff", border: "1px solid #e5e7eb", borderRadius: 8, marginBottom: 24 }}>
-        <h2 style={{ fontSize: 18, marginTop: 0, marginBottom: 16 }}>General Settings</h2>
+      <div className="qb-panel">
+        <h2>General Settings</h2>
 
-        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+        <div className="qb-stack">
           <div>
-            <label style={{ display: "block", fontWeight: 600, fontSize: 14, marginBottom: 4 }}>
+            <label className="qb-label">
               Quiz Title
             </label>
             <input
@@ -270,18 +261,17 @@ export default function QuizBuilder() {
               className="input"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              style={{ width: "100%", padding: "8px 12px", boxSizing: "border-box" }}
             />
           </div>
 
           <div>
-            <label style={{ display: "block", fontWeight: 600, fontSize: 14, marginBottom: 4 }}>
+            <label className="qb-label">
               Delivery Mode
             </label>
             <select
               value={mode}
               onChange={(e) => setMode(e.target.value)}
-              style={{ padding: "8px 12px", borderRadius: 6, border: "1px solid #d1d5db", width: "100%" }}
+              className="input"
             >
               <option value="built">Built-in Interactive Quiz (Questions auto-graded)</option>
               <option value="uploaded">Uploaded Quiz (Student submits image, faculty grades)</option>
@@ -289,7 +279,7 @@ export default function QuizBuilder() {
           </div>
 
           <div>
-            <label style={{ display: "block", fontWeight: 600, fontSize: 14, marginBottom: 4 }}>
+            <label className="qb-label">
               Instructions / Description
             </label>
             <textarea
@@ -298,14 +288,13 @@ export default function QuizBuilder() {
               placeholder="Guidelines or instructions for students..."
               value={instructions}
               onChange={(e) => setInstructions(e.target.value)}
-              style={{ width: "100%", padding: "8px 12px", boxSizing: "border-box" }}
             />
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+          <div className="qb-grid">
             {mode === "uploaded" && (
               <div>
-                <label style={{ display: "block", fontWeight: 600, fontSize: 14, marginBottom: 4 }}>
+                <label className="qb-label">
                   Total Items / Maximum Score *
                 </label>
                 <input
@@ -315,14 +304,13 @@ export default function QuizBuilder() {
                   className="input"
                   value={totalItems}
                   onChange={(e) => setTotalItems(e.target.value)}
-                  style={{ width: "100%", padding: "8px 12px", boxSizing: "border-box" }}
                   required
                 />
               </div>
             )}
 
             <div>
-              <label style={{ display: "block", fontWeight: 600, fontSize: 14, marginBottom: 4 }}>
+              <label className="qb-label">
                 Max Attempts (leave blank for unlimited)
               </label>
               <input
@@ -332,15 +320,14 @@ export default function QuizBuilder() {
                 placeholder="Unlimited"
                 value={maxAttempts}
                 onChange={(e) => setMaxAttempts(e.target.value)}
-                style={{ width: "100%", padding: "8px 12px", boxSizing: "border-box" }}
               />
             </div>
           </div>
 
           {mode === "uploaded" && (
-            <div style={{ display: "flex", flexDirection: "column", gap: 12, marginTop: 4 }}>
+            <div className="qb-stack-tight">
               <div>
-                <label style={{ display: "block", fontWeight: 600, fontSize: 14, marginBottom: 4 }}>
+                <label className="qb-label">
                   External Quiz Link (Optional)
                 </label>
                 <input
@@ -349,16 +336,15 @@ export default function QuizBuilder() {
                   placeholder="https://forms.google.com/..."
                   value={externalUrl}
                   onChange={(e) => setExternalUrl(e.target.value)}
-                  style={{ width: "100%", padding: "8px 12px", boxSizing: "border-box" }}
                 />
               </div>
 
               <div>
-                <label style={{ display: "block", fontWeight: 600, fontSize: 14, marginBottom: 4 }}>
+                <label className="qb-label">
                   Quiz Attachment (PDF, PPTX, Text or Image ≤ 25 MB)
                 </label>
                 {attachment && (
-                  <p style={{ fontSize: 13, color: "#065f46", margin: "0 0 6px" }}>
+                  <p className="qb-note-ok">
                     Current attachment: <strong>{attachment.name}</strong>
                   </p>
                 )}
@@ -370,37 +356,39 @@ export default function QuizBuilder() {
                     disabled={uploadingAttachment}
                   />
                 ) : (
-                  <p style={{ fontSize: 12, color: "#6b7280", margin: 0 }}>
+                  <p className="qb-muted-note">
                     Create quiz first to attach a file.
                   </p>
                 )}
-                {uploadingAttachment && <span style={{ fontSize: 12, color: "#4f46e5", marginLeft: 8 }}>Uploading...</span>}
+                {uploadingAttachment && (
+                  <span className="qb-uploading">Uploading...</span>
+                )}
               </div>
             </div>
           )}
 
           {mode === "built" && (
             <div>
-              <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }}>
+              <label className="qb-check">
                 <input
                   type="checkbox"
                   checked={showAnswers}
                   onChange={(e) => setShowAnswers(e.target.checked)}
                 />
-                <span style={{ fontSize: 14 }}>
+                <span className="qb-check-label">
                   Show answer review to students after submission
                 </span>
               </label>
             </div>
           )}
 
-          <div style={{ marginTop: 8 }}>
+          <div className="qb-actions">
             {!quiz ? (
               <button type="button" className="btn btn-solid" onClick={handleCreateQuiz}>
                 Create Quiz
               </button>
             ) : (
-              <div style={{ display: "flex", gap: 12 }}>
+              <>
                 <button type="button" className="btn btn-solid" onClick={handleSaveMeta}>
                   Save Settings
                 </button>
@@ -409,7 +397,7 @@ export default function QuizBuilder() {
                     Regrade All Attempts
                   </button>
                 )}
-              </div>
+              </>
             )}
           </div>
         </div>
@@ -417,39 +405,27 @@ export default function QuizBuilder() {
 
       {/* Built-in Mode: Question Builder */}
       {quiz && quiz.mode === "built" && (
-        <div style={{ padding: 20, background: "#fff", border: "1px solid #e5e7eb", borderRadius: 8, marginBottom: 24 }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-            <h2 style={{ fontSize: 18, margin: 0 }}>Questions ({questions.length} / 20)</h2>
-            <span style={{ fontSize: 13, color: questions.length >= 10 ? "#065f46" : "#b45309" }}>
+        <div className="qb-panel">
+          <div className="qb-head-row">
+            <h2>Questions ({questions.length} / 20)</h2>
+            <span className={`qb-count ${questions.length >= 10 ? "qb-count-ready" : "qb-count-pending"}`}>
               {questions.length >= 10 ? "✓ Ready to publish" : "Needs at least 10 questions to publish"}
             </span>
           </div>
 
-          <ul style={{ listStyle: "none", padding: 0, margin: "0 0 20px" }}>
+          <ul className="qb-list">
             {questions.map((q, idx) => (
-              <li
-                key={q.id}
-                style={{
-                  padding: 12,
-                  border: "1px solid #e5e7eb",
-                  borderRadius: 6,
-                  marginBottom: 8,
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
-              >
+              <li key={q.id} className="qb-question">
                 <div>
-                  <strong style={{ marginRight: 6 }}>{idx + 1}.</strong>
+                  <strong className="qb-question-prompt">{idx + 1}.</strong>
                   <span>{q.prompt}</span>
-                  <span style={{ fontSize: 12, color: "#6b7280", marginLeft: 8 }}>
+                  <span className="qb-question-meta">
                     ({q.type}, {q.points} {q.points === 1 ? "pt" : "pts"})
                   </span>
                 </div>
                 <button
                   type="button"
-                  className="btn"
-                  style={{ padding: "4px 8px", fontSize: 12, color: "#991b1b" }}
+                  className="btn qb-delete"
                   onClick={() => handleDeleteQuestion(q.id)}
                 >
                   Delete
@@ -459,57 +435,41 @@ export default function QuizBuilder() {
           </ul>
 
           {questions.length < 20 && (
-            <form
-              onSubmit={handleAddQuestion}
-              style={{ padding: 16, border: "1px dashed #cbd5e1", borderRadius: 6, background: "#f8fafc" }}
-            >
-              <h3 style={{ fontSize: 16, marginTop: 0, marginBottom: 12 }}>Add New Question</h3>
+            <form onSubmit={handleAddQuestion} className="qb-add-form">
+              <h3>Add New Question</h3>
 
-              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+              <div className="qb-add-stack">
+                <div className="qb-add-grid">
                   <div>
-                    <label style={{ display: "block", fontSize: 13, fontWeight: 600, marginBottom: 4 }}>Type</label>
+                    <label className="qb-add-label">Type</label>
                     <select
+                      className="input"
                       value={qType}
                       onChange={(e) => setQType(e.target.value)}
-                      style={{ width: "100%", padding: "6px 10px", borderRadius: 4, border: "1px solid #d1d5db" }}
                     >
                       <option value="choice">Multiple Choice</option>
                       <option value="text">Short Text</option>
                     </select>
                   </div>
                   <div>
-                    <label style={{ display: "block", fontSize: 13, fontWeight: 600, marginBottom: 4 }}>Points</label>
-                    <input
-                      type="number"
-                      min={1}
-                      value={qPoints}
-                      onChange={(e) => setQPoints(e.target.value)}
-                      style={{ width: "100%", padding: "6px 10px", borderRadius: 4, border: "1px solid #d1d5db" }}
-                    />
+                    <label className="qb-add-label">Points</label>
+                    <input type="number" min={1} className="input" value={qPoints} onChange={(e) => setQPoints(e.target.value)} />
                   </div>
                 </div>
 
                 <div>
-                  <label style={{ display: "block", fontSize: 13, fontWeight: 600, marginBottom: 4 }}>Question Prompt</label>
-                  <input
-                    type="text"
-                    value={qPrompt}
-                    onChange={(e) => setQPrompt(e.target.value)}
-                    placeholder="Enter question text..."
-                    required
-                    style={{ width: "100%", padding: "8px 12px", boxSizing: "border-box" }}
-                  />
+                  <label className="qb-add-label">Question Prompt</label>
+                  <input type="text" className="input" value={qPrompt} onChange={(e) => setQPrompt(e.target.value)} placeholder="Enter question text..." required />
                 </div>
 
                 {qType === "choice" && (
                   <div>
-                    <label style={{ display: "block", fontSize: 13, fontWeight: 600, marginBottom: 6 }}>
+                    <label className="qb-add-label">
                       Options (Select the correct option)
                     </label>
-                    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                    <div className="qb-options">
                       {qOptions.map((opt, i) => (
-                        <div key={i} style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                        <div key={i} className="qb-option-row">
                           <input
                             type="radio"
                             name="correctOpt"
@@ -518,6 +478,7 @@ export default function QuizBuilder() {
                           />
                           <input
                             type="text"
+                            className="input"
                             value={opt}
                             onChange={(e) => {
                               const n = [...qOptions];
@@ -525,18 +486,12 @@ export default function QuizBuilder() {
                               setQOptions(n);
                             }}
                             placeholder={`Option ${i + 1}`}
-                            style={{ flex: 1, padding: "6px 10px", borderRadius: 4, border: "1px solid #d1d5db" }}
                           />
                         </div>
                       ))}
                     </div>
                     {qOptions.length < 6 && (
-                      <button
-                        type="button"
-                        className="btn"
-                        style={{ marginTop: 8, fontSize: 12 }}
-                        onClick={() => setQOptions([...qOptions, ""])}
-                      >
+                      <button type="button" className="btn" onClick={() => setQOptions([...qOptions, ""])}>
                         + Add Option
                       </button>
                     )}
@@ -545,16 +500,10 @@ export default function QuizBuilder() {
 
                 {qType === "text" && (
                   <div>
-                    <label style={{ display: "block", fontSize: 13, fontWeight: 600, marginBottom: 4 }}>
+                    <label className="qb-add-label">
                       Accepted Answers (comma-separated)
                     </label>
-                    <input
-                      type="text"
-                      value={qAccepted}
-                      onChange={(e) => setQAccepted(e.target.value)}
-                      placeholder="e.g. Paris, paris, city of light"
-                      style={{ width: "100%", padding: "8px 12px", boxSizing: "border-box" }}
-                    />
+                    <input type="text" className="input" value={qAccepted} onChange={(e) => setQAccepted(e.target.value)} placeholder="e.g. Paris, paris, city of light" />
                   </div>
                 )}
 
