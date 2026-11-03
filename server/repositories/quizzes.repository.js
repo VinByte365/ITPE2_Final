@@ -205,3 +205,38 @@ export async function reorderQuestions(quizId, questionIds) {
     return true;
   });
 }
+
+export async function createQuestionsBulk(quizId, items) {
+  return withTransaction(async (client) => {
+    const results = [];
+    // determine starting position
+    const { rows: posRows } = await client.query(
+      `select coalesce(max(position), 0) as max_pos from public.questions where quiz_id = $1`,
+      [quizId],
+    );
+    let pos = posRows[0]?.max_pos || 0;
+    for (const item of items) {
+      pos += 1;
+      const { rows } = await client.query(
+        `insert into public.questions
+           (quiz_id, position, type, prompt, options, correct_option_id,
+            accepted_answers, points)
+         values ($1,$2,$3,$4,$5,$6,$7,$8)
+         returning id, quiz_id, position, type, prompt, options, correct_option_id,
+                   accepted_answers, points, created_at, updated_at`,
+        [
+          quizId,
+          pos,
+          item.type,
+          item.prompt,
+          item.options ? JSON.stringify(item.options) : null,
+          item.correctOptionId ?? null,
+          item.acceptedAnswers ?? null,
+          item.points ?? 1,
+        ],
+      );
+      results.push(mapQuestion(rows[0]));
+    }
+    return results;
+  });
+}

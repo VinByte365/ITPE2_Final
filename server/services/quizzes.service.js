@@ -1,4 +1,6 @@
 // server/services/quizzes.service.js
+import { questionSchema } from '../validators/quiz.validator.js';
+
 import { AppError } from '../lib/errors.js';
 import * as quizzesRepoModule from '../repositories/quizzes.repository.js';
 import * as topicsRepoModule from '../repositories/topics.repository.js';
@@ -183,4 +185,58 @@ export async function updateQuizStatus(facultyId, quizId, status, isAdmin) {
 
   const updated = await deps.quizzesRepo.updateQuiz(quizId, { status });
   return updated;
+}
+
+export async function importQuestions(facultyId, quizId, payload, isAdmin) {
+  const quiz = await deps.quizzesRepo.findQuizById(quizId);
+  if (!quiz) throw new AppError(404, "NOT_FOUND", "Quiz not found.");
+  await checkTopicOwner(quiz.topicId, facultyId, isAdmin);
+
+  const rows = Array.isArray(payload?.questions) ? payload.questions : [];
+  // Validate each row, collect row-level errors
+  const errors = [];
+  const validated = [];
+  rows.forEach((row, idx) => {
+    const parsed = questionSchema.safeParse(row);
+    if (!parsed.success) {
+      errors.push({ row: idx + 1, issues: parsed.error.issues.map((i) => i.message) });
+    } else {
+      validated.push(parsed.data);
+    }
+  });
+  if (errors.length > 0) {
+    throw new AppError(422, "VALIDATION_ERROR", "One or more import rows are invalid.", errors);
+  }
+
+  const existing = await deps.quizzesRepo.countQuestions(quizId);
+  if (existing + validated.length > 20) {
+    throw new AppError(422, "QUIZ_QUESTION_COUNT", "Total questions would exceed 20.");
+  }
+
+  // Prepare items with server-generated option ids
+  const items = validated.map((q) => {
+    if (q.type === "choice") {
+      const options = (q.options || []).map((o) => ({ id: genOptionId(), label: o.label }));
+      let correctOptionId = null;
+      if (typeof q.correctOptionIndex === "number" && options[q.correctOptionIndex]) {
+        correctOptionId = options[q.correctOptionIndex].id;
+      }
+      return {
+        type: q.type,
+        prompt: q.prompt,
+        options,
+        correctOptionId,
+        points: q.points,
+      };
+    }
+    return {
+      type: q.type,
+      prompt: q.prompt,
+      acceptedAnswers: q.acceptedAnswers,
+      points: q.points,
+    };
+  });
+
+  const created = await deps.quizzesRepo.createQuestionsBulk(quizId, items);
+  return created;
 }

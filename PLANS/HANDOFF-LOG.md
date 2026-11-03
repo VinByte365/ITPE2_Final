@@ -238,3 +238,10 @@ Append-only. Newest entry **at the bottom**. Never edit old entries; add a corre
 - **Decisions / assumptions:** Publish via PATCH status; invalid count ? 422 QUIZ_QUESTION_COUNT.
 - **Surprises / problems:** none.
 - **Next task:** QUIZ-07 (bulk question import endpoint).
+
+### 2026-11-01 · cline · agent
+- **Finished:** QUIZ-07 (bulk question import endpoint: atomic, row-level error details, total-over-20 rejected; createQuestionsBulk transactional).
+- **In progress:** none
+- **Decisions / assumptions:** Validation uses questionSchema per row; errors array returned in AppError.details.
+- **Surprises / problems:** none.
+- **Next task:** QUIZ-08 (student start/resume attempt).
