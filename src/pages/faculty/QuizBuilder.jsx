@@ -11,6 +11,7 @@ import {
   getQuizAttachmentUploadUrl,
 } from "../../api/quizzes";
 import { uploadToSignedUrl } from "../../api/client";
+import QuestionImport from "../../components/QuestionImport";
 
 export default function QuizBuilder() {
   const { id: topicId } = useParams();
@@ -567,6 +568,9 @@ export default function QuizBuilder() {
             </form>
           )}
         </div>
+      )}
+      {quiz && quiz.mode === "built" && (
+        <QuestionImport quizId={quiz.id} onImported={load} />
       )}
     </div>
   );

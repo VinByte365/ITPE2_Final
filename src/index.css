@@ -2590,6 +2590,197 @@ main:focus {
 }
 
 /* ==========================================================================
+   Question import
+   CSV question import used inside QuizBuilder (built-in mode only).
+   ========================================================================== */
+
+.qi-panel {
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  background: var(--paper);
+  margin-bottom: 24px;
+}
+
+.qi-panel h2 {
+  margin: 0 0 16px;
+  font-size: 18px;
+}
+
+.qi-head {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.qi-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.qi-file {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.qi-label {
+  display: block;
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.qi-file-input {
+  width: 100%;
+  min-height: 46px;
+  padding: 0.7rem 0.85rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 2px;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.qi-file-input:focus {
+  outline: none;
+  border-color: var(--accent-ink);
+}
+
+.qi-hint {
+  margin: 0;
+  font-size: 0.92rem;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.qi-mono {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+}
+
+.qi-summary {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 12px;
+  font-size: 13px;
+}
+
+.qi-count {
+  color: var(--ink);
+}
+
+.qi-count-invalid {
+  color: var(--accent-ink);
+  font-weight: 600;
+}
+
+.qi-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  margin-bottom: 12px;
+}
+
+.qi-table th,
+.qi-table td {
+  text-align: left;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+}
+
+.qi-table thead {
+  background: var(--paper-2);
+}
+
+.qi-table th {
+  font-weight: 600;
+  color: var(--ink-soft);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.72rem;
+  font-family: var(--font-mono);
+}
+
+.qi-th-num,
+.qi-td-num {
+  width: 24px;
+}
+
+.qi-td-prompt {
+  max-width: 46ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.qi-row-valid .qi-td {
+  background: var(--paper);
+}
+
+.qi-row-invalid .qi-td {
+  background: var(--accent-soft);
+}
+
+.qi-ok {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--ink);
+}
+
+.qi-issues {
+  margin: 0;
+  padding: 0 0 0 16px;
+  color: var(--ink-soft);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.qi-issues li {
+  margin-bottom: 2px;
+}
+
+.qi-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.qi-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 8px;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+.qi-badge-valid {
+  color: var(--ink);
+}
+
+.qi-badge-invalid {
+  border-color: var(--line-strong);
+  color: var(--accent-ink);
+}
+
+.qi-btn-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ==========================================================================
    Responsive
    ========================================================================== */
 

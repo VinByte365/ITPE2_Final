@@ -91,3 +91,21 @@ export const CloseIcon = (props) => (
     <path d="m6 6 12 12M18 6 6 18" />
   </svg>
 );
+
+export const CheckIcon = (props) => (
+  <svg
+    viewBox="0 0 24 24"
+    width="16"
+    height="16"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.8"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+    focusable="false"
+    {...props}
+  >
+    <path d="m5 12.5 4.5 4.5L19 6.5" />
+  </svg>
+);
