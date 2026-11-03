@@ -20,23 +20,23 @@ export default function ImageViewer({ src, alt = "Submission image" }) {
     <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
       {/* Controls */}
       <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
-        <button type="button" className="button" style={{ fontSize: 12, padding: "4px 8px" }} onClick={zoomIn}>
+        <button type="button" className="btn" style={{ fontSize: 12, padding: "4px 8px" }} onClick={zoomIn}>
           Zoom In (+)
         </button>
-        <button type="button" className="button" style={{ fontSize: 12, padding: "4px 8px" }} onClick={zoomOut}>
+        <button type="button" className="btn" style={{ fontSize: 12, padding: "4px 8px" }} onClick={zoomOut}>
           Zoom Out (-)
         </button>
-        <button type="button" className="button" style={{ fontSize: 12, padding: "4px 8px" }} onClick={rotateRight}>
+        <button type="button" className="btn" style={{ fontSize: 12, padding: "4px 8px" }} onClick={rotateRight}>
           Rotate (90°)
         </button>
-        <button type="button" className="button" style={{ fontSize: 12, padding: "4px 8px" }} onClick={resetZoom}>
+        <button type="button" className="btn" style={{ fontSize: 12, padding: "4px 8px" }} onClick={resetZoom}>
           Reset
         </button>
         <a
           href={src}
           target="_blank"
           rel="noopener noreferrer"
-          className="button"
+          className="btn"
           style={{ fontSize: 12, padding: "4px 8px", textDecoration: "none", color: "inherit" }}
         >
           Open Full Size ↗

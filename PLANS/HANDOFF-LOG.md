@@ -321,3 +321,10 @@ Append-only. Newest entry **at the bottom**. Never edit old entries; add a corre
 - **Decisions / assumptions:** DEC-31 (UI-03 split into page-scoped tasks), DEC-32 (StatusBadge stamped mono label), DEC-33 (HANDOFF-LOG append-only), DEC-34 (public wrapper hooks accepted, markdown-view/slides-embed real gaps) recorded.
 - **Surprises / problems:** Subagent dispatch blocked by the free-model usage quota, so the planned UI-04 worker run did not start.
 - **Next task:** UI-04 (pending a successful worker dispatch).
+
+### 2026-11-03 · @lms-worker · agent
+- **Finished:** UI-04 (shared layout primitives and undefined classes): added the `LMS layout primitives` section to `src/index.css` (`.page-shell`, `.subject-grid`, `.subject-card`, `.subject-code`, `.topic-blocked`, `.auth-layout`, `.auth-page`, `.auth-error`, `.auth-info`, `.field-error`, `.password-field`, `.filters`, `.input`, `.markdown-view`, `.slides-embed` + iframe) built from design tokens only; swapped all LMS/auth `button` / `button-primary` classNames to `btn` / `btn-solid`; removed the static inline `style` on SlidesEmbed iframes (now `.slides-embed iframe`); replaced raw hex in `TopicCard.jsx` inline styles and `.frame-body iframe` background with tokens. Verified: `npm.cmd run lint` 0 errors / 0 warnings, `npm.cmd run build` exit 0, `npm.cmd test` 162/162 pass; class scan shows no undefined LMS/auth class tokens remain (public-site wrappers accepted per DEC-34).
+- **In progress:** none
+- **Decisions / assumptions:** No product behaviour changed. `.page-shell` mirrors the `.shell` gutter and adds editorial vertical padding; auth screens center in a narrow column via `.auth-page` (max 34rem); markdown typography lives in `.markdown-view` (max-width 68ch); slides embed keeps a 480px iframe height via CSS.
+- **Surprises / problems:** None during execution.
+- **Next task:** UI-05 (responsive and keyboard sweep)

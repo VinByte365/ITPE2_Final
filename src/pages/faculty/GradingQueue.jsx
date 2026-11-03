@@ -197,7 +197,7 @@ export default function GradingQueue() {
         <div style={{ display: "flex", gap: 6 }}>
           <button
             type="button"
-            className={`button ${statusFilter === "pending_review" ? "button-primary" : ""}`}
+            className={`btn ${statusFilter === "pending_review" ? "btn-solid" : ""}`}
             style={{ fontSize: 13, padding: "6px 12px" }}
             onClick={() => setStatusFilter("pending_review")}
           >
@@ -205,7 +205,7 @@ export default function GradingQueue() {
           </button>
           <button
             type="button"
-            className={`button ${statusFilter === "graded" ? "button-primary" : ""}`}
+            className={`btn ${statusFilter === "graded" ? "btn-solid" : ""}`}
             style={{ fontSize: 13, padding: "6px 12px" }}
             onClick={() => setStatusFilter("graded")}
           >
@@ -213,7 +213,7 @@ export default function GradingQueue() {
           </button>
           <button
             type="button"
-            className={`button ${statusFilter === "all" ? "button-primary" : ""}`}
+            className={`btn ${statusFilter === "all" ? "btn-solid" : ""}`}
             style={{ fontSize: 13, padding: "6px 12px" }}
             onClick={() => setStatusFilter("all")}
           >
@@ -236,7 +236,7 @@ export default function GradingQueue() {
             onChange={(e) => setSearchTerm(e.target.value)}
             style={{ flex: 1, padding: "6px 10px", fontSize: 13 }}
           />
-          <button type="submit" className="button" style={{ fontSize: 13, padding: "6px 12px" }}>
+          <button type="submit" className="btn" style={{ fontSize: 13, padding: "6px 12px" }}>
             Search
           </button>
         </form>
@@ -368,7 +368,7 @@ export default function GradingQueue() {
               <div style={{ display: "flex", gap: 12, marginTop: 16 }}>
                 <button
                   type="button"
-                  className="button button-primary"
+                  className="btn btn-solid"
                   onClick={() => handleSaveGrade(false)}
                   disabled={grading}
                 >
@@ -376,7 +376,7 @@ export default function GradingQueue() {
                 </button>
                 <button
                   type="button"
-                  className="button"
+                  className="btn"
                   onClick={() => handleSaveGrade(true)}
                   disabled={grading}
                 >

@@ -232,7 +232,7 @@ export default function UploadSubmission({ quiz, onStatusChange }) {
             </span>
             <button
               type="button"
-              className="button"
+              className="btn"
               style={{ fontSize: 12, padding: "4px 8px" }}
               onClick={handleDeletePending}
               disabled={submitting}
@@ -313,7 +313,7 @@ export default function UploadSubmission({ quiz, onStatusChange }) {
             <div>
               <button
                 type="button"
-                className="button button-primary"
+                className="btn btn-solid"
                 onClick={handleUploadSubmit}
                 disabled={submitting}
               >

@@ -96,7 +96,7 @@ export default function QuestionImport({ quizId, onImported }) {
               ))}
             </tbody>
           </table>
-          <button className="button" onClick={handleConfirm} disabled={importing || errors.length > 0}>
+          <button className="btn" onClick={handleConfirm} disabled={importing || errors.length > 0}>
             {importing ? "Importing..." : "Confirm import"}
           </button>
         </>

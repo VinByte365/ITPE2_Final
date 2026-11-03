@@ -29,7 +29,7 @@ export default function StudentDashboard() {
     <div className="page-shell">
       <h1>My Subjects</h1>
       {error && <div className="auth-error" role="alert">{error}</div>}
-      <p><Link to="/student/join" className="button">Join a subject</Link></p>
+      <p><Link to="/student/join" className="btn">Join a subject</Link></p>
       {subjects.length === 0 ? (
         <p>You haven't joined any subjects yet.</p>
       ) : (

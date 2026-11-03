@@ -146,11 +146,11 @@ export default function QuizRun() {
         </p>
         <div style={{ display: "flex", gap: 12, justifyContent: "center" }}>
           {blockedState.blockedByTopicId && (
-            <Link to={`/student/topics/${blockedState.blockedByTopicId}`} className="button button-primary">
+            <Link to={`/student/topics/${blockedState.blockedByTopicId}`} className="btn btn-solid">
               Go to prerequisite topic
             </Link>
           )}
-          <button type="button" className="button" onClick={() => navigate(-1)}>
+          <button type="button" className="btn" onClick={() => navigate(-1)}>
             Go Back
           </button>
         </div>
@@ -163,7 +163,7 @@ export default function QuizRun() {
       <div className="page-shell">
         <div className="auth-error" role="alert">{error}</div>
         <div style={{ marginTop: 16 }}>
-          <button type="button" className="button" onClick={() => navigate(-1)}>
+          <button type="button" className="btn" onClick={() => navigate(-1)}>
             Go Back
           </button>
         </div>
@@ -203,7 +203,7 @@ export default function QuizRun() {
             {result.passed ? (
               <Link
                 to={topic?.subjectId ? `/student/subjects/${topic.subjectId}` : "/student"}
-                className="button button-primary"
+                className="btn btn-solid"
                 style={{ textDecoration: "none" }}
               >
                 Continue to next topic →
@@ -212,14 +212,14 @@ export default function QuizRun() {
               <>
                 <Link
                   to={topic ? `/student/topics/${topic.id}` : -1}
-                  className="button"
+                  className="btn"
                   style={{ textDecoration: "none" }}
                 >
                   Repeat this topic
                 </Link>
                 <button
                   type="button"
-                  className="button button-primary"
+                  className="btn btn-solid"
                   onClick={load}
                 >
                   Retake Quiz
@@ -369,7 +369,7 @@ export default function QuizRun() {
       <div style={{ display: "flex", justifyContent: "flex-end", gap: 12, marginTop: 24 }}>
         <button
           type="button"
-          className="button button-primary"
+          className="btn btn-solid"
           onClick={handleSubmit}
           disabled={submitting}
         >

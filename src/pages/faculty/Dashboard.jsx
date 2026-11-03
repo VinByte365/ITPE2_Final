@@ -30,7 +30,7 @@ export default function FacultyDashboard() {
       <h1>My Subjects</h1>
       {error && <div className="auth-error" role="alert">{error}</div>}
       <p>
-        <Link to="/faculty/subjects/new" className="button">Create subject</Link>
+        <Link to="/faculty/subjects/new" className="btn">Create subject</Link>
       </p>
       {subjects.length === 0 ? (
         <p>No subjects yet. Create your first subject to get started.</p>

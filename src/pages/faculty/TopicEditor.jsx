@@ -121,7 +121,7 @@ export default function TopicEditor() {
         <div><label>Description<textarea value={description} onChange={(e) => setDescription(e.target.value)} /></label></div>
         <div><label>Available from<input value={availableFrom} onChange={(e) => setAvailableFrom(e.target.value)} /></label></div>
         <div><label>Status<select value={status} onChange={(e) => setStatus(e.target.value)}><option value="draft">draft</option><option value="published">published</option></select></label></div>
-        <button type="submit" className="button" disabled={saving}>{saving ? "Saving..." : "Save details"}</button>
+        <button type="submit" className="btn" disabled={saving}>{saving ? "Saving..." : "Save details"}</button>
       </form>
 
       <h2>Content blocks</h2>
@@ -190,7 +190,7 @@ export default function TopicEditor() {
         )}
 
         {!(newType === "presentation") && (
-          <button type="button" className="button" style={{ marginTop: 8 }} onClick={handleAddBlock}>Add block</button>
+          <button type="button" className="btn" style={{ marginTop: 8 }} onClick={handleAddBlock}>Add block</button>
         )}
       </div>
     </div>

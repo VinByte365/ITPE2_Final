@@ -97,8 +97,8 @@ export default function FacultyTopics() {
       <h1>Topics</h1>
       {error && <div className="auth-error" role="alert">{error}</div>}
       <div style={{ marginBottom: 12 }}>
-        <button className="button" onClick={() => setShowAdd((v) => !v)}>Add topic</button>{" "}
-        <button className="button" onClick={() => setShowBulk((v) => !v)}>Bulk add</button>
+        <button className="btn" onClick={() => setShowAdd((v) => !v)}>Add topic</button>{" "}
+        <button className="btn" onClick={() => setShowBulk((v) => !v)}>Bulk add</button>
       </div>
 
       {showAdd && (
@@ -106,7 +106,7 @@ export default function FacultyTopics() {
           <div><label>Title<input value={addForm.title} onChange={(e) => setAddForm({ ...addForm, title: e.target.value })} required /></label></div>
           <div><label>Available from (YYYY-MM-DD)<input value={addForm.availableFrom} onChange={(e) => setAddForm({ ...addForm, availableFrom: e.target.value })} required /></label></div>
           <div><label>Status<select value={addForm.status} onChange={(e) => setAddForm({ ...addForm, status: e.target.value })}><option value="draft">draft</option><option value="published">published</option></select></label></div>
-          <button type="submit" className="button">Create</button>
+          <button type="submit" className="btn">Create</button>
         </form>
       )}
 
@@ -118,7 +118,7 @@ export default function FacultyTopics() {
           <div><label>Meeting days{WEEKDAYS.map((d, i) => (<label key={d} style={{ marginRight: 8 }}><input type="checkbox" checked={bulk.meetingDays.includes(i)} onChange={(e) => { const next = e.target.checked ? [...bulk.meetingDays, i] : bulk.meetingDays.filter((x) => x !== i); setBulk({ ...bulk, meetingDays: next }); }} />{d}</label>))}</label></div>
           <button type="button" onClick={handleBulkPreview}>Preview dates</button>
           {bulkPreview.length > 0 && (<ul style={{ maxHeight: 120, overflow: "auto" }}>{bulkPreview.map((d) => <li key={d}>{d}</li>)}</ul>)}
-          <div style={{ marginTop: 8 }}><button type="button" className="button" onClick={handleBulkSave} disabled={bulkPreview.length === 0}>Save bulk</button></div>
+          <div style={{ marginTop: 8 }}><button type="button" className="btn" onClick={handleBulkSave} disabled={bulkPreview.length === 0}>Save bulk</button></div>
         </div>
       )}
 

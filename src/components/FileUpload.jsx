@@ -43,7 +43,7 @@ export default function FileUpload({ accept, maxSizeMb, onUploaded, onError, get
       />
       <button
         type="button"
-        className="button"
+        className="btn"
         disabled={uploading}
         onClick={() => inputRef.current?.click()}
       >

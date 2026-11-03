@@ -246,7 +246,7 @@ export default function QuizBuilder() {
             >
               {quiz.status.toUpperCase()}
             </span>
-            <button type="button" className="button button-primary" onClick={handlePublish}>
+            <button type="button" className="btn btn-solid" onClick={handlePublish}>
               {quiz.status === "published" ? "Unpublish to Draft" : "Publish Quiz"}
             </button>
           </div>
@@ -396,16 +396,16 @@ export default function QuizBuilder() {
 
           <div style={{ marginTop: 8 }}>
             {!quiz ? (
-              <button type="button" className="button button-primary" onClick={handleCreateQuiz}>
+              <button type="button" className="btn btn-solid" onClick={handleCreateQuiz}>
                 Create Quiz
               </button>
             ) : (
               <div style={{ display: "flex", gap: 12 }}>
-                <button type="button" className="button button-primary" onClick={handleSaveMeta}>
+                <button type="button" className="btn btn-solid" onClick={handleSaveMeta}>
                   Save Settings
                 </button>
                 {quiz.mode === "built" && (
-                  <button type="button" className="button" onClick={handleRegrade}>
+                  <button type="button" className="btn" onClick={handleRegrade}>
                     Regrade All Attempts
                   </button>
                 )}
@@ -448,7 +448,7 @@ export default function QuizBuilder() {
                 </div>
                 <button
                   type="button"
-                  className="button"
+                  className="btn"
                   style={{ padding: "4px 8px", fontSize: 12, color: "#991b1b" }}
                   onClick={() => handleDeleteQuestion(q.id)}
                 >
@@ -533,7 +533,7 @@ export default function QuizBuilder() {
                     {qOptions.length < 6 && (
                       <button
                         type="button"
-                        className="button"
+                        className="btn"
                         style={{ marginTop: 8, fontSize: 12 }}
                         onClick={() => setQOptions([...qOptions, ""])}
                       >
@@ -559,7 +559,7 @@ export default function QuizBuilder() {
                 )}
 
                 <div>
-                  <button type="submit" className="button button-primary">
+                  <button type="submit" className="btn btn-solid">
                     Add Question
                   </button>
                 </div>

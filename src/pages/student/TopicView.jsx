@@ -98,14 +98,14 @@ export default function TopicView() {
           {blockedState.blockedByTopicId && (
             <Link
               to={`/student/topics/${blockedState.blockedByTopicId}`}
-              className="button button-primary"
+              className="btn btn-solid"
             >
               Go to prerequisite topic
             </Link>
           )}
           <button
             type="button"
-            className="button"
+            className="btn"
             onClick={() => navigate(-1)}
           >
             Go Back
@@ -120,7 +120,7 @@ export default function TopicView() {
       <div className="page-shell">
         <div className="auth-error" role="alert">{error}</div>
         <div style={{ marginTop: 16 }}>
-          <button type="button" className="button" onClick={() => navigate(-1)}>
+          <button type="button" className="btn" onClick={() => navigate(-1)}>
             Go Back
           </button>
         </div>
@@ -219,7 +219,7 @@ export default function TopicView() {
               <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
                 <Link
                   to={`/student/topics/${topic.id}/quiz`}
-                  className="button button-primary"
+                  className="btn btn-solid"
                   style={{ textDecoration: "none" }}
                 >
                   {topic.state === "completed"
@@ -244,7 +244,7 @@ export default function TopicView() {
               <div>
                 <Link
                   to={`/student/topics/${topic.id}/quiz`}
-                  className="button button-primary"
+                  className="btn btn-solid"
                   style={{ textDecoration: "none" }}
                 >
                   Submit Quiz Image
@@ -265,7 +265,7 @@ export default function TopicView() {
               </p>
             ) : (
               <button
-                className="button button-primary"
+                className="btn btn-solid"
                 onClick={handleComplete}
                 disabled={completing}
               >
