@@ -15,7 +15,7 @@ Depends on: 06. Specs: `../specs/05-reports.md`, `../specs/03-business-rules.md`
 
 ## Frontend
 
-- [ ] RPT-05 Shared pure helpers
+- [x] RPT-05 Shared pure helpers (@kilo, 2026-11-04)
   - Files: `src/lib/reportTable.js`, `reportTable.test.js` (use `node --test`) · Done when: `toTable(report, options)` and the live pass/fail recompute function exist and are tested; same logic is used by preview and every exporter
 - [ ] RPT-06 Report preview page
   - Files: `src/pages/faculty/Report.jsx`, `src/api/reports.js` · Done when: header block, sort controls (surname/score, asc/desc), passing % control with live recompute, column picker, failed shown with color plus symbol, footer totals, loading/empty/error states
