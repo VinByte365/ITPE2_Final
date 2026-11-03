@@ -40,7 +40,7 @@ Until phase 06, "access to quiz" uses the schedule-only check from phase 03; GAT
   - Files: `src/components/QuizRunner.jsx`, `src/pages/student/QuizRun.jsx` · Done when: all questions on one scrolling page (Google Forms style); radio for choice, text input for text; unanswered count shown before submit; double submit prevented; progress kept if the page reloads (resumes attempt)
 - [x] QUIZ-16 Result screen and attempt history (@cline, 2026-11-01)
   - Files: `src/pages/student/QuizRun.jsx`, `TopicView.jsx` · Done when: shows score, percent, passing mark, Passed/Failed badge (icon + text); failed shows "Repeat topic" and retake; history list lists attempts with best marked
-- [ ] QUIZ-17 Docs
+- [x] QUIZ-17 Docs (@lms-researcher, 2026-11-03)
   - Files: `../specs/02-api.md`, `docs/API.md` · Done when: match the implementation
 
 ## Phase verification

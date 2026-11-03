@@ -25,7 +25,7 @@ export default function TopicCard({ topic, isStudent }) {
   const card = (
     <div
       className={`subject-card ${isBlocked ? 'topic-blocked' : ''}`}
-      style={isBlocked ? { opacity: 0.6, cursor: 'not-allowed', backgroundColor: '#f9fafb' } : {}}
+      style={isBlocked ? { cursor: 'not-allowed' } : {}}
       aria-disabled={isBlocked ? 'true' : undefined}
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '8px' }}>
@@ -36,13 +36,13 @@ export default function TopicCard({ topic, isStudent }) {
       </div>
 
       {topic.description && (
-        <p style={{ margin: '4px 0 8px', fontSize: 13, color: '#4b5563' }}>
+        <p style={{ margin: '4px 0 8px', fontSize: 13, color: 'var(--muted)' }}>
           {topic.description}
         </p>
       )}
 
       {helperText && (
-        <p style={{ margin: '4px 0 0', fontSize: 12, color: isLocked || isScheduled ? '#6b7280' : '#111827', fontWeight: 500 }}>
+        <p style={{ margin: '4px 0 0', fontSize: 12, color: isLocked || isScheduled ? 'var(--muted)' : 'var(--ink)', fontWeight: 500 }}>
           {helperText}
         </p>
       )}

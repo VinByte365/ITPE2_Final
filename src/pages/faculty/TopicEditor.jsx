@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import MarkdownView from "../../components/MarkdownView";
 import SlidesEmbed from "../../components/SlidesEmbed";
@@ -34,16 +34,16 @@ export default function TopicEditor() {
   const [newVisible, setNewVisible] = useState(true);
   const [preview, setPreview] = useState(false);
 
-  const load = async () => {
+  const load = useCallback(async () => {
     setLoading(true); setError("");
     try {
       const content = await listTopicContent(topicId);
       setBlocks(Array.isArray(content) ? content : []);
     } catch (err) { setError(err?.message || "Failed to load content."); }
     finally { setLoading(false); }
-  };
+  }, [topicId]);
 
-  useEffect(() => { load(); }, [topicId]);
+  useEffect(() => { load(); }, [load]);
 
   const handleSaveDetails = async (e) => {
     e.preventDefault();
@@ -121,7 +121,7 @@ export default function TopicEditor() {
         <div><label>Description<textarea value={description} onChange={(e) => setDescription(e.target.value)} /></label></div>
         <div><label>Available from<input value={availableFrom} onChange={(e) => setAvailableFrom(e.target.value)} /></label></div>
         <div><label>Status<select value={status} onChange={(e) => setStatus(e.target.value)}><option value="draft">draft</option><option value="published">published</option></select></label></div>
-        <button type="submit" className="button" disabled={saving}>{saving ? "Saving..." : "Save details"}</button>
+        <button type="submit" className="btn" disabled={saving}>{saving ? "Saving..." : "Save details"}</button>
       </form>
 
       <h2>Content blocks</h2>
@@ -190,7 +190,7 @@ export default function TopicEditor() {
         )}
 
         {!(newType === "presentation") && (
-          <button type="button" className="button" style={{ marginTop: 8 }} onClick={handleAddBlock}>Add block</button>
+          <button type="button" className="btn" style={{ marginTop: 8 }} onClick={handleAddBlock}>Add block</button>
         )}
       </div>
     </div>

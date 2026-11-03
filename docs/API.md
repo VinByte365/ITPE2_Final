@@ -328,6 +328,119 @@ Business protections:
 - An admin cannot demote themselves.
 - The last remaining admin cannot be demoted.
 
+## Quizzes
+
+Quiz content hangs off a topic (`PUT /faculty/topics/:id/quiz`) and is published as a
+quiz (`PATCH /faculty/quizzes/:id`). Faculty endpoints that read or write questions
+return answer keys; student endpoints never do.
+
+### Faculty quiz management
+
+```http
+GET    /faculty/topics/:id/quiz
+PUT    /faculty/topics/:id/quiz
+PATCH  /faculty/quizzes/:id
+GET    /faculty/quizzes/:id/questions
+POST   /faculty/quizzes/:id/questions
+PATCH  /faculty/questions/:id
+DELETE /faculty/questions/:id
+PUT    /faculty/quizzes/:id/questions/order
+POST   /faculty/quizzes/:id/questions/import
+POST   /faculty/quizzes/:id/regrade
+POST   /faculty/quizzes/:id/attachment/upload-url
+```
+
+`GET /faculty/topics/:id/quiz` responds `{ "data": quiz }` with the quiz and its
+questions (including answer keys), or `{ "data": null }` when the topic has no quiz.
+
+`PUT /faculty/topics/:id/quiz` creates or updates quiz meta: `title`, `mode`,
+`instructions`, `maxAttempts`, `showAnswers`, `totalItems`, `externalUrl`,
+`attachmentPath`. The `mode` cannot change once attempts exist.
+
+`PATCH /faculty/quizzes/:id` accepts `{ "status": "draft" | "published" }`.
+Publishing a `built` quiz requires 10 to 20 questions (`422 QUIZ_QUESTION_COUNT`);
+publishing an `uploaded` quiz requires `totalItems`.
+
+`POST /faculty/quizzes/:id/questions` accepts `{ type, prompt, options?, correctOptionIndex?, acceptedAnswers?, points? }`
+(`type`: `choice` or `text`). The API allows at most 20 questions (`422` beyond).
+Option ids are generated server-side. Responds `201` with `{ "data": question }`.
+
+`PATCH /faculty/questions/:id` updates a question; `DELETE /faculty/questions/:id`
+deletes one, `422` when a published built quiz would fall below 10 questions.
+
+`PUT /faculty/quizzes/:id/questions/order` accepts `{ "questionIds": [uuid] }` and
+returns the reordered question list.
+
+`POST /faculty/quizzes/:id/questions/import` accepts `{ "questions": [...] }` and is
+atomic: the whole payload is rejected with row-level `details` if any row is invalid or
+the total exceeds 20.
+
+`POST /faculty/quizzes/:id/regrade` recomputes `score` and `total` of all `auto` attempts
+of the quiz from stored answers and returns `{ "data": { regraded, changed } }`.
+
+`POST /faculty/quizzes/:id/attachment/upload-url` accepts `{ fileName, mime, size, kind? }`
+and returns `{ "data": { uploadUrl, token, path } }` for uploaded-mode quiz attachments.
+
+### Quiz taking (student, built-in)
+
+```http
+POST /student/quizzes/:id/attempts
+POST /student/attempts/:id/submit
+GET  /student/quizzes/:id/attempts
+```
+
+`POST /student/quizzes/:id/attempts` starts or resumes an `in_progress` attempt, with
+gating enforced. Errors: `403 QUIZ_NOT_PUBLISHED`, `409 MAX_ATTEMPTS_REACHED`. Responds
+`200` with `{ "data": { attempt, questions } }`; questions carry no answer keys.
+
+`POST /student/attempts/:id/submit` accepts
+`{ "answers": [{ "questionId", "optionId?", "text?" }] }`, grades on the server, and
+responds `{ "data": { score, total, percent, passed, passingPercent, review? } }`.
+A second submit returns `409 ATTEMPT_ALREADY_SUBMITTED`. `review` is only present when
+`showAnswers` is true.
+
+`GET /student/quizzes/:id/attempts` returns the student's own attempt history plus the
+`best` attempt (highest percent, latest on ties) and the `passed` flag.
+
+### Quiz taking (student, uploaded)
+
+```http
+POST /student/quizzes/:id/uploads/upload-url
+POST /student/quizzes/:id/submissions
+DELETE /student/attempts/:id
+GET  /student/attempts/:id/image-url
+```
+
+`POST /student/quizzes/:id/uploads/upload-url` accepts `{ fileName, mime, size }` and
+returns `{ "data": { uploadUrl, token, path } }`; accepts JPG/PNG/WebP up to 5 MB.
+
+`POST /student/quizzes/:id/submissions` accepts `{ "path }` and verifies the object,
+creating a `pending_review` attempt; conflicts: `409 PENDING_REVIEW_EXISTS`,
+`409 MAX_ATTEMPTS_REACHED`.
+
+`DELETE /student/attempts/:id` removes the student's own `pending_review` attempt.
+
+`GET /student/attempts/:id/image-url` returns a short-lived signed URL for the student's
+own `pending_review` attempt.
+
+### Manual grading (faculty)
+
+```http
+GET  /faculty/subjects/:id/submissions?status=&q=
+GET  /faculty/attempts/:id
+PATCH /faculty/attempts/:id/grade
+```
+
+`GET /faculty/subjects/:id/submissions` lists the faculty queue with optional `status`
+and `q` filters.
+
+`GET /faculty/attempts/:id` returns attempt details plus a signed image URL and the
+quiz's `totalItems`.
+
+`PATCH /faculty/attempts/:id/grade` accepts `{ "score", "feedback?" }` with
+`0 ≤ score ≤ totalItems`; sets `graded`, `gradedBy`, and `gradedAt`; may be repeated to
+correct a grade.
+
 ## Common status codes
 
 | Status | Meaning |

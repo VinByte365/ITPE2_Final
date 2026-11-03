@@ -24,7 +24,6 @@ export default function SlidesEmbed({ url, fileUrl, fileName, title }) {
           src={toSlidesEmbedUrl(url)}
           title={title || 'Slides'}
           allowFullScreen
-          style={{ width: '100%', height: 480, border: 0 }}
         />
         <p>
           <a href={url} target="_blank" rel="noopener noreferrer">
@@ -41,7 +40,6 @@ export default function SlidesEmbed({ url, fileUrl, fileName, title }) {
         <iframe
           src={fileUrl}
           title={title || 'PDF'}
-          style={{ width: '100%', height: 480, border: 0 }}
         />
         <p>
           <a href={fileUrl} target="_blank" rel="noopener noreferrer">

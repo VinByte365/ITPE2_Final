@@ -263,7 +263,11 @@ export async function createStudentSubmission(studentId, quizId, { path }) {
   // Path prefix verification
   const expectedPrefix = `subjects/${subject.id}/quizzes/${quizId}/${studentId}/`;
   if (!path || !path.startsWith(expectedPrefix)) {
-    try { await deps.storage.removeObject('quiz-uploads', path); } catch {}
+    try {
+      await deps.storage.removeObject('quiz-uploads', path);
+    } catch {
+      // Ignore storage errors: the upload is rejected either way.
+    }
     throw new AppError(422, 'UPLOAD_INVALID', 'Upload path prefix is invalid.');
   }
 
@@ -280,7 +284,11 @@ export async function createStudentSubmission(studentId, quizId, { path }) {
       if (buffer) {
         const magic = checkImageMagicBytes(buffer);
         if (!magic) {
-          try { await deps.storage.removeObject('quiz-uploads', path); } catch {}
+          try {
+            await deps.storage.removeObject('quiz-uploads', path);
+          } catch {
+            // Ignore storage errors: the upload is rejected either way.
+          }
           throw new AppError(422, 'UPLOAD_INVALID', 'Uploaded file is not a valid image (JPEG/PNG/WebP).');
         }
       }
@@ -316,7 +324,9 @@ export async function deletePendingSubmission(studentId, attemptId) {
   if (attempt.imagePath) {
     try {
       await deps.storage.removeObject('quiz-uploads', attempt.imagePath);
-    } catch {}
+    } catch {
+      // Ignore storage errors: the attempt record is removed regardless.
+    }
   }
 
   await deps.attemptsRepo.deleteAttempt(attemptId);
