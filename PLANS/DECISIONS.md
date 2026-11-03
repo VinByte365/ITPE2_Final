@@ -38,6 +38,10 @@ Status values: **confirmed** (the product owner said so) · **assumed** (reasona
 | DEC-28 | Subjects are archived, never hard-deleted. A topic that has attempts cannot be deleted (unpublish it instead). | assumed | |
 | DEC-29 | Notes and summaries are visible to students by default; a content block can be marked faculty-only (`visible_to_students = false`). | assumed | |
 | DEC-30 | One faculty owner per subject (no co-teachers) in v1. | assumed | |
+| DEC-31 | Phase 09 UI-03 is replaced by page-scoped tasks UI-06…UI-10. It covered six pages and 197 static `style={{}}` blocks, which is not reviewable as one diff. UI-04 (shared layout primitives) runs first so the page tasks can reuse real classes. | decided | |
+| DEC-32 | `StatusBadge` renders a stamped mono label (2 px radius) rather than a pill, and carries state with icon + word + one token (`--accent-ink` attention, `--ink` neutral/done, `--muted` inactive). The palette has no semantic hues, so no green/amber/red is introduced. | decided | |
+| DEC-33 | `PLANS/HANDOFF-LOG.md` is append-only at the byte level. It contains legacy non-UTF-8 bytes (raw `0xB7`), so a whole-file rewrite corrupts every historical entry. Agents must append; a diff with deletions on that file is a defect. | decided | |
+| DEC-34 | Public-site wrapper hooks with no rules (`home`, `about-page`, `topics-page`, `hero-copy`, `about-hero-copy`, `presenter-list`, `gallery-main`, `course-map`, `nav-user`, `nav-logout`) are accepted as semantic landmarks, not drift — their children carry the styling. Only `markdown-view` (a content block with no typography at all) and `slides-embed` (inline iframe sizing) are real gaps and are fixed in UI-04. | decided | |
 
 ## Open questions (answer when known; defaults are in the table above)
 
