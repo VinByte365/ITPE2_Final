@@ -1,0 +1,26 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+
+  // The orchestrator plans and delegates. It never edits files.
+  "default_agent": "orchestrator",
+
+  // Loaded into every session, including subagents.
+  "instructions": ["PLANS/AGENT.md", "PLANS/README.md"],
+
+  "agents": {
+    "orchestrator": {
+      "description": "Plans and delegates LMS work. Never edits files.",
+      "mode": "primary",
+      "model": "opencode/big-pickle",
+      "permissions": [
+        { "action": "edit", "resource": "*", "effect": "deny" },
+        { "action": "shell", "resource": "*", "effect": "ask" },
+        { "action": "subagent", "resource": "*", "effect": "deny" },
+        { "action": "subagent", "resource": "lms-worker", "effect": "allow" },
+        { "action": "subagent", "resource": "lms-auditor", "effect": "allow" },
+        { "action": "subagent", "resource": "lms-researcher", "effect": "allow" },
+        { "action": "subagent", "resource": "lms-verifier", "effect": "allow" }
+      ]
+    }
+  }
+}

@@ -17,7 +17,7 @@ You are continuing a human-led project. Several people and agents work on it ove
    (when they exist). For UI work, also run the app and use it.
 7. Tick the box, replace 🚧 with ` (@name, YYYY-MM-DD)`, then commit as `TASK-ID: summary`.
 8. Repeat from step 2. Stop after about 5 tasks or when blocked.
-9. Before ending, append an entry to `HANDOFF-LOG.md` and run `node docs/lms/progress.mjs`.
+9. Before ending, append an entry to `HANDOFF-LOG.md` and run `node PLANS/progress.mjs`.
 
 ## Project conventions (verify in HK-01; the repo wins over this file if they disagree, then update this file)
 

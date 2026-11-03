@@ -37,7 +37,7 @@ fewer merge conflicts and a cleaner git history.
 4. Blocked? Leave it unticked, append ` — ⛔ reason`, and write the details in `HANDOFF-LOG.md`.
 5. Tasks marked `(stretch)` are optional and not counted in the totals.
 6. Run `npm run docs:progress` (task HK-06 adds the script) to refresh `checklists/PROGRESS.md`.
-   Until then run `node docs/lms/progress.mjs`.
+   Until then run `node PLANS/progress.mjs`.
 7. Never delete or renumber a task. If a task is wrong, strike it through (`~~text~~`), explain in
    `DECISIONS.md`, and add a new task with the next free number.
 

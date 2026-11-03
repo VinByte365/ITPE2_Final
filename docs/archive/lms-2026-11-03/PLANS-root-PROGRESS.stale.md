@@ -1,6 +1,6 @@
 # Progress
 
-Updated by `node docs/lms/progress.mjs` (or `npm run docs:progress`). Do not edit the table by hand.
+Updated by `node PLANS/progress.mjs` (or `npm run docs:progress`). Do not edit the table by hand.
 Stretch tasks are listed separately and do not count toward the total.
 
 <!-- progress:start -->

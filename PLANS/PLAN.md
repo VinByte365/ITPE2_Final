@@ -63,9 +63,13 @@ New code goes next to the old: new tables use UUID keys and get numbered migrati
 | 06 Gating | Failed or pending quizzes block the next topic; all states enforced on the server and shown in the UI |
 | 07 Reports | Preview, sort, print, PDF, spreadsheet; per-student summary |
 | 08 Testing and deploy | Seed data, security and accessibility sweeps, deployment, docs, acceptance |
+| 09 UI alignment | LMS pages match the public site's design system; lint clean |
 
 Phase 06 is specified from the start in `specs/03-business-rules.md`. Phases 03 and 04 use simple
 stand-ins (schedule-only access) that GATE replaces; each task says where.
+
+Phase 09 is visual alignment and lint health. It depends on 04, 05 and 07 but does not block 08;
+it exists because those phases predate the documented design system.
 
 ## 5. Key risks
 

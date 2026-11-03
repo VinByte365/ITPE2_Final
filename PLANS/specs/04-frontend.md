@@ -90,3 +90,46 @@ src/
 - Markdown from users is rendered through `MarkdownView` only. Never use `dangerouslySetInnerHTML` with user content.
 - Image upload (`UPL-10`): `accept="image/jpeg,image/png,image/webp"` (this also makes iOS convert HEIC to JPEG), downscale to
   at most 2000 px on the long edge with canvas, re-encode as JPEG quality 0.85, show a preview before sending.
+
+## Design system
+
+The look was produced with the `redesign-existing-projects` skill; that skill is the design
+authority. This section maps it to this repo. **`src/index.css` wins over both** if they disagree.
+
+### Tokens (`src/index.css` `:root`)
+
+| Family | Names |
+| --- | --- |
+| Paper | `--paper`, `--paper-2`, `--paper-3` |
+| Ink | `--ink`, `--ink-2`, `--ink-soft` |
+| Muted | `--muted`, `--muted-2` |
+| Line | `--line`, `--line-strong` |
+| Accent | `--accent`, `--accent-ink`, `--accent-soft`, `--accent-on-ink` |
+| On ink | `--on-ink`, `--on-ink-muted`, `--on-ink-line` |
+| Type | `--font-display`, `--font-body`, `--font-mono` |
+| Layout | `--shell`, `--header-h`, `--ease`, `--z-header`, `--z-menu`, `--z-grain` |
+
+### Existing class families
+
+`.btn`, `.btn-solid`, `.btn-line`, `.btn-paper`, `.btn-ghost-light`, `.eyebrow`, `.frame`,
+`.filter-tab`, `.reveal`, `.index-*`, `.hero-*`, `.footer-*`.
+
+Shared components: `Icons`, `Reveal`, `SiteHeader`, `SiteFooter`, `StatusBadge`, `TopicCard`,
+`MarkdownView`, `SlidesEmbed`, `ImageViewer`, `FileUpload`, `UploadSubmission`.
+
+### Rules
+
+1. Tokens only. No raw hex values in JSX or CSS.
+2. One stylesheet: `src/index.css`. No extra CSS files, Tailwind, CSS-in-JS, or styling libraries.
+3. Every `className` must resolve to a selector in `src/index.css`. Add the rule when you add the class.
+4. Icons come from `src/components/Icons.jsx`. Extend it; never use emoji as an icon.
+5. No green/red traffic-light colours. The palette has no semantic hues: express state with
+   icon + text label + `--accent` (attention), `--ink` (neutral), or `--muted` (inactive).
+6. Inline `style={{}}` only for genuinely dynamic values (for example a progress width).
+
+### Known drift (do not copy)
+
+The LMS pages added in phases 01–07 predate this section. They use classes that are not defined
+(`page-shell`, `subject-card`, `status-badge`, `button`, `auth-page`, `auth-error`), hardcoded
+Tailwind-style hex values in `StatusBadge.jsx`, and static inline styles. Align them with this
+section instead of imitating them.

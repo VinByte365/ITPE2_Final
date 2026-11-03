@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Counts checklist tasks and rewrites the table in checklists/PROGRESS.md.
-// Usage: node docs/lms/progress.mjs
+// Usage: node PLANS/progress.mjs
 import { readdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';

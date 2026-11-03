@@ -192,9 +192,9 @@ PATCH  /api/v1/admin/profiles/:id
 
 ## LMS work in progress
 
-The `docs/lms/` folder contains the in-progress plan, agent rules, decisions, specs and
+The `PLANS/` folder contains the in-progress plan, agent rules, decisions, specs and
 checklists for repurposing this site into a small LMS (faculty create subjects/topics/quizzes;
-students join with a code and progress by passing). See [`docs/lms/README.md`](docs/lms/README.md).
+students join with a code and progress by passing). See [`PLANS/README.md`](PLANS/README.md).
 
 ## Deployment notes
 
