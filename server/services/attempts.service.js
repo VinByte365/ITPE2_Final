@@ -1,4 +1,6 @@
 // server/services/attempts.service.js
+import { gradeAttempt, isPassed, computePercent, gradeQuestion } from './grading.js';
+
 import { AppError } from '../lib/errors.js';
 import * as attemptsRepoModule from '../repositories/quizzes.repository.js';
 import * as quizzesRepoModule from '../repositories/quizzes.repository.js';
@@ -76,4 +78,54 @@ export async function startAttempt(studentId, quizId) {
   });
   const questions = await deps.quizzesRepo.listQuestionsByQuiz(quizId);
   return { attempt, questions: questions.map(stripKeys) };
+}
+
+export async function submitAttempt(studentId, attemptId, answersPayload) {
+  const attempt = await deps.attemptsRepo.findAttemptById(attemptId);
+  if (!attempt) throw new AppError(404, "NOT_FOUND", "Attempt not found.");
+  if (attempt.studentId !== studentId) throw new AppError(404, "NOT_FOUND", "Attempt not found.");
+  if (attempt.status !== "in_progress") {
+    throw new AppError(409, "ATTEMPT_ALREADY_SUBMITTED", "This attempt has already been submitted.");
+  }
+
+  const quiz = await deps.quizzesRepo.findQuizById(attempt.quizId);
+  if (!quiz) throw new AppError(404, "NOT_FOUND", "Quiz not found.");
+
+  const topic = await deps.topicsRepo.findTopicById(quiz.topicId);
+  const subject = await deps.subjectsRepo.findSubjectById(topic.subjectId);
+  const passingPercent = subject.passingPercent;
+
+  const questions = await deps.quizzesRepo.listQuestionsByQuiz(quiz.id);
+
+  // Build answers map for grading
+  const answers = Array.isArray(answersPayload) ? answersPayload : (answersPayload?.answers || []);
+  const answerMap = {};
+  for (const a of answers) {
+    if (a && a.questionId) {
+      answerMap[a.questionId] = a.optionId !== undefined ? a.optionId : a.text;
+    }
+  }
+  // Also support array aligned? We use map.
+
+  // gradeAttempt expects answers array aligned OR object. Pass object map.
+  const { score, total } = gradeAttempt(questions, answerMap);
+  const passed = isPassed(score, total, passingPercent);
+  const percent = computePercent(score, total);
+
+  await deps.attemptsRepo.updateAttempt(attemptId, {
+    status: "graded",
+    answers,
+    score,
+    total,
+    submittedAt: new Date().toISOString(),
+  });
+
+  const response = { score, total, percent, passed, passingPercent };
+  if (quiz.showAnswers) {
+    response.review = questions.map((q) => {
+      const ans = answerMap[q.id];
+      return { questionId: q.id, correct: gradeQuestion(q, ans) > 0 };
+    });
+  }
+  return response;
 }

@@ -252,3 +252,10 @@ Append-only. Newest entry **at the bottom**. Never edit old entries; add a corre
 - **Decisions / assumptions:** Topic accessibility uses schedule check (availableFrom).
 - **Surprises / problems:** mappers.js syntax fixed (mapQuestion/mapAttempt).
 - **Next task:** QUIZ-09 (submit and grade).
+
+### 2026-11-01 · cline · agent
+- **Finished:** QUIZ-09 (submit and grade: server-side grading, raw answers, score/total, status graded; second submit ? 409; response percent/passed/passingPercent; review only when show_answers).
+- **In progress:** none
+- **Decisions / assumptions:** Submit route POST /student/attempts/:id/submit; answers payload {answers:[...]} or array.
+- **Surprises / problems:** none.
+- **Next task:** QUIZ-10 (student attempt history).

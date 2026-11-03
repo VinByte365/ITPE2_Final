@@ -21,7 +21,7 @@ Until phase 06, "access to quiz" uses the schedule-only check from phase 03; GAT
   - Files: service, route · Done when: atomic; any invalid row rejects everything with `details` per row; total over 20 rejected
 - [x] QUIZ-08 Student start/resume attempt (@cline, 2026-11-01)
   - Files: `server/services/attempts.service.js`, routes · Done when: returns questions without answer keys; resumes `in_progress`; `max_attempts` enforced; unpublished quiz refused; student must be enrolled and topic accessible
-- [ ] QUIZ-09 Submit and grade
+- [x] QUIZ-09 Submit and grade (@cline, 2026-11-01)
   - Files: service, routes · Done when: server-side grading stores raw answers, `score`, `total`, status `graded`; second submit → `409 ATTEMPT_ALREADY_SUBMITTED`; response has `percent`, `passed`, `passingPercent`; `review` only when `show_answers` is true
 - [ ] QUIZ-10 Student attempt history with best score and pass flag
   - Files: service, routes · Done when: pass flag uses the subject's current passing percent
