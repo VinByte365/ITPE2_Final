@@ -1,37 +1,39 @@
 // src/components/StatusBadge.jsx
+import {
+  BookIcon,
+  CheckIcon,
+  ClockIcon,
+  GlobeIcon,
+  HourglassIcon,
+  LockIcon,
+  PencilIcon,
+  PlayIcon,
+  RotateIcon,
+} from './Icons';
+
+// Colours live in `src/index.css` (`.status-badge.status-<status>`): attention states use
+// `--accent-ink`, neutral or done states use `--ink`, inactive states use `--muted`.
 const STATUS_CONFIG = {
-  draft: { bg: '#e5e7eb', fg: '#1f2937', label: 'Draft', icon: '📝' },
-  published: { bg: '#d1fae5', fg: '#065f46', label: 'Published', icon: '🌐' },
-  scheduled: { bg: '#fef3c7', fg: '#92400e', label: 'Scheduled', icon: '⏳' },
-  locked: { bg: '#f3f4f6', fg: '#374151', label: 'Locked', icon: '🔒' },
-  open: { bg: '#dbeafe', fg: '#1e40af', label: 'Open', icon: '📖' },
-  completed: { bg: '#dcfce7', fg: '#166534', label: 'Completed', icon: '✓' },
-  pending_review: { bg: '#fef9c3', fg: '#854d0e', label: 'Pending Review', icon: '⏳' },
-  failed: { bg: '#fee2e2', fg: '#991b1b', label: 'Repeat Topic', icon: '↺' },
-  graded: { bg: '#dcfce7', fg: '#166534', label: 'Graded', icon: '✓' },
-  in_progress: { bg: '#e0e7ff', fg: '#3730a3', label: 'In Progress', icon: '▶' },
+  draft: { label: 'Draft', icon: PencilIcon },
+  published: { label: 'Published', icon: GlobeIcon },
+  scheduled: { label: 'Scheduled', icon: ClockIcon },
+  locked: { label: 'Locked', icon: LockIcon },
+  open: { label: 'Open', icon: BookIcon },
+  completed: { label: 'Completed', icon: CheckIcon },
+  pending_review: { label: 'Pending Review', icon: HourglassIcon },
+  failed: { label: 'Repeat Topic', icon: RotateIcon },
+  graded: { label: 'Graded', icon: CheckIcon },
+  in_progress: { label: 'In Progress', icon: PlayIcon },
 };
 
 export default function StatusBadge({ status }) {
-  const c = STATUS_CONFIG[status] || { bg: '#e5e7eb', fg: '#1f2937', label: status, icon: '' };
+  const config = STATUS_CONFIG[status];
+  const Icon = config && config.icon;
+
   return (
-    <span
-      className={`status-badge status-${status}`}
-      style={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        gap: '4px',
-        padding: '2px 8px',
-        borderRadius: 999,
-        fontSize: 12,
-        fontWeight: 600,
-        background: c.bg,
-        color: c.fg,
-        border: '1px solid rgba(0,0,0,0.06)',
-      }}
-    >
-      {c.icon && <span aria-hidden="true">{c.icon}</span>}
-      <span>{c.label}</span>
+    <span className={`status-badge status-${status}`}>
+      {Icon && <Icon />}
+      <span>{config ? config.label : status}</span>
     </span>
   );
 }

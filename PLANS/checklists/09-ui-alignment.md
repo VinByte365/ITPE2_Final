@@ -15,7 +15,7 @@ inline styles. Closing this phase makes the LMS visually continuous with the pub
 
 ## Design system
 
-- [ ] UI-02 Align `StatusBadge` and shared primitives with the design system
+- [x] UI-02 Align `StatusBadge` and shared primitives with the design system (@lms-worker, 2026-11-03)
   - Files: `src/components/StatusBadge.jsx`, `src/components/Icons.jsx`, `src/index.css` · Done when: no raw hex values; state colours come from palette tokens; icons come from `Icons.jsx`; every class resolves in `index.css`
 
 - [ ] UI-03 Remove static inline styles from LMS pages
