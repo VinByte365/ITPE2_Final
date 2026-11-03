@@ -18,6 +18,7 @@ import Placeholder from "./auth/pages/Placeholder";
 import FacultyDashboard from "./pages/faculty/Dashboard";
 import SubjectNew from "./pages/faculty/SubjectNew";
 import Roster from "./pages/faculty/Roster";
+import Report from "./pages/faculty/Report";
 import FacultyTopics from "./pages/faculty/Topics";
 import TopicEditor from "./pages/faculty/TopicEditor";
 import QuizBuilder from './pages/faculty/QuizBuilder';
@@ -86,6 +87,7 @@ export default function App() {
             <Route path="/faculty/topics/:id/quiz" element={<ProtectedRoute roles={["faculty"]}><QuizBuilder /></ProtectedRoute>} />
             <Route path="/faculty/subjects/:id/grading" element={<ProtectedRoute roles={["faculty"]}><Placeholder title="Grading queue" /></ProtectedRoute>} />
             <Route path="/faculty/subjects/:id/report" element={<ProtectedRoute roles={["faculty"]}><Placeholder title="Report" /></ProtectedRoute>} />
+            <Route path="/faculty/subjects/:id/report/preview" element={<ProtectedRoute roles={["faculty"]}><Report /></ProtectedRoute>} />
             <Route path="/faculty/subjects/:id/students/:studentId" element={<ProtectedRoute roles={["faculty"]}><Placeholder title="Student scores" /></ProtectedRoute>} />
 
             <Route path="/admin/users" element={<ProtectedRoute roles={["admin"]}><UsersPage /></ProtectedRoute>} />

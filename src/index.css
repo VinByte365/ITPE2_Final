@@ -3731,6 +3731,100 @@ main:focus {
 }
 
 /* ==========================================================================
+   Report preview page
+   Header block, controls, table, footer, legend.
+   ========================================================================== */
+
+.rv-report-header-block {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.rv-report-controls {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  background: var(--paper-2);
+}
+
+.rv-report-table-wrap {
+  overflow-x: auto;
+  margin-bottom: 1.5rem;
+}
+
+.rv-report-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+  background: var(--paper);
+}
+
+.rv-report-th,
+.rv-report-td {
+  text-align: left;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  white-space: nowrap;
+}
+
+.rv-report-th {
+  background: var(--paper-2);
+  font-weight: 600;
+  color: var(--ink-soft);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.72rem;
+  font-family: var(--font-mono);
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+.rv-report-td {
+  background: var(--paper);
+}
+
+.rv-report-row {
+  border-bottom: 1px solid var(--line);
+}
+
+.rv-report-row:last-child {
+  border-bottom: none;
+}
+
+.rv-report-td-quiz {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+}
+
+.rv-report-td-failed {
+  background: var(--accent-soft);
+}
+
+.rv-report-footer {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
+  font-size: 0.92rem;
+}
+
+/* ==========================================================================
    Responsive
    ========================================================================== */
 
