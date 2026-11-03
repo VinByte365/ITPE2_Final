@@ -287,3 +287,15 @@ Append-only. Newest entry **at the bottom**. Never edit old entries; add a corre
 - **Decisions / assumptions:** QUIZ-14 (CSV import) and QUIZ-17 (docs) left unticked.
 - **Surprises / problems:** none.
 - **Next task:** QUIZ-14 (CSV import UI) or QUIZ-17 (docs).
+
+
+### 2026-11-03 · antigravity · agent
+- **Finished:**
+  - Phase 06 Core (Gating): GATE-01 (computeTopicStates() pure service with 12 BR-06 scenario tests + accessible check), GATE-03 (real states on student topic list with reason and blockedByTopicId), GATE-04 (assertTopicAccessible() on student topic detail, content download, quiz start, upload-url, submission), GATE-09 (state badges and TopicCard styling with WCAG AA compliance and aria-disabled), GATE-10 (post-quiz flow with retake/repeat and advance button), GATE-11 (friendly blocked-URL page for TOPIC_NOT_AVAILABLE and TOPIC_LOCKED with prerequisite navigation and back button).
+  - Phase 05 (Uploaded Quizzes): UPL-01 (quiz metadata and publish validation), UPL-02 (quiz attachment upload-url endpoint for faculty), UPL-03 (student upload-url endpoint with 5 MB JPG/PNG/WebP validation), UPL-04 (student submission endpoint verifying storage, magic bytes, creating pending_review attempt with source='manual'), UPL-05 (delete pending submission and get student attempt image URL), UPL-06 (faculty submissions queue and attempt detail endpoints), UPL-07 (PATCH /faculty/attempts/:id/grade endpoint with score bounds 0..totalItems, 2 decimal limit, and pass calculation), UPL-09 (QuizBuilder uploaded-mode configuration, totalItems, instructions, attachment upload, mode switch attempt lock), UPL-10 (UploadSubmission.jsx component with canvas client-side downscale/compression, preview, upload progress, replace pending attempt), UPL-12 (GradingQueue.jsx and ImageViewer.jsx with zoom, rotate, score validation, save and next).
+  - Phase 07 (Reports): RPT-01 (buildReport() pure function with surname sort preserving accents/Ñ, score sorting, ties broken by surname, no-quiz students last, dynamic pass/fail; 6 unit tests; GET /faculty/subjects/:id/report), RPT-02 (GET /faculty/subjects/:id/students/:studentId/scores), RPT-03 (GET /student/subjects/:id/grades).
+  - Dependencies installed: exceljs, jspdf, jspdf-autotable.
+- **In progress:** Phase 07 Frontend (Report preview, exporters, student scores and grades UI).
+- **Decisions / assumptions:** Gating precedence follows BR-06 strictly (scheduled over locked). Pass/fail is never stored in DB. Student endpoints never receive answer keys. Pending manual submissions never unlock next topic.
+- **Surprises / problems:** None. All 162 unit tests pass (npm test). Vite build passes cleanly (npm run build).
+- **Next task:** RPT-05 / RPT-06 (Report preview page and export helpers in src/lib/ and src/pages/).

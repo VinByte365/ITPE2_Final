@@ -57,6 +57,13 @@ export async function objectInfo(bucket, path) {
   return data;
 }
 
+export async function downloadObject(bucket, path) {
+  const client = getServiceClient();
+  const { data, error } = await client.storage.from(bucket).download(path);
+  if (error || !data) return null;
+  return Buffer.from(await data.arrayBuffer());
+}
+
 export async function removeObject(bucket, path) {
   const client = getServiceClient();
   const { error } = await client.storage.from(bucket).remove([path]);

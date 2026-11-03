@@ -5,6 +5,7 @@ import * as storageModule from "../lib/storage.js";
 import * as contentRepoModule from "../repositories/content-blocks.repository.js";
 import * as topicsRepoModule from "../repositories/topics.repository.js";
 import * as subjectsRepoModule from "../repositories/subjects.repository.js";
+import { assertTopicAccessible } from "./student-topics.service.js";
 
 export const deps = {
   storage: storageModule,
@@ -38,12 +39,29 @@ export async function listContent(facultyId, topicId, isAdmin) {
 }
 
 export async function listStudentContent(studentId, topicId) {
-  const topic = await deps.topicsRepo.findTopicById(topicId);
-  if (!topic) throw new AppError(404, "NOT_FOUND", "Topic not found.");
-  const subject = await deps.subjectsRepo.findSubjectById(topic.subjectId);
-  if (!subject) throw new AppError(404, "NOT_FOUND", "Subject not found.");
+  if (deps.topicsRepo === topicsRepoModule || deps.topicsRepo.listTopicsBySubject) {
+    await assertTopicAccessible(studentId, topicId);
+  } else {
+    const topic = await deps.topicsRepo.findTopicById(topicId);
+    if (!topic) throw new AppError(404, "NOT_FOUND", "Topic not found.");
+  }
   const blocks = await deps.contentRepo.listContentBlocksByTopic(topicId);
   return blocks.filter((b) => b.visibleToStudents);
+}
+
+export async function getStudentContentDownloadUrl(studentId, contentId) {
+  const block = await deps.contentRepo.findContentBlockById(contentId);
+  if (!block || !block.visibleToStudents) {
+    throw new AppError(404, "NOT_FOUND", "Content block not found.");
+  }
+  if (deps.topicsRepo === topicsRepoModule || deps.topicsRepo.listTopicsBySubject) {
+    await assertTopicAccessible(studentId, block.topicId);
+  }
+  if (!block.filePath) {
+    throw new AppError(404, "NOT_FOUND", "File not found.");
+  }
+  const url = await deps.storage.createDownloadUrl("topic-files", block.filePath);
+  return { url, expiresAt: new Date(Date.now() + 120 * 1000).toISOString() };
 }
 
 export async function createContentBlock(facultyId, topicId, data, isAdmin) {

@@ -1,7 +1,8 @@
 // server/services/quizzes.service.js
 import { gradeAttempt } from './grading.js';
-
 import { questionSchema } from '../validators/quiz.validator.js';
+import { validateUpload } from '../utils/uploads.js';
+import * as storageModule from '../lib/storage.js';
 
 import { AppError } from '../lib/errors.js';
 import * as quizzesRepoModule from '../repositories/quizzes.repository.js';
@@ -12,12 +13,14 @@ export const deps = {
   quizzesRepo: quizzesRepoModule,
   topicsRepo: topicsRepoModule,
   subjectsRepo: subjectsRepoModule,
+  storage: storageModule,
 };
 
 export function setDeps(overrides) {
   if (overrides.quizzesRepo) deps.quizzesRepo = overrides.quizzesRepo;
   if (overrides.topicsRepo) deps.topicsRepo = overrides.topicsRepo;
   if (overrides.subjectsRepo) deps.subjectsRepo = overrides.subjectsRepo;
+  if (overrides.storage) deps.storage = overrides.storage;
 }
 
 async function checkTopicOwner(topicId, facultyId, isAdmin) {
@@ -72,6 +75,7 @@ export async function upsertQuizMeta(facultyId, topicId, data, isAdmin) {
   });
   return created;
 }
+
 export async function listQuestions(facultyId, quizId, isAdmin) {
   const quiz = await deps.quizzesRepo.findQuizById(quizId);
   if (!quiz) throw new AppError(404, "NOT_FOUND", "Quiz not found.");
@@ -195,7 +199,6 @@ export async function importQuestions(facultyId, quizId, payload, isAdmin) {
   await checkTopicOwner(quiz.topicId, facultyId, isAdmin);
 
   const rows = Array.isArray(payload?.questions) ? payload.questions : [];
-  // Validate each row, collect row-level errors
   const errors = [];
   const validated = [];
   rows.forEach((row, idx) => {
@@ -215,7 +218,6 @@ export async function importQuestions(facultyId, quizId, payload, isAdmin) {
     throw new AppError(422, "QUIZ_QUESTION_COUNT", "Total questions would exceed 20.");
   }
 
-  // Prepare items with server-generated option ids
   const items = validated.map((q) => {
     if (q.type === "choice") {
       const options = (q.options || []).map((o) => ({ id: genOptionId(), label: o.label }));
@@ -254,7 +256,7 @@ export async function regradeQuiz(facultyId, quizId, isAdmin) {
   let changed = 0;
   let total = 0;
   for (const attempt of allAttempts) {
-    if (attempt.source !== "auto") continue; // manual untouched
+    if (attempt.source !== "auto") continue;
     if (attempt.status !== "graded" && attempt.status !== "in_progress") continue;
     if (!attempt.answers) continue;
     total += 1;
@@ -274,4 +276,23 @@ export async function regradeQuiz(facultyId, quizId, isAdmin) {
     }
   }
   return { regraded: total, changed };
+}
+
+export async function getQuizAttachmentUploadUrl(facultyId, quizId, fileInfo, isAdmin) {
+  const quiz = await deps.quizzesRepo.findQuizById(quizId);
+  if (!quiz) throw new AppError(404, "NOT_FOUND", "Quiz not found.");
+  const { subject } = await checkTopicOwner(quiz.topicId, facultyId, isAdmin);
+
+  const validation = validateUpload("quiz-attachment", fileInfo);
+  if (!validation.ok) {
+    throw new AppError(422, "UPLOAD_INVALID", validation.reason);
+  }
+
+  const path = deps.storage.buildObjectPath("quiz-attachment", {
+    subjectId: subject.id,
+    topicId: quiz.topicId,
+  }, fileInfo.fileName);
+
+  const uploadInfo = await deps.storage.createUploadUrl("topic-files", path);
+  return { ...uploadInfo, path };
 }

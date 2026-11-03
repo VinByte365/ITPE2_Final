@@ -5,13 +5,13 @@ Goal: replace the schedule-only stand-ins from phases 03 and 04 with the real ru
 
 ## Backend
 
-- [ ] GATE-01 Pure `computeTopicStates()`
+- [x] GATE-01 Pure `computeTopicStates()`
   - Files: `server/services/progress.service.js`, `progress.service.test.js` · Done when: inputs are plain data (topics, quizzes, attempts, progress rows, passing percent, `now`, timezone-resolved dates); output matches the BR-06 table; all 12 scenarios in the spec are tests and pass
 - [ ] GATE-02 Efficient data loading for one student and for a whole subject
   - Files: `server/repositories/progress.repository.js` · Done when: a fixed number of queries regardless of topic or student count (no N+1); verified with query logging on 16 topics × 40 students
-- [ ] GATE-03 Real states on the student topic list
+- [x] GATE-03 Real states on the student topic list
   - Files: `server/services/student-topics.service.js` · Done when: returns `scheduled|locked|open|failed|pending_review|completed` with `reason` and `blockedByTopicId`; stand-in code removed
-- [ ] GATE-04 `assertTopicAccessible()` on every student endpoint that touches a topic
+- [x] GATE-04 `assertTopicAccessible()` on every student endpoint that touches a topic
   - Files: `server/services/access.service.js`, services, routes · Done when: topic detail, content download, quiz start, submit, upload-url and submission all return `TOPIC_NOT_AVAILABLE` or `TOPIC_LOCKED` correctly; one test per endpoint
 - [ ] GATE-05 Dynamic effects of setting changes
   - Files: tests · Done when: tests prove that changing passing %, unpublishing/publishing a quiz, regrading and re-grading a manual attempt change states as BR-06 describes, with no stored state to fix
@@ -24,11 +24,11 @@ Goal: replace the schedule-only stand-ins from phases 03 and 04 with the real ru
 
 ## Frontend
 
-- [ ] GATE-09 State visuals and labels
+- [x] GATE-09 State visuals and labels
   - Files: `src/components/TopicCard.jsx`, `StatusBadge.jsx`, `src/index.css` · Done when: each state has icon, label and style; `scheduled` and `locked` are grayed and `aria-disabled`; contrast passes WCAG AA for text on gray
-- [ ] GATE-10 Flow after a quiz
+- [x] GATE-10 Flow after a quiz
   - Files: `src/pages/student/TopicView.jsx`, `QuizRun.jsx` · Done when: passed → "Continue to next topic" (only if it is open); failed → "Repeat this topic" scrolls to the content and offers retake; pending → clear waiting message
-- [ ] GATE-11 Friendly handling of blocked direct URLs
+- [x] GATE-11 Friendly handling of blocked direct URLs
   - Files: `TopicView.jsx`, `src/api/client.js` · Done when: `TOPIC_NOT_AVAILABLE` and `TOPIC_LOCKED` render a page with the reason, the date or blocking topic, and a back link
 - [ ] GATE-12 Faculty progress view
   - Files: `src/pages/faculty/Roster.jsx` (or a new tab) · Done when: grid of students × topics with state icons; filters for "failed" and "pending"

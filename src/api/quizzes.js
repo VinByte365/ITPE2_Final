@@ -42,6 +42,26 @@ export async function regradeQuiz(quizId) {
   return post(`/faculty/quizzes/${quizId}/regrade`);
 }
 
+export async function getQuizAttachmentUploadUrl(quizId, fileInfo) {
+  return post(`/faculty/quizzes/${quizId}/attachment/upload-url`, fileInfo);
+}
+
+export async function listFacultySubmissions(subjectId, params = {}) {
+  const query = new URLSearchParams();
+  if (params.status) query.set('status', params.status);
+  if (params.q) query.set('q', params.q);
+  const qStr = query.toString();
+  return get(`/faculty/subjects/${subjectId}/submissions${qStr ? `?${qStr}` : ''}`);
+}
+
+export async function getFacultyAttemptDetail(attemptId) {
+  return get(`/faculty/attempts/${attemptId}`);
+}
+
+export async function gradeFacultyAttempt(attemptId, payload) {
+  return patch(`/faculty/attempts/${attemptId}/grade`, payload);
+}
+
 // Student
 export async function startAttempt(quizId) {
   return post(`/student/quizzes/${quizId}/attempts`);
@@ -53,4 +73,20 @@ export async function submitAttempt(attemptId, answers) {
 
 export async function getAttemptHistory(quizId) {
   return get(`/student/quizzes/${quizId}/attempts`);
+}
+
+export async function getStudentUploadUrl(quizId, fileInfo) {
+  return post(`/student/quizzes/${quizId}/uploads/upload-url`, fileInfo);
+}
+
+export async function submitQuizImage(quizId, path) {
+  return post(`/student/quizzes/${quizId}/submissions`, { path });
+}
+
+export async function deletePendingAttempt(attemptId) {
+  return del(`/student/attempts/${attemptId}`);
+}
+
+export async function getAttemptImageUrl(attemptId) {
+  return get(`/student/attempts/${attemptId}/image-url`);
 }

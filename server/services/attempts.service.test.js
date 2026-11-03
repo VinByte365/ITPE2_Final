@@ -53,6 +53,8 @@ const fakeSubjectsRepo = {
 const fakeAttemptsRepo = {
   countAttempts: async () => state.attempts.length,
   findInProgressAttempt: async () => state.inProgress,
+  findPendingReviewAttempt: async (quizId, studentId) =>
+    state.attempts.find((a) => a.quizId === quizId && a.studentId === studentId && a.status === 'pending_review') || null,
   createAttempt: async (data) => {
     const a = { id: `att-${state.attempts.length + 1}`, ...data, score: null, total: null, submittedAt: null };
     state.attempts.push(a);
@@ -68,12 +70,23 @@ const fakeAttemptsRepo = {
   },
   listAttemptsByStudentQuiz: async () => [...state.attempts],
   listAllAttemptsByQuiz: async () => [...state.attempts],
+  findAttemptWithContext: async (id) => {
+    const a = state.attempts.find((x) => x.id === id);
+    if (!a) return null;
+    return {
+      attempt: a,
+      quiz: state.quiz,
+      topic: state.topic,
+      subject: state.subject,
+      student: { id: a.studentId, firstName: "Test", lastName: "Student", studentNumber: "S-1" },
+    };
+  },
 };
 
 setAttemptsDeps({ attemptsRepo: fakeAttemptsRepo, quizzesRepo: fakeQuizzesRepo, topicsRepo: fakeTopicsRepo, subjectsRepo: fakeSubjectsRepo });
 setQuizzesDeps({ quizzesRepo: fakeQuizzesRepo, topicsRepo: fakeTopicsRepo, subjectsRepo: fakeSubjectsRepo });
 
-const { startAttempt, submitAttempt, getAttemptHistory } = attemptsMod;
+const { startAttempt, submitAttempt, getAttemptHistory, gradeManualAttempt } = attemptsMod;
 
 const SUBJECT_ID = "subj-1";
 const STUDENT_ID = "student-1";
@@ -231,4 +244,61 @@ test("getAttemptHistory: pass flag uses current passing percent", async () => {
   await submitAttempt(STUDENT_ID, started.attempt.id, [{ questionId: "q1", optionId: "a" }]);
   const hist = await getAttemptHistory(STUDENT_ID, QUIZ_ID);
   assert.equal(hist.passed, true); // 1/1 = 100% >= 90
+});
+
+test("gradeManualAttempt: rejects non-owner faculty", async () => {
+  reset();
+  state.quiz = makeQuiz({ totalItems: 20, mode: "uploaded" });
+  state.topic = makeTopic();
+  state.subject = makeSubject(75); // facultyId is "f1"
+  const att = { id: "att-manual", quizId: QUIZ_ID, studentId: STUDENT_ID, source: "manual", status: "pending_review", score: null, total: null };
+  state.attempts.push(att);
+  await assert.rejects(
+    () => gradeManualAttempt("f2", "att-manual", { score: 15 }, false),
+    (err) => err instanceof AppError && err.code === "NOT_FOUND" && err.status === 404,
+  );
+});
+
+test("gradeManualAttempt: rejects score bounds and >2 decimals", async () => {
+  reset();
+  state.quiz = makeQuiz({ totalItems: 20, mode: "uploaded" });
+  state.topic = makeTopic();
+  state.subject = makeSubject(75);
+  const att = { id: "att-manual", quizId: QUIZ_ID, studentId: STUDENT_ID, source: "manual", status: "pending_review", score: null, total: null };
+  state.attempts.push(att);
+
+  // negative
+  await assert.rejects(
+    () => gradeManualAttempt("f1", "att-manual", { score: -1 }, false),
+    (err) => err instanceof AppError && err.code === "VALIDATION_ERROR" && err.status === 422,
+  );
+
+  // over total
+  await assert.rejects(
+    () => gradeManualAttempt("f1", "att-manual", { score: 21 }, false),
+    (err) => err instanceof AppError && err.code === "VALIDATION_ERROR" && err.status === 422,
+  );
+
+  // >2 decimals
+  await assert.rejects(
+    () => gradeManualAttempt("f1", "att-manual", { score: 15.123 }, false),
+    (err) => err instanceof AppError && err.code === "VALIDATION_ERROR" && err.status === 422,
+  );
+});
+
+test("gradeManualAttempt: successfully grades and computes pass/fail", async () => {
+  reset();
+  state.quiz = makeQuiz({ totalItems: 20, mode: "uploaded" });
+  state.topic = makeTopic();
+  state.subject = makeSubject(75);
+  const att = { id: "att-manual", quizId: QUIZ_ID, studentId: STUDENT_ID, source: "manual", status: "pending_review", score: null, total: null };
+  state.attempts.push(att);
+
+  const result = await gradeManualAttempt("f1", "att-manual", { score: 15, feedback: "Great job" }, false);
+  assert.equal(result.score, 15);
+  assert.equal(result.total, 20);
+  assert.equal(result.percent, 75);
+  assert.equal(result.passed, true);
+  assert.equal(att.status, "graded");
+  assert.equal(att.feedback, "Great job");
 });

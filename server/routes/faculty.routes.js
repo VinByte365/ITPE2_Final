@@ -42,7 +42,17 @@ import {
   updateQuestion,
   updateQuizStatus,
   upsertQuizMeta,
+  getQuizAttachmentUploadUrl,
 } from '../services/quizzes.service.js';
+import {
+  getSubjectReport,
+  getStudentScores,
+} from '../services/report.service.js';
+import {
+  listSubmissions,
+  getFacultyAttemptDetail,
+  gradeManualAttempt,
+} from '../services/attempts.service.js';
 
 import {
   contentBlockSchema,
@@ -62,6 +72,8 @@ import { uuidSchema } from '../validators/common.js';
 import {
   createQuestionSchema,
   updateQuestionSchema,
+  gradeAttemptSchema,
+  uploadUrlSchema,
 } from '../validators/quiz.validator.js';
 
 const router = Router();
@@ -442,5 +454,80 @@ router.post(
   }),
 );
 
+
+
+// POST /faculty/quizzes/:id/attachment/upload-url (UPL-02)
+router.post(
+  '/quizzes/:id/attachment/upload-url',
+  asyncHandler(async (req, res) => {
+    const quizId = uuidSchema.parse(req.params.id);
+    const fileInfo = uploadUrlSchema.parse(req.body);
+    const isAdmin = req.auth.profile?.role === 'admin';
+    const result = await getQuizAttachmentUploadUrl(req.auth.profile.id, quizId, fileInfo, isAdmin);
+    res.json({ data: result });
+  }),
+);
+
+// GET /faculty/subjects/:id/submissions (UPL-06)
+router.get(
+  '/subjects/:id/submissions',
+  requireSubjectOwner('id'),
+  asyncHandler(async (req, res) => {
+    const isAdmin = req.auth.profile?.role === 'admin';
+    const status = req.query.status;
+    const q = req.query.q;
+    const submissions = await listSubmissions(req.auth.profile.id, req.params.id, { status, q }, isAdmin);
+    res.json({ data: submissions });
+  }),
+);
+
+// GET /faculty/attempts/:id (UPL-06)
+router.get(
+  '/attempts/:id',
+  asyncHandler(async (req, res) => {
+    const attemptId = uuidSchema.parse(req.params.id);
+    const isAdmin = req.auth.profile?.role === 'admin';
+    const detail = await getFacultyAttemptDetail(req.auth.profile.id, attemptId, isAdmin);
+    res.json({ data: detail });
+  }),
+);
+
+// PATCH /faculty/attempts/:id/grade (UPL-07)
+router.patch(
+  '/attempts/:id/grade',
+  asyncHandler(async (req, res) => {
+    const attemptId = uuidSchema.parse(req.params.id);
+    const input = gradeAttemptSchema.parse(req.body);
+    const isAdmin = req.auth.profile?.role === 'admin';
+    const result = await gradeManualAttempt(req.auth.profile.id, attemptId, input, isAdmin);
+    res.json({ data: result });
+  }),
+);
+
+
+// GET /faculty/subjects/:id/report (RPT-01)
+router.get(
+  '/subjects/:id/report',
+  requireSubjectOwner('id'),
+  asyncHandler(async (req, res) => {
+    const isAdmin = req.auth.profile?.role === 'admin';
+    const sort = req.query.sort || 'surname';
+    const dir = req.query.dir || 'asc';
+    const report = await getSubjectReport(req.auth.profile.id, req.params.id, { sort, dir }, isAdmin);
+    res.json({ data: report });
+  }),
+);
+
+// GET /faculty/subjects/:id/students/:studentId/scores (RPT-02)
+router.get(
+  '/subjects/:id/students/:studentId/scores',
+  requireSubjectOwner('id'),
+  asyncHandler(async (req, res) => {
+    const studentId = uuidSchema.parse(req.params.studentId);
+    const isAdmin = req.auth.profile?.role === 'admin';
+    const scores = await getStudentScores(req.auth.profile.id, req.params.id, studentId, isAdmin);
+    res.json({ data: scores });
+  }),
+);
 
 export default router;

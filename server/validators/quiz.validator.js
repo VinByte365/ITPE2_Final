@@ -72,3 +72,24 @@ export const importPayloadSchema = z
 export const reorderQuestionsSchema = z.object({
   questionIds: z.array(z.string().uuid()).min(1),
 });
+
+export const gradeAttemptSchema = z
+  .object({
+    score: z.coerce.number().min(0, 'Score cannot be negative.'),
+    feedback: z.string().trim().max(5000).optional().nullable(),
+  })
+  .strict();
+
+export const uploadUrlSchema = z
+  .object({
+    fileName: z.string().trim().min(1, 'File name is required.'),
+    mime: z.string().trim().min(1, 'MIME type is required.'),
+    size: z.coerce.number().int().positive('Size must be positive.'),
+  })
+  .strict();
+
+export const submissionSchema = z
+  .object({
+    path: z.string().trim().min(1, 'Path is required.'),
+  })
+  .strict();
