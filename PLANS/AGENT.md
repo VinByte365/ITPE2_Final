@@ -48,6 +48,12 @@ You are continuing a human-led project. Several people and agents work on it ove
 - Do not modify legacy content code (`modules`, `themes`, `presenters`) unless a task says so.
 - Do not change the meaning of a rule in `specs/03-business-rules.md` silently. Add or update a `DEC-` entry.
 - Do not tick a task you did not verify. If you could not run something, say so in the log.
+- **`HANDOFF-LOG.md` is append-only, byte for byte.** Never rewrite it with a "read the whole file,
+  edit, write the whole file" change. Append only (`Add-Content`, `>>`, or a write that copies the
+  existing bytes first). Older entries contain legacy non-UTF-8 bytes (raw `0xB7` separators), so a
+  full rewrite silently replaces them with `U+FFFD` and corrupts every historical entry. Append with
+  LF line endings. If you ever see `PLANS/HANDOFF-LOG.md` show deletions in `git diff`, revert your
+  change and redo it as an append.
 
 ## When to stop and ask the user
 

@@ -40,6 +40,9 @@ You are the main developer on this project. `PLANS/AGENT.md` is binding — read
    `npm.cmd run lint`, `npm.cmd run build`, `npm.cmd test`.
 7. Tick the box, replace 🚧 with ` (@lms-worker, YYYY-MM-DD)`, append an entry to
    `PLANS/HANDOFF-LOG.md`, then run `node PLANS/progress.mjs`.
+   - **Append to `HANDOFF-LOG.md`; never rewrite it.** It contains legacy non-UTF-8 bytes; a
+     whole-file rewrite corrupts every old entry. Use `Add-Content -Encoding utf8` or copy the
+     existing bytes then append. `git diff` must show additions only — zero deletions.
 8. Stop after about 5 tasks or when blocked.
 
 ## UI work
