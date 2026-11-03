@@ -4427,3 +4427,113 @@ main:focus {
     transform: none;
   }
 }
+
+/* ==========================================================================
+   Print (RPT-07)
+   A4 landscape; hide site chrome and controls; repeat table header on every
+   page; rows do not split across pages.
+   ========================================================================== */
+
+@page {
+  size: A4 landscape;
+  margin: 12mm 10mm 12mm 10mm;
+}
+
+@media print {
+  /* Hide site chrome and interactive controls on paper. */
+  .site-header,
+  .site-footer,
+  .menu-toggle,
+  .print-hide,
+  button,
+  input,
+  select,
+  .rv-report-controls .btn {
+    display: none !important;
+  }
+
+  /* Keep the header block, table, footer, and legend on paper. */
+  .print-show {
+    display: block !important;
+  }
+
+  body {
+    background: var(--paper) !important;
+    color: var(--ink) !important;
+    font-size: 9pt;
+    line-height: 1.4;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .page-shell {
+    width: 100% !important;
+    max-width: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+
+  .rv-report-header-block {
+    page-break-after: avoid;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .rv-report-table-wrap {
+    overflow: visible !important;
+  }
+
+  .rv-report-table {
+    width: 100% !important;
+    font-size: 8pt;
+  }
+
+  .rv-report-th,
+  .rv-report-td {
+    border: 1px solid var(--line) !important;
+    padding: 5px 7px;
+    white-space: normal !important;
+  }
+
+  /* Repeat table header on every printed page. */
+  .rv-report-table thead {
+    display: table-header-group;
+  }
+
+  /* Do not split table rows across pages. */
+  .rv-report-row {
+    page-break-inside: avoid;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .rv-report-footer {
+    page-break-before: avoid;
+    margin-top: 1rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--line);
+    font-size: 8pt;
+  }
+
+  /* Failed cells keep their accent background in print. */
+  .rv-report-td-failed {
+    background: var(--accent-soft) !important;
+  }
+
+  .status-badge {
+    border: 1px solid var(--line) !important;
+  }
+}
+
+/* Print-only utility classes. */
+.print-only {
+  display: none;
+}
+
+@media print {
+  .print-only {
+    display: block;
+  }
+}

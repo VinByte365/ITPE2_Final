@@ -19,8 +19,8 @@ Depends on: 06. Specs: `../specs/05-reports.md`, `../specs/03-business-rules.md`
   - Files: `src/lib/reportTable.js`, `reportTable.test.js` (use `node --test`) · Done when: `toTable(report, options)` and the live pass/fail recompute function exist and are tested; same logic is used by preview and every exporter
 - [x] RPT-06 Report preview page (@kilo, 2026-11-04)
   - Files: `src/pages/faculty/Report.jsx`, `src/api/reports.js`, `src/App.jsx`, `src/index.css` · Done when: header block, sort controls (surname/score, asc/desc), passing % control with live recompute, column picker, failed shown with color plus symbol, footer totals, loading/empty/error states
-- [ ] RPT-07 Print
-  - Files: `src/lib/printReport.js`, `src/index.css` (`@media print`) · Done when: A4 landscape; controls and site chrome hidden; header repeats on each page; rows do not split; verified in Chrome and Firefox print preview
+- [x] RPT-07 Print (@kilo, 2026-11-04)
+  - Files: `src/index.css` (`@media print`) · Done when: A4 landscape; controls and site chrome hidden; header repeats on each page; rows do not split; verified in Chrome and Firefox print preview
 - [ ] RPT-08 PDF export
   - Files: `src/lib/exportPdf.js` · Done when: lazy-loaded; same columns and order as the preview; failed in red; page numbers; file name per spec; opens correctly
 - [ ] RPT-09 Spreadsheet export (and CSV)
