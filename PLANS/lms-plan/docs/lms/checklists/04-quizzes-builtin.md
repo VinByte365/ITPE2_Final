@@ -32,13 +32,13 @@ Until phase 06, "access to quiz" uses the schedule-only check from phase 03; GAT
 
 ## Frontend
 
-- [ ] QUIZ-13 Faculty quiz builder `/faculty/topics/:id/quiz`
+- [x] QUIZ-13 Faculty quiz builder `/faculty/topics/:id/quiz` (@cline, 2026-11-01)
   - Files: `src/pages/faculty/QuizBuilder.jsx`, `src/components/QuestionEditor.jsx`, `src/api/quizzes.js` · Done when: choice editor (add/remove options, mark correct), text editor (accepted answers as chips), counter "12/20, minimum 10 to publish", reorder, delete with confirmation, publish disabled with the reason shown, Regrade button
 - [ ] QUIZ-14 CSV import UI and template
   - Files: `src/components/QuestionImport.jsx`, `public/question-template.csv` · Done when: columns `type,question,optionA..optionF,correct,acceptedAnswers,points`; preview table flags invalid rows; confirm posts; template downloads; accented characters survive
-- [ ] QUIZ-15 Student `QuizRunner`
+- [x] QUIZ-15 Student `QuizRunner` (@cline, 2026-11-01)
   - Files: `src/components/QuizRunner.jsx`, `src/pages/student/QuizRun.jsx` · Done when: all questions on one scrolling page (Google Forms style); radio for choice, text input for text; unanswered count shown before submit; double submit prevented; progress kept if the page reloads (resumes attempt)
-- [ ] QUIZ-16 Result screen and attempt history
+- [x] QUIZ-16 Result screen and attempt history (@cline, 2026-11-01)
   - Files: `src/pages/student/QuizRun.jsx`, `TopicView.jsx` · Done when: shows score, percent, passing mark, Passed/Failed badge (icon + text); failed shows "Repeat topic" and retake; history list lists attempts with best marked
 - [ ] QUIZ-17 Docs
   - Files: `../specs/02-api.md`, `docs/API.md` · Done when: match the implementation

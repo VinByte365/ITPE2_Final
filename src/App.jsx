@@ -20,9 +20,13 @@ import SubjectNew from "./pages/faculty/SubjectNew";
 import Roster from "./pages/faculty/Roster";
 import FacultyTopics from "./pages/faculty/Topics";
 import TopicEditor from "./pages/faculty/TopicEditor";
+import QuizBuilder from './pages/faculty/QuizBuilder';
+
 import StudentDashboard from "./pages/student/Dashboard";
 import JoinSubject from "./pages/student/JoinSubject";
 import SubjectTopics from "./pages/student/SubjectTopics";
+import QuizRun from './pages/student/QuizRun';
+
 import TopicView from "./pages/student/TopicView";
 import UsersPage from "./pages/admin/Users";
 
@@ -64,6 +68,8 @@ export default function App() {
             <Route path="/topics/:id" element={<ModuleDetailPage />} />
             <Route path="/about" element={<AboutPage />} />
 
+            <Route path="/student/topics/:id/quiz" element={<ProtectedRoute roles={["student"]}><QuizRun /></ProtectedRoute>} />
+
             <Route path="/student" element={<ProtectedRoute roles={["student"]}><StudentDashboard /></ProtectedRoute>} />
             <Route path="/student/join" element={<ProtectedRoute roles={["student"]}><JoinSubject /></ProtectedRoute>} />
             <Route path="/student/subjects/:id" element={<ProtectedRoute roles={["student"]}><SubjectTopics /></ProtectedRoute>} />
@@ -77,7 +83,7 @@ export default function App() {
             <Route path="/faculty/subjects/:id/students" element={<ProtectedRoute roles={["faculty"]}><Roster /></ProtectedRoute>} />
             <Route path="/faculty/subjects/:id/topics" element={<ProtectedRoute roles={["faculty"]}><FacultyTopics /></ProtectedRoute>} />
             <Route path="/faculty/topics/:id" element={<ProtectedRoute roles={["faculty"]}><TopicEditor /></ProtectedRoute>} />
-            <Route path="/faculty/topics/:id/quiz" element={<ProtectedRoute roles={["faculty"]}><Placeholder title="Quiz builder" /></ProtectedRoute>} />
+            <Route path="/faculty/topics/:id/quiz" element={<ProtectedRoute roles={["faculty"]}><QuizBuilder /></ProtectedRoute>} />
             <Route path="/faculty/subjects/:id/grading" element={<ProtectedRoute roles={["faculty"]}><Placeholder title="Grading queue" /></ProtectedRoute>} />
             <Route path="/faculty/subjects/:id/report" element={<ProtectedRoute roles={["faculty"]}><Placeholder title="Report" /></ProtectedRoute>} />
             <Route path="/faculty/subjects/:id/students/:studentId" element={<ProtectedRoute roles={["faculty"]}><Placeholder title="Student scores" /></ProtectedRoute>} />

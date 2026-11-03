@@ -280,3 +280,10 @@ Append-only. Newest entry **at the bottom**. Never edit old entries; add a corre
 - **Decisions / assumptions:** Used setDeps seam; 138 tests pass.
 - **Surprises / problems:** none.
 - **Next task:** QUIZ-13 (faculty quiz builder frontend).
+
+### 2026-11-01 · cline · agent
+- **Finished:** QUIZ-13, QUIZ-15, QUIZ-16 (frontend: QuizBuilder, QuizRun, result screen + history). src/api/quizzes.js. Routes wired.
+- **In progress:** none
+- **Decisions / assumptions:** QUIZ-14 (CSV import) and QUIZ-17 (docs) left unticked.
+- **Surprises / problems:** none.
+- **Next task:** QUIZ-14 (CSV import UI) or QUIZ-17 (docs).
