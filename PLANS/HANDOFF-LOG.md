@@ -266,3 +266,10 @@ Append-only. Newest entry **at the bottom**. Never edit old entries; add a corre
 - **Decisions / assumptions:** best = highest percent, ties latest; passed via BR-01.
 - **Surprises / problems:** none.
 - **Next task:** QUIZ-11 (regrade endpoint).
+
+### 2026-11-01 · cline · agent
+- **Finished:** QUIZ-11 (regrade endpoint: recomputes auto attempts, reports counts, manual untouched).
+- **In progress:** none
+- **Decisions / assumptions:** Regrade route POST /faculty/quizzes/:id/regrade.
+- **Surprises / problems:** none.
+- **Next task:** QUIZ-12 (tests with fake repository).

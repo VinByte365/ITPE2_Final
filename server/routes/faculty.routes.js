@@ -37,6 +37,7 @@ import {
   getQuiz,
   importQuestions,
   listQuestions,
+  regradeQuiz,
   reorderQuestions,
   updateQuestion,
   updateQuizStatus,
@@ -426,6 +427,18 @@ router.post(
     const isAdmin = req.auth.profile?.role === 'admin';
     const questions = await importQuestions(req.auth.profile.id, quizId, req.body, isAdmin);
     res.status(201).json({ data: questions });
+  }),
+);
+
+
+// POST /faculty/quizzes/:id/regrade
+router.post(
+  '/quizzes/:id/regrade',
+  asyncHandler(async (req, res) => {
+    const quizId = uuidSchema.parse(req.params.id);
+    const isAdmin = req.auth.profile?.role === 'admin';
+    const result = await regradeQuiz(req.auth.profile.id, quizId, isAdmin);
+    res.json({ data: result });
   }),
 );
 

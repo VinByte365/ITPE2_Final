@@ -25,7 +25,7 @@ Until phase 06, "access to quiz" uses the schedule-only check from phase 03; GAT
   - Files: service, routes · Done when: server-side grading stores raw answers, `score`, `total`, status `graded`; second submit → `409 ATTEMPT_ALREADY_SUBMITTED`; response has `percent`, `passed`, `passingPercent`; `review` only when `show_answers` is true
 - [x] QUIZ-10 Student attempt history with best score and pass flag (@cline, 2026-11-01)
   - Files: service, routes · Done when: pass flag uses the subject's current passing percent
-- [ ] QUIZ-11 Regrade endpoint
+- [x] QUIZ-11 Regrade endpoint (@cline, 2026-11-01)
   - Files: service, route · Done when: after editing a correct answer, regrade updates affected attempts and reports counts; manual attempts untouched
 - [ ] QUIZ-12 Tests with a fake repository
   - Files: `server/**/*.test.js` · Done when: start, resume, submit, double submit, max attempts, answer-key leakage, publish limits, regrade covered

@@ -337,3 +337,14 @@ export async function updateAttempt(id, data) {
   );
   return mapAttempt(rows[0]);
 }
+
+export async function listAllAttemptsByQuiz(quizId) {
+  const { rows } = await dbQuery(
+    `select id, quiz_id, student_id, attempt_no, source, status, answers, score, total,
+            image_path, feedback, graded_by, graded_at, started_at, submitted_at,
+            created_at, updated_at
+       from public.attempts where quiz_id = $1`,
+    [quizId],
+  );
+  return rows.map(mapAttempt);
+}

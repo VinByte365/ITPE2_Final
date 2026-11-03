@@ -1,4 +1,6 @@
 // server/services/quizzes.service.js
+import { gradeAttempt } from './grading.js';
+
 import { questionSchema } from '../validators/quiz.validator.js';
 
 import { AppError } from '../lib/errors.js';
@@ -239,4 +241,37 @@ export async function importQuestions(facultyId, quizId, payload, isAdmin) {
 
   const created = await deps.quizzesRepo.createQuestionsBulk(quizId, items);
   return created;
+}
+
+export async function regradeQuiz(facultyId, quizId, isAdmin) {
+  const quiz = await deps.quizzesRepo.findQuizById(quizId);
+  if (!quiz) throw new AppError(404, "NOT_FOUND", "Quiz not found.");
+  await checkTopicOwner(quiz.topicId, facultyId, isAdmin);
+
+  const questions = await deps.quizzesRepo.listQuestionsByQuiz(quizId);
+  const allAttempts = await deps.quizzesRepo.listAllAttemptsByQuiz(quizId);
+
+  let changed = 0;
+  let total = 0;
+  for (const attempt of allAttempts) {
+    if (attempt.source !== "auto") continue; // manual untouched
+    if (attempt.status !== "graded" && attempt.status !== "in_progress") continue;
+    if (!attempt.answers) continue;
+    total += 1;
+    const answers = Array.isArray(attempt.answers) ? attempt.answers : (attempt.answers?.answers || []);
+    const answerMap = {};
+    for (const a of answers) {
+      if (a && a.questionId) {
+        answerMap[a.questionId] = a.optionId !== undefined ? a.optionId : a.text;
+      }
+    }
+    const { score, total: tot } = gradeAttempt(questions, answerMap);
+    const newScore = Math.round(score * 100) / 100;
+    const newTotal = Math.round(tot * 100) / 100;
+    if (newScore !== Number(attempt.score) || newTotal !== Number(attempt.total)) {
+      await deps.attemptsRepo.updateAttempt(attempt.id, { score: newScore, total: newTotal });
+      changed += 1;
+    }
+  }
+  return { regraded: total, changed };
 }
