@@ -129,3 +129,36 @@ export async function submitAttempt(studentId, attemptId, answersPayload) {
   }
   return response;
 }
+
+export async function getAttemptHistory(studentId, quizId) {
+  const quiz = await deps.quizzesRepo.findQuizById(quizId);
+  if (!quiz) throw new AppError(404, "NOT_FOUND", "Quiz not found.");
+
+  const topic = await deps.topicsRepo.findTopicById(quiz.topicId);
+  const subject = await deps.subjectsRepo.findSubjectById(topic.subjectId);
+  const passingPercent = subject.passingPercent;
+
+  const attempts = await deps.attemptsRepo.listAttemptsByStudentQuiz(quizId, studentId);
+
+  // best = graded attempt with highest percent (ties: latest)
+  let best = null;
+  for (const a of attempts) {
+    if (a.status !== "graded" || a.score === null || a.total === null) continue;
+    const pct = a.total > 0 ? (a.score / a.total) * 100 : 0;
+    if (!best) { best = { attempt: a, percent: pct }; continue; }
+    const bestPct = best.attempt.total > 0 ? (best.attempt.score / best.attempt.total) * 100 : 0;
+    if (pct > bestPct || (pct === bestPct && new Date(a.submittedAt || a.startedAt) > new Date(best.attempt.submittedAt || best.attempt.startedAt))) {
+      best = { attempt: a, percent: pct };
+    }
+  }
+
+  const passed = best ? isPassed(best.attempt.score, best.attempt.total, passingPercent) : false;
+
+  return {
+    attempts,
+    best: best ? best.attempt : null,
+    bestPercent: best ? Math.round(best.percent * 100) / 100 : null,
+    passed,
+    passingPercent,
+  };
+}

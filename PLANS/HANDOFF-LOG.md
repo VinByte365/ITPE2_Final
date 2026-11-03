@@ -259,3 +259,10 @@ Append-only. Newest entry **at the bottom**. Never edit old entries; add a corre
 - **Decisions / assumptions:** Submit route POST /student/attempts/:id/submit; answers payload {answers:[...]} or array.
 - **Surprises / problems:** none.
 - **Next task:** QUIZ-10 (student attempt history).
+
+### 2026-11-01 · cline · agent
+- **Finished:** QUIZ-10 (student attempt history with best score and pass flag using current passing percent).
+- **In progress:** none
+- **Decisions / assumptions:** best = highest percent, ties latest; passed via BR-01.
+- **Surprises / problems:** none.
+- **Next task:** QUIZ-11 (regrade endpoint).

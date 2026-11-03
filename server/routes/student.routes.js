@@ -9,7 +9,7 @@ import {
 import { enrollLimiter } from '../middleware/rateLimit.js';
 import { enrollSchema } from '../validators/subject.validator.js';
 import { uuidSchema } from '../validators/common.js';
-import { startAttempt, submitAttempt } from '../services/attempts.service.js';
+import { getAttemptHistory, startAttempt, submitAttempt } from '../services/attempts.service.js';
 
 import { listStudentContent } from '../services/content.service.js';
 import {
@@ -111,6 +111,17 @@ router.post(
     const attemptId = uuidSchema.parse(req.params.id);
     const answers = req.body?.answers ?? req.body ?? [];
     const result = await submitAttempt(req.auth.profile.id, attemptId, answers);
+    res.json({ data: result });
+  }),
+);
+
+
+// GET /student/quizzes/:id/attempts
+router.get(
+  '/quizzes/:id/attempts',
+  asyncHandler(async (req, res) => {
+    const quizId = uuidSchema.parse(req.params.id);
+    const result = await getAttemptHistory(req.auth.profile.id, quizId);
     res.json({ data: result });
   }),
 );
