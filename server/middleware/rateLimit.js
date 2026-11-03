@@ -51,3 +51,31 @@ export const passwordResetLimiter = rateLimit({
     },
   },
 });
+
+export const uploadUrlLimiter = rateLimit({
+  windowMs: 10 * 60 * 1000,
+  limit: 30,
+  keyGenerator: (req) => req.auth?.profile?.id || req.ip,
+  standardHeaders: 'draft-7',
+  legacyHeaders: false,
+  message: {
+    error: {
+      code: 'RATE_LIMITED',
+      message: 'Too many upload URL requests. Try again later.',
+    },
+  },
+});
+
+export const submissionsLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  limit: 20,
+  keyGenerator: (req) => req.auth?.profile?.id || req.ip,
+  standardHeaders: 'draft-7',
+  legacyHeaders: false,
+  message: {
+    error: {
+      code: 'RATE_LIMITED',
+      message: 'Too many submissions. Try again later.',
+    },
+  },
+});

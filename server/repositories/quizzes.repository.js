@@ -99,6 +99,7 @@ export async function deleteQuiz(id) {
   const { rows } = await dbQuery(`delete from public.quizzes where id = $1 returning id`, [id]);
   return rows[0] ? rows[0].id : null;
 }
+
 // ---------------------------------------------------------------------------
 // Questions
 // ---------------------------------------------------------------------------
@@ -209,7 +210,6 @@ export async function reorderQuestions(quizId, questionIds) {
 export async function createQuestionsBulk(quizId, items) {
   return withTransaction(async (client) => {
     const results = [];
-    // determine starting position
     const { rows: posRows } = await client.query(
       `select coalesce(max(position), 0) as max_pos from public.questions where quiz_id = $1`,
       [quizId],
@@ -262,8 +262,21 @@ export async function findInProgressAttempt(quizId, studentId) {
             image_path, feedback, graded_by, graded_at, started_at, submitted_at,
             created_at, updated_at
        from public.attempts
-      where quiz_id = $1 and student_id = $2 and status = ''in_progress''
+      where quiz_id = $1 and student_id = $2 and status = 'in_progress'
       order by started_at desc limit 1`,
+    [quizId, studentId],
+  );
+  return mapAttempt(rows[0]);
+}
+
+export async function findPendingReviewAttempt(quizId, studentId) {
+  const { rows } = await dbQuery(
+    `select id, quiz_id, student_id, attempt_no, source, status, answers, score, total,
+            image_path, feedback, graded_by, graded_at, started_at, submitted_at,
+            created_at, updated_at
+       from public.attempts
+      where quiz_id = $1 and student_id = $2 and status = 'pending_review'
+      limit 1`,
     [quizId, studentId],
   );
   return mapAttempt(rows[0]);
@@ -292,12 +305,21 @@ export async function listAttemptsByStudentQuiz(quizId, studentId) {
 export async function createAttempt(data) {
   const { rows } = await dbQuery(
     `insert into public.attempts
-       (quiz_id, student_id, attempt_no, source, status, answers)
-     values ($1,$2,$3,$4,$5,$6)
+       (quiz_id, student_id, attempt_no, source, status, answers, image_path, submitted_at)
+     values ($1,$2,$3,$4,$5,$6,$7,$8)
      returning id, quiz_id, student_id, attempt_no, source, status, answers, score, total,
                image_path, feedback, graded_by, graded_at, started_at, submitted_at,
                created_at, updated_at`,
-    [data.quizId, data.studentId, data.attemptNo, data.source, data.status, data.answers ? JSON.stringify(data.answers) : null],
+    [
+      data.quizId,
+      data.studentId,
+      data.attemptNo,
+      data.source,
+      data.status,
+      data.answers ? JSON.stringify(data.answers) : null,
+      data.imagePath ?? null,
+      data.submittedAt ?? null,
+    ],
   );
   return mapAttempt(rows[0]);
 }
@@ -311,6 +333,7 @@ export async function updateAttempt(id, data) {
     answers: "answers",
     score: "score",
     total: "total",
+    imagePath: "image_path",
     submittedAt: "submitted_at",
     feedback: "feedback",
     gradedBy: "graded_by",
@@ -336,4 +359,97 @@ export async function updateAttempt(id, data) {
     params,
   );
   return mapAttempt(rows[0]);
+}
+
+export async function deleteAttempt(id) {
+  const { rows } = await dbQuery(
+    `delete from public.attempts where id = $1 returning id`,
+    [id],
+  );
+  return rows[0] ? rows[0].id : null;
+}
+
+export async function listAllAttemptsByQuiz(quizId) {
+  const { rows } = await dbQuery(
+    `select id, quiz_id, student_id, attempt_no, source, status, answers, score, total,
+            image_path, feedback, graded_by, graded_at, started_at, submitted_at,
+            created_at, updated_at
+       from public.attempts where quiz_id = $1`,
+    [quizId],
+  );
+  return rows.map(mapAttempt);
+}
+
+export async function listSubmissionsBySubject(subjectId, { status, q } = {}) {
+  let sql = `
+    select a.id, a.quiz_id, a.student_id, a.attempt_no, a.source, a.status,
+           a.score, a.total, a.image_path, a.feedback, a.graded_by, a.graded_at,
+           a.started_at, a.submitted_at, a.created_at, a.updated_at,
+           p.first_name, p.last_name, p.student_number, p.email,
+           t.id as topic_id, t.title as topic_title,
+           q.title as quiz_title, q.total_items
+      from public.attempts a
+      join public.quizzes q on q.id = a.quiz_id
+      join public.topics t on t.id = q.topic_id
+      join public.profiles p on p.id = a.student_id
+     where t.subject_id = $1 and a.source = 'manual'
+  `;
+  const params = [subjectId];
+  if (status) {
+    params.push(status);
+    sql += ` and a.status = $${params.length}`;
+  }
+  if (q && q.trim()) {
+    params.push(`%${q.trim()}%`);
+    sql += ` and (p.first_name ilike $${params.length} or p.last_name ilike $${params.length} or p.student_number ilike $${params.length})`;
+  }
+  sql += ` order by a.submitted_at desc nulls last, a.created_at desc`;
+  const { rows } = await dbQuery(sql, params);
+  return rows.map((r) => ({
+    ...mapAttempt(r),
+    student: {
+      id: r.student_id,
+      firstName: r.first_name,
+      lastName: r.last_name,
+      studentNumber: r.student_number,
+      email: r.email,
+    },
+    topic: {
+      id: r.topic_id,
+      title: r.topic_title,
+    },
+    quiz: {
+      id: r.quiz_id,
+      title: r.quiz_title,
+      totalItems: r.total_items,
+    },
+  }));
+}
+
+export async function findAttemptWithContext(attemptId) {
+  const { rows } = await dbQuery(
+    `select a.id, a.quiz_id, a.student_id, a.attempt_no, a.source, a.status,
+            a.answers, a.score, a.total, a.image_path, a.feedback, a.graded_by,
+            a.graded_at, a.started_at, a.submitted_at, a.created_at, a.updated_at,
+            q.total_items, q.title as quiz_title, q.mode as quiz_mode,
+            t.id as topic_id, t.title as topic_title,
+            s.id as subject_id, s.faculty_id, s.passing_percent,
+            p.first_name, p.last_name, p.student_number, p.email
+       from public.attempts a
+       join public.quizzes q on q.id = a.quiz_id
+       join public.topics t on t.id = q.topic_id
+       join public.subjects s on s.id = t.subject_id
+       join public.profiles p on p.id = a.student_id
+      where a.id = $1 limit 1`,
+    [attemptId],
+  );
+  if (!rows[0]) return null;
+  const r = rows[0];
+  return {
+    attempt: mapAttempt(r),
+    quiz: { id: r.quiz_id, title: r.quiz_title, totalItems: r.total_items, mode: r.quiz_mode },
+    topic: { id: r.topic_id, title: r.topic_title },
+    subject: { id: r.subject_id, facultyId: r.faculty_id, passingPercent: r.passing_percent },
+    student: { id: r.student_id, firstName: r.first_name, lastName: r.last_name, studentNumber: r.student_number, email: r.email },
+  };
 }

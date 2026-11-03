@@ -13,7 +13,7 @@ const state = {
 
 const fakeTopicsRepo = {
   findTopicById: async (id) => (state.topic && state.topic.id === id ? state.topic : null),
-  listTopicsBySubject: async () => [],
+  listTopicsBySubject: async () => (state.topic ? [state.topic] : []),
   recordTopicProgress: async (studentId, topicId) => {
     const key = `${studentId}:${topicId}`;
     if (!state.recorded.includes(key)) state.recorded.push(key);
@@ -29,11 +29,22 @@ const fakeSubjectsRepo = {
       : null,
 };
 
-setDeps({ topicsRepo: fakeTopicsRepo, subjectsRepo: fakeSubjectsRepo });
+const fakeQuizzesRepo = {
+  findQuizByTopic: async () => null,
+};
+
+const fakeProgressRepo = {
+  listPublishedQuizzesBySubject: async () => ({}),
+  listAttemptsByStudentSubject: async () => [],
+  listProgressByStudentSubject: async () => new Set(state.recorded.map((k) => k.split(':')[1])),
+};
+
+setDeps({ topicsRepo: fakeTopicsRepo, subjectsRepo: fakeSubjectsRepo, progressRepo: fakeProgressRepo, quizzesRepo: fakeQuizzesRepo });
 
 const { listStudentTopics, getStudentTopic, completeTopic } = await import('../services/student-topics.service.js');
 
 function reset() {
+  fakeTopicsRepo.listTopicsBySubject = async () => (state.topic ? [state.topic] : []);
   state.topic = null;
   state.subject = null;
   state.enrollment = null;

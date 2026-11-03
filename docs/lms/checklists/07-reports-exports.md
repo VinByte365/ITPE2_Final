@@ -4,11 +4,11 @@ Depends on: 06. Specs: `../specs/05-reports.md`, `../specs/03-business-rules.md`
 
 ## Backend
 
-- [ ] RPT-01 Pure `buildReport()` and the report endpoint
+- [x] RPT-01 Pure `buildReport()` and the report endpoint
   - Files: `server/services/report.service.js`, `report.service.test.js`, repository, routes · Done when: shape matches the spec; tests cover sorting by surname (including `Ñ`, hyphens, case), by score both directions, ties, missing quizzes counted as 0, students with no quizzes last, passing % changes
-- [ ] RPT-02 Per-student scores endpoint
+- [x] RPT-02 Per-student scores endpoint
   - Files: service, routes · Done when: returns each quiz with every attempt (date, score, total, percent, source, result) and best; only for the owning faculty
-- [ ] RPT-03 Student own grades endpoint
+- [x] RPT-03 Student own grades endpoint
   - Files: service, routes · Done when: only the student's own data; no answer keys; includes average and remark
 - [ ] RPT-04 Performance check
   - Files: repository, migrations (indexes if needed) · Done when: 100 students × 16 quizzes responds in under 1 s locally; `EXPLAIN` shows indexes used
