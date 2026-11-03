@@ -335,3 +335,11 @@ Append-only. Newest entry **at the bottom**. Never edit old entries; add a corre
 - **Decisions / assumptions:** No product behaviour changed. Quiz status pill and count hints now switch via state classes (`qb-status-published` / `qb-status-draft`, `qb-count-ready` / `qb-count-pending`) instead of inline ternaries; the design-system tokens carry the colours. Form controls reuse the shared `.input` class.
 - **Surprises / problems:** None during execution.
 - **Next task:** UI-07 (QuizRun inline styles, 38)
+
+### 2026-11-04 · @kilo · agent
+- **Finished:** UPL-11 (student status display in TopicView)
+- **In progress:** none
+- **Decisions / assumptions:** Added ttempts array to getStudentTopic response in server/services/student-topics.service.js — attempts filtered to the topic's quiz, sorted by attemptNo descending (most recent first), each with a computed passed flag via isPassed(score, total, passingPercent). Frontend TopicView.jsx rewritten to show: pending_review state with `Waiting for your instructor to grade`, completed/ailed states with score/total/percent/pass-fail badge and feedback, and an attempt-history list. Replaced emoji (?, ??, ?, ?) with Icons.jsx glyphs (HourglassIcon, CheckIcon, RotateIcon). Replaced raw hex inline colors with CSS token references (ar(--muted), ar(--ink-soft), ar(--accent-ink)). Added percentOf() helper for percent display. Added 3 unit tests to student-topics.test.js for attempts with passed flag, failed attempt, and empty attempts.
+- **Surprises / problems:** ttempts[0] may be pending_review even when state is completed (a later pending attempt after a passing one), so the score panel uses the latest *graded* attempt (	opic.attempts.find(a => a.status === 'graded')) rather than attempts[0].
+- **Next task:** UPL-08 (orphan cleanup script) or RPT-05 (shared report helpers)
+

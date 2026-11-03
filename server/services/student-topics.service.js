@@ -1,6 +1,7 @@
 // server/services/student-topics.service.js
 import { AppError } from "../lib/errors.js";
 import { computeTopicStates, isTopicAccessible } from "./progress.service.js";
+import { isPassed } from "./grading.js";
 import * as topicsRepoModule from "../repositories/topics.repository.js";
 import * as subjectsRepoModule from "../repositories/subjects.repository.js";
 import * as progressRepoModule from "../repositories/progress.repository.js";
@@ -51,7 +52,7 @@ async function loadStates(studentId, subjectId) {
     now,
   });
 
-  return { subject, states };
+  return { subject, states, attempts };
 }
 
 export async function listStudentTopics(studentId, subjectId) {
@@ -66,7 +67,7 @@ export async function getStudentTopic(studentId, topicId) {
     throw new AppError(404, "NOT_FOUND", "Topic not found.");
   }
 
-  const { states } = await loadStates(studentId, topic.subjectId);
+  const { subject, states, attempts } = await loadStates(studentId, topic.subjectId);
   const topicState = states.find((s) => s.id === topicId);
 
   if (!topicState) {
@@ -85,6 +86,7 @@ export async function getStudentTopic(studentId, topicId) {
   }
 
   let quiz = null;
+  let topicAttempts = [];
   if (deps.quizzesRepo && deps.quizzesRepo.findQuizByTopic) {
     const q = await deps.quizzesRepo.findQuizByTopic(topicId);
     if (q && q.status === "published") {
@@ -101,10 +103,23 @@ export async function getStudentTopic(studentId, topicId) {
         attachmentName: q.attachmentName,
         attachmentMime: q.attachmentMime,
       };
+      topicAttempts = attempts
+        .filter((a) => a.quizId === q.id)
+        .sort((a, b) => b.attemptNo - a.attemptNo)
+        .map((a) => ({
+          ...a,
+          passed:
+            a.status === "graded" &&
+            Number.isFinite(a.score) &&
+            Number.isFinite(a.total) &&
+            a.total > 0
+              ? isPassed(a.score, a.total, subject.passingPercent)
+              : null,
+        }));
     }
   }
 
-  return { ...topicState, quiz };
+  return { ...topicState, quiz, attempts: topicAttempts };
 }
 
 /**

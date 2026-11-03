@@ -28,7 +28,7 @@ Flow: the student takes the quiz elsewhere, uploads an image showing the score, 
   - Files: `src/pages/faculty/QuizBuilder.jsx` · Done when: choose "Built-in" or "Uploaded"; uploaded mode shows total items, instructions, external link, attachment upload; switching mode is blocked after attempts exist with an explanation
 - [x] UPL-10 Student `UploadSubmission` component
   - Files: `src/components/UploadSubmission.jsx`, `FileUpload.jsx` · Done when: restricted `accept`, camera allowed on phones, client-side downscale and JPEG re-encode, preview, progress bar, replace while pending, clear error messages; shows the faculty's instructions, link and attachment
-- [ ] UPL-11 Student status display
+- [x] UPL-11 Student status display (@kilo, 2026-11-04)
   - Files: `TopicView.jsx`, `StatusBadge.jsx` · Done when: Pending review, Graded (score, percent, pass/fail, feedback), history of attempts
 - [x] UPL-12 Faculty grading queue `/faculty/subjects/:id/grading`
   - Files: `src/pages/faculty/GradingQueue.jsx`, `src/components/ImageViewer.jsx` · Done when: pending badge count; viewer with zoom, rotate and open-full-size; score field with total shown and validated; Save, then "Save and next"; feedback optional; already graded items can be corrected
