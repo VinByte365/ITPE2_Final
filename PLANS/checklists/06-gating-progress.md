@@ -7,7 +7,7 @@ Goal: replace the schedule-only stand-ins from phases 03 and 04 with the real ru
 
 - [x] GATE-01 Pure `computeTopicStates()`
   - Files: `server/services/progress.service.js`, `progress.service.test.js` · Done when: inputs are plain data (topics, quizzes, attempts, progress rows, passing percent, `now`, timezone-resolved dates); output matches the BR-06 table; all 12 scenarios in the spec are tests and pass
-- [ ] GATE-02 Efficient data loading for one student and for a whole subject
+- [x] GATE-02 Efficient data loading for one student and for a whole subject (@kilo, 2026-11-04)
   - Files: `server/repositories/progress.repository.js` · Done when: a fixed number of queries regardless of topic or student count (no N+1); verified with query logging on 16 topics × 40 students
 - [x] GATE-03 Real states on the student topic list
   - Files: `server/services/student-topics.service.js` · Done when: returns `scheduled|locked|open|failed|pending_review|completed` with `reason` and `blockedByTopicId`; stand-in code removed
