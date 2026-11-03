@@ -134,17 +134,17 @@ export default function QuizRun() {
 
   if (blockedState) {
     return (
-      <div className="page-shell" style={{ maxWidth: 640, margin: "40px auto", textAlign: "center" }}>
-        <div style={{ fontSize: 48, marginBottom: 16 }}>
+      <div className="page-shell qr-narrow">
+        <div className="qr-glyph">
           {blockedState.type === "scheduled" ? "⏳" : "🔒"}
         </div>
-        <h1 style={{ fontSize: 24, marginBottom: 8 }}>
+        <h1 className="qr-title">
           {blockedState.type === "scheduled" ? "Topic Not Available Yet" : "Topic Locked"}
         </h1>
-        <p style={{ color: "#4b5563", fontSize: 16, marginBottom: 20 }}>
+        <p className="qr-lead">
           {blockedState.message}
         </p>
-        <div style={{ display: "flex", gap: 12, justifyContent: "center" }}>
+        <div className="qr-actions">
           {blockedState.blockedByTopicId && (
             <Link to={`/student/topics/${blockedState.blockedByTopicId}`} className="btn btn-solid">
               Go to prerequisite topic
@@ -162,7 +162,7 @@ export default function QuizRun() {
     return (
       <div className="page-shell">
         <div className="auth-error" role="alert">{error}</div>
-        <div style={{ marginTop: 16 }}>
+        <div className="qr-cta-top">
           <button type="button" className="btn" onClick={() => navigate(-1)}>
             Go Back
           </button>
@@ -174,32 +174,23 @@ export default function QuizRun() {
   // Result screen (GATE-10)
   if (result) {
     return (
-      <div className="page-shell" style={{ maxWidth: 680, margin: "0 auto" }}>
-        <div
-          style={{
-            padding: 24,
-            borderRadius: 12,
-            background: result.passed ? "#ecfdf5" : "#fef2f2",
-            border: `1px solid ${result.passed ? "#a7f3d0" : "#fecaca"}`,
-            marginBottom: 24,
-            textAlign: "center",
-          }}
-        >
-          <div style={{ fontSize: 40, marginBottom: 8 }}>
+      <div className="page-shell qr-result">
+        <div className={`qr-result-panel ${result.passed ? "qr-result-passed" : "qr-result-failed"}`}>
+          <div className="qr-result-glyph">
             {result.passed ? "🎉" : "📝"}
           </div>
-          <h1 style={{ fontSize: 24, margin: "0 0 8px", color: result.passed ? "#065f46" : "#991b1b" }}>
+          <h1 className={`qr-result-title ${result.passed ? "qr-result-title-passed" : "qr-result-title-failed"}`}>
             {result.passed ? "Congratulations! You Passed" : "Needs Improvement"}
           </h1>
-          <p style={{ fontSize: 20, fontWeight: 700, margin: "0 0 4px" }}>
+          <p className="qr-result-score">
             Score: {result.score} / {result.total} ({result.percent}%)
           </p>
-          <p style={{ fontSize: 14, color: "#6b7280", margin: "0 0 20px" }}>
+          <p className="qr-result-note">
             Passing mark: {result.passingPercent}%
           </p>
 
           {/* GATE-10 Action buttons */}
-          <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
+          <div className="qr-actions">
             {result.passed ? (
               <Link
                 to={topic?.subjectId ? `/student/subjects/${topic.subjectId}` : "/student"}
