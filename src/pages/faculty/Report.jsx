@@ -6,6 +6,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { getFacultyReport } from '../../api/reports';
 import { toTable } from '../../lib/reportTable';
+import { exportPdf } from '../../lib/exportPdf';
 import StatusBadge from '../../components/StatusBadge';
 
 export default function Report() {
@@ -89,6 +90,18 @@ export default function Report() {
     if (next.has(quizId)) next.delete(quizId);
     else next.add(quizId);
     setSelectedQuizIds(next);
+  };
+
+  const handleDownloadPdf = async () => {
+    if (!report) return;
+    try {
+      await exportPdf(report, {
+        passingPercent,
+        columns: columns.map((c) => c.key),
+      });
+    } catch (err) {
+      setError(err?.message || 'Failed to generate PDF.');
+    }
   };
 
   if (loading) {
@@ -229,7 +242,7 @@ export default function Report() {
           <button type="button" className="btn btn-solid" onClick={() => { }}>
             Print
           </button>
-          <button type="button" className="btn btn-solid" onClick={() => { }}>
+          <button type="button" className="btn btn-solid" onClick={handleDownloadPdf}>
             Download PDF
           </button>
           <button type="button" className="btn btn-solid" onClick={() => { }}>

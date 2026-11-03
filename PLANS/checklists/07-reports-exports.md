@@ -21,7 +21,7 @@ Depends on: 06. Specs: `../specs/05-reports.md`, `../specs/03-business-rules.md`
   - Files: `src/pages/faculty/Report.jsx`, `src/api/reports.js`, `src/App.jsx`, `src/index.css` · Done when: header block, sort controls (surname/score, asc/desc), passing % control with live recompute, column picker, failed shown with color plus symbol, footer totals, loading/empty/error states
 - [x] RPT-07 Print (@kilo, 2026-11-04)
   - Files: `src/index.css` (`@media print`) · Done when: A4 landscape; controls and site chrome hidden; header repeats on each page; rows do not split; verified in Chrome and Firefox print preview
-- [ ] RPT-08 PDF export
+- [x] RPT-08 PDF export (@kilo, 2026-11-04)
   - Files: `src/lib/exportPdf.js` · Done when: lazy-loaded; same columns and order as the preview; failed in red; page numbers; file name per spec; opens correctly
 - [ ] RPT-09 Spreadsheet export (and CSV)
   - Files: `src/lib/exportXlsx.js`, `src/lib/exportCsv.js` · Done when: lazy-loaded; numbers stored as numbers; frozen header; failed fill; CSV has UTF-8 BOM and `ñ` survives; opens correctly in Excel and LibreOffice
