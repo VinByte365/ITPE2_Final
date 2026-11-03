@@ -27,7 +27,7 @@ Until phase 06, "access to quiz" uses the schedule-only check from phase 03; GAT
   - Files: service, routes · Done when: pass flag uses the subject's current passing percent
 - [x] QUIZ-11 Regrade endpoint (@cline, 2026-11-01)
   - Files: service, route · Done when: after editing a correct answer, regrade updates affected attempts and reports counts; manual attempts untouched
-- [ ] QUIZ-12 Tests with a fake repository
+- [x] QUIZ-12 Tests with a fake repository (@cline, 2026-11-01)
   - Files: `server/**/*.test.js` · Done when: start, resume, submit, double submit, max attempts, answer-key leakage, publish limits, regrade covered
 
 ## Frontend

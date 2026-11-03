@@ -273,3 +273,10 @@ Append-only. Newest entry **at the bottom**. Never edit old entries; add a corre
 - **Decisions / assumptions:** Regrade route POST /faculty/quizzes/:id/regrade.
 - **Surprises / problems:** none.
 - **Next task:** QUIZ-12 (tests with fake repository).
+
+### 2026-11-01 · cline · agent
+- **Finished:** QUIZ-12 (tests with fake repository: attempts service 10 tests + quizzes publish limits 3 tests).
+- **In progress:** none
+- **Decisions / assumptions:** Used setDeps seam; 138 tests pass.
+- **Surprises / problems:** none.
+- **Next task:** QUIZ-13 (faculty quiz builder frontend).
