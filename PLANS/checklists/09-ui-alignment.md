@@ -22,7 +22,7 @@ inline styles. Closing this phase makes the LMS visually continuous with the pub
   - Replaced by UI-06 … UI-10. One task covering six pages and 197 `style={{}}` blocks was not
     reviewable in a single pass; each page now has its own task with its own diff.
 
-- [ ] UI-04 Define the shared layout primitives and remove undefined classes
+- [ ] UI-04 Define the shared layout primitives and remove undefined classes — 🚧 @lms-worker
   - Files: `src/index.css`, `src/components/SlidesEmbed.jsx`, and the markup in `src/auth/pages/*.jsx`, `src/pages/faculty/*.jsx`, `src/pages/student/*.jsx` · Done when: `page-shell`, `subject-card`, `subject-grid`, `subject-code`, `auth-page`, `auth-layout`, `auth-error`, `auth-info`, `field-error`, `input`, `password-field`, `filters`, `markdown-view` and `slides-embed` resolve to real selectors built from tokens; `button` / `button-primary` markup is `.btn` / `.btn-solid`; the static `style={{}}` on the `SlidesEmbed` iframes is gone; no LMS or auth `className` token is left undefined
 
 - [ ] UI-05 Responsive and keyboard sweep
