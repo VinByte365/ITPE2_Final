@@ -13,7 +13,7 @@ Goal: replace the schedule-only stand-ins from phases 03 and 04 with the real ru
   - Files: `server/services/student-topics.service.js` · Done when: returns `scheduled|locked|open|failed|pending_review|completed` with `reason` and `blockedByTopicId`; stand-in code removed
 - [x] GATE-04 `assertTopicAccessible()` on every student endpoint that touches a topic
   - Files: `server/services/access.service.js`, services, routes · Done when: topic detail, content download, quiz start, submit, upload-url and submission all return `TOPIC_NOT_AVAILABLE` or `TOPIC_LOCKED` correctly; one test per endpoint
-- [ ] GATE-05 Dynamic effects of setting changes
+- [x] GATE-05 Dynamic effects of setting changes (@kilo, 2026-11-04)
   - Files: tests · Done when: tests prove that changing passing %, unpublishing/publishing a quiz, regrading and re-grading a manual attempt change states as BR-06 describes, with no stored state to fix
 - [ ] GATE-06 Faculty progress endpoint
   - Files: service, routes · Done when: `GET /faculty/subjects/:id/progress` returns each student's state per topic using GATE-01

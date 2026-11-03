@@ -209,3 +209,138 @@ describe('isTopicAccessible', () => {
   });
 });
 
+describe('GATE-05: dynamic effects of setting changes (no stored state)', () => {
+  const baseTopics = [
+    { id: 't1', position: 1, title: 'Topic 1', availableFrom: PAST, subjectId: 'subj1', status: 'published' },
+    { id: 't2', position: 2, title: 'Topic 2', availableFrom: PAST, subjectId: 'subj1', status: 'published' },
+  ];
+  const baseQuizByTopicId = { t1: { id: 'q1', topicId: 't1', status: 'published' } };
+  const baseNow = NOW;
+
+  it('raising passing percent flips completed → failed, and next topic open → locked', () => {
+    const attempts = [{ id: 'a1', quizId: 'q1', status: 'graded', score: 8, total: 10, studentId: 's1' }];
+
+    const at75 = computeTopicStates({
+      topics: baseTopics, quizByTopicId: baseQuizByTopicId, attempts,
+      progressTopicIds: new Set(), passingPercent: 75, now: baseNow,
+    });
+    assert.strictEqual(at75[0].state, 'completed');
+    assert.strictEqual(at75[1].state, 'open');
+
+    const at90 = computeTopicStates({
+      topics: baseTopics, quizByTopicId: baseQuizByTopicId, attempts,
+      progressTopicIds: new Set(), passingPercent: 90, now: baseNow,
+    });
+    assert.strictEqual(at90[0].state, 'failed');
+    assert.strictEqual(at90[1].state, 'locked');
+  });
+
+  it('lowering passing percent flips failed → completed, and next topic locked → open', () => {
+    const attempts = [{ id: 'a1', quizId: 'q1', status: 'graded', score: 7, total: 10, studentId: 's1' }];
+
+    const at90 = computeTopicStates({
+      topics: baseTopics, quizByTopicId: baseQuizByTopicId, attempts,
+      progressTopicIds: new Set(), passingPercent: 90, now: baseNow,
+    });
+    assert.strictEqual(at90[0].state, 'failed');
+    assert.strictEqual(at90[1].state, 'locked');
+
+    const at50 = computeTopicStates({
+      topics: baseTopics, quizByTopicId: baseQuizByTopicId, attempts,
+      progressTopicIds: new Set(), passingPercent: 50, now: baseNow,
+    });
+    assert.strictEqual(at50[0].state, 'completed');
+    assert.strictEqual(at50[1].state, 'open');
+  });
+
+  it('unpublishing a quiz flips completed → open (topic_progress path)', () => {
+    const attempts = [{ id: 'a1', quizId: 'q1', status: 'graded', score: 10, total: 10, studentId: 's1' }];
+
+    const withQuiz = computeTopicStates({
+      topics: baseTopics, quizByTopicId: baseQuizByTopicId, attempts,
+      progressTopicIds: new Set(), passingPercent: 75, now: baseNow,
+    });
+    assert.strictEqual(withQuiz[0].state, 'completed');
+
+    const withoutQuiz = computeTopicStates({
+      topics: baseTopics, quizByTopicId: {}, attempts,
+      progressTopicIds: new Set(), passingPercent: 75, now: baseNow,
+    });
+    assert.strictEqual(withoutQuiz[0].state, 'open');
+    assert.strictEqual(withoutQuiz[1].state, 'locked');
+  });
+
+  it('publishing a quiz flips open → completed when a passing attempt exists', () => {
+    const attempts = [{ id: 'a1', quizId: 'q1', status: 'graded', score: 10, total: 10, studentId: 's1' }];
+
+    const withoutQuiz = computeTopicStates({
+      topics: baseTopics, quizByTopicId: {}, attempts,
+      progressTopicIds: new Set(), passingPercent: 75, now: baseNow,
+    });
+    assert.strictEqual(withoutQuiz[0].state, 'open');
+
+    const withQuiz = computeTopicStates({
+      topics: baseTopics, quizByTopicId: baseQuizByTopicId, attempts,
+      progressTopicIds: new Set(), passingPercent: 75, now: baseNow,
+    });
+    assert.strictEqual(withQuiz[0].state, 'completed');
+    assert.strictEqual(withQuiz[1].state, 'open');
+  });
+
+  it('regrading a lower score flips completed → failed', () => {
+    const attemptsHigh = [{ id: 'a1', quizId: 'q1', status: 'graded', score: 10, total: 10, studentId: 's1' }];
+    const completed = computeTopicStates({
+      topics: baseTopics, quizByTopicId: baseQuizByTopicId, attempts: attemptsHigh,
+      progressTopicIds: new Set(), passingPercent: 75, now: baseNow,
+    });
+    assert.strictEqual(completed[0].state, 'completed');
+
+    const attemptsLow = [{ id: 'a1', quizId: 'q1', status: 'graded', score: 7, total: 10, studentId: 's1' }];
+    const failed = computeTopicStates({
+      topics: baseTopics, quizByTopicId: baseQuizByTopicId, attempts: attemptsLow,
+      progressTopicIds: new Set(), passingPercent: 75, now: baseNow,
+    });
+    assert.strictEqual(failed[0].state, 'failed');
+    assert.strictEqual(failed[1].state, 'locked');
+  });
+
+  it('regrading a manual attempt from pending_review to graded flips pending_review → completed/failed', () => {
+    const pending = [{ id: 'a1', quizId: 'q1', status: 'pending_review', score: null, total: null, studentId: 's1' }];
+    const pendingState = computeTopicStates({
+      topics: baseTopics, quizByTopicId: baseQuizByTopicId, attempts: pending,
+      progressTopicIds: new Set(), passingPercent: 75, now: baseNow,
+    });
+    assert.strictEqual(pendingState[0].state, 'pending_review');
+    assert.strictEqual(pendingState[1].state, 'locked');
+
+    const gradedPass = [{ id: 'a1', quizId: 'q1', status: 'graded', score: 10, total: 10, studentId: 's1' }];
+    const passState = computeTopicStates({
+      topics: baseTopics, quizByTopicId: baseQuizByTopicId, attempts: gradedPass,
+      progressTopicIds: new Set(), passingPercent: 75, now: baseNow,
+    });
+    assert.strictEqual(passState[0].state, 'completed');
+    assert.strictEqual(passState[1].state, 'open');
+
+    const gradedFail = [{ id: 'a1', quizId: 'q1', status: 'graded', score: 7, total: 10, studentId: 's1' }];
+    const failState = computeTopicStates({
+      topics: baseTopics, quizByTopicId: baseQuizByTopicId, attempts: gradedFail,
+      progressTopicIds: new Set(), passingPercent: 75, now: baseNow,
+    });
+    assert.strictEqual(failState[0].state, 'failed');
+    assert.strictEqual(failState[1].state, 'locked');
+  });
+
+  it('no stored state to fix: same inputs always produce same outputs', () => {
+    const attempts = [{ id: 'a1', quizId: 'q1', status: 'graded', score: 8, total: 10, studentId: 's1' }];
+    const first = computeTopicStates({
+      topics: baseTopics, quizByTopicId: baseQuizByTopicId, attempts,
+      progressTopicIds: new Set(), passingPercent: 75, now: baseNow,
+    });
+    const second = computeTopicStates({
+      topics: baseTopics, quizByTopicId: baseQuizByTopicId, attempts,
+      progressTopicIds: new Set(), passingPercent: 75, now: baseNow,
+    });
+    assert.deepStrictEqual(first, second);
+  });
+});
+
