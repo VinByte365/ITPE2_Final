@@ -83,13 +83,36 @@ async function main() {
   await client.query('BEGIN');
 
   try {
-    // ---- 1. Profiles ----
+    // ---- 0. Auth users (required by profiles FK) ----
+  const authUserIds = [facultyId, pendingFacultyId, ...studentIds];
+  const authEmails = ['faculty.approved@example.com', 'faculty.pending@example.com',
+    'ana.nunez@example.com', 'benito.ojeda@example.com', 'clarisse.ibanez@example.com',
+    'diego.reyes@example.com', 'elena.cruz@example.com', 'francis.tan@example.com',
+    'grace.lim@example.com', 'hector.morales@example.com', 'isabel.santos@example.com',
+    'julian.garcia@example.com', 'kristine.aquino@example.com', 'luis.martinez@example.com'];
+  for (let i = 0; i < authUserIds.length; i++) {
+    await client.query(
+      `insert into auth.users (id, email, encrypted_password, email_confirmed_at, created_at, updated_at, aud, role, raw_app_meta_data, raw_user_meta_data, is_sso_user, is_anonymous)
+       values ($1, $2, '$2a$10$l3hyYk4eM6oV2N1.UK0iV.3UChX1J6LuorT8jdCWpmE6lw3JLwOI2', now(), now(), now(), 'authenticated', 'authenticated', '{"provider":"email","providers":["email"]}', '{}', false, false)
+       on conflict (id) do nothing`,
+      [authUserIds[i], authEmails[i]],
+    );
+  }
+
+  // ---- 1. Profiles ----
     await client.query(
       `insert into public.profiles
         (id, email, full_name, first_name, last_name, student_number, approval_status, role)
       values
         ($1, 'faculty.approved@example.com', 'Maria Dela Cruz', 'Maria', 'Dela Cruz', NULL, 'approved', 'faculty'),
-        ($2, 'faculty.pending@example.com', 'Jose R. Santos', 'Jose', 'Santos', NULL, 'pending', 'faculty')`,
+        ($2, 'faculty.pending@example.com', 'Jose R. Santos', 'Jose', 'Santos', NULL, 'pending', 'faculty')
+      on conflict (id) do update
+        set email = excluded.email,
+            full_name = excluded.full_name,
+            first_name = excluded.first_name,
+            last_name = excluded.last_name,
+            approval_status = excluded.approval_status,
+            role = excluded.role`,
       [facultyId, pendingFacultyId],
     );
 
@@ -123,16 +146,6 @@ async function main() {
       );
     }
 
-    // ---- 2. Enrollments ----
-    for (const s of students) {
-      await client.query(
-        `insert into public.enrollments (subject_id, student_id, status)
-         values ($1, $2, 'active')
-         on conflict (subject_id, student_id) do nothing`,
-        [subjectId, s.id],
-      );
-    }
-
     // ---- 3. Subject ----
     await client.query(
       `insert into public.subjects
@@ -145,6 +158,16 @@ async function main() {
          set name = excluded.name`,
       [subjectId, facultyId],
     );
+
+    // ---- 2. Enrollments ----
+    for (const s of students) {
+      await client.query(
+        `insert into public.enrollments (subject_id, student_id, status)
+         values ($1, $2, 'active')
+         on conflict (subject_id, student_id) do nothing`,
+        [subjectId, s.id],
+      );
+    }
 
     // ---- 4. Topics (8, mixed past/future dates) ----
     const topics = [
@@ -191,12 +214,12 @@ async function main() {
       { position: 5, type: 'choice', prompt: 'What is 0 XOR 1?', options: '[{"id":"a","label":"0"},{"id":"b","label":"1"}]', correct: 'b', answers: null, points: 1 },
       { position: 6, type: 'choice', prompt: 'What is 1 AND 1?', options: '[{"id":"a","label":"0"},{"id":"b","label":"1"}]', correct: 'b', answers: null, points: 1 },
       // Text questions
-      { position: 7, type: 'text', prompt: 'Name one basic logic gate.', options: null, correct: null, answers: '["AND","OR","NOT","NAND","NOR","XOR","XNOR"]', points: 1 },
-      { position: 8, type: 'text', prompt: 'What does NAND stand for?', options: null, correct: null, answers: '["Not AND","NOT AND"]', points: 1 },
-      { position: 9, type: 'text', prompt: 'How many inputs does a basic gate have?', options: null, correct: null, answers: '["2","two"]', points: 1 },
-      { position: 10, type: 'text', prompt: 'Name a universal gate.', options: null, correct: null, answers: '["NAND","NOR"]', points: 1 },
-      { position: 11, type: 'text', prompt: 'What is the output of NOT 0?', options: null, correct: null, answers: '["1","one"]', points: 1 },
-      { position: 12, type: 'text', prompt: 'What is a truth table?', options: null, correct: null, answers: '["A table showing all possible input combinations and their outputs"]', points: 1 },
+      { position: 7, type: 'text', prompt: 'Name one basic logic gate.', options: null, correct: null, answers: '{"AND","OR","NOT","NAND","NOR","XOR","XNOR"}', points: 1 },
+      { position: 8, type: 'text', prompt: 'What does NAND stand for?', options: null, correct: null, answers: '{"Not AND","NOT AND"}', points: 1 },
+      { position: 9, type: 'text', prompt: 'How many inputs does a basic gate have?', options: null, correct: null, answers: '{"2","two"}', points: 1 },
+      { position: 10, type: 'text', prompt: 'Name a universal gate.', options: null, correct: null, answers: '{"NAND","NOR"}', points: 1 },
+      { position: 11, type: 'text', prompt: 'What is the output of NOT 0?', options: null, correct: null, answers: '{"1","one"}', points: 1 },
+      { position: 12, type: 'text', prompt: 'What is a truth table?', options: null, correct: null, answers: '{"A table showing all possible input combinations and their outputs"}', points: 1 },
     ];
 
     for (const q of questions) {
@@ -231,7 +254,7 @@ async function main() {
          image_path, feedback, graded_by, graded_at, started_at, submitted_at)
        values ($1, $2, $3, 1, 'auto', 'graded', '[]', 8, 12, NULL, NULL, $4, $5, $6, $7)
        on conflict (quiz_id, student_id, attempt_no) do nothing`,
-      [uuid('seed-lms-attempt-1'), builtQuizId, studentIds[0], facultyId, past(3).toISOString(), past(3).toISOString(), past(3).toISOString()],
+      [uuid('seed-lms-attempt-1'), builtQuizId, studentIds[0], facultyId, past(3), past(3), past(3)],
     );
 
     // Student 2: failed built quiz (5/12)
@@ -241,7 +264,7 @@ async function main() {
          image_path, feedback, graded_by, graded_at, started_at, submitted_at)
        values ($1, $2, $3, 1, 'auto', 'graded', '[]', 5, 12, NULL, NULL, $4, $5, $6, $7)
        on conflict (quiz_id, student_id, attempt_no) do nothing`,
-      [uuid('seed-lms-attempt-2'), builtQuizId, studentIds[1], facultyId, past(2).toISOString(), past(2).toISOString(), past(2).toISOString()],
+      [uuid('seed-lms-attempt-2'), builtQuizId, studentIds[1], facultyId, past(2), past(2), past(2)],
     );
 
     // Student 3: pending uploaded quiz
@@ -253,7 +276,7 @@ async function main() {
                'subjects/.../quizzes/.../student3/abc.png', NULL, NULL, NULL,
                $4, $5)
        on conflict (quiz_id, student_id, attempt_no) do nothing`,
-      [uuid('seed-lms-attempt-3'), uploadedQuizId, studentIds[2], past(1).toISOString(), past(1).toISOString()],
+      [uuid('seed-lms-attempt-3'), uploadedQuizId, studentIds[2], past(1), past(1)],
     );
 
     await client.query('COMMIT');
