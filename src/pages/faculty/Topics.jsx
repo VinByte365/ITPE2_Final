@@ -90,19 +90,19 @@ export default function FacultyTopics() {
     catch (err) { setError(err?.message || "Delete failed."); }
   };
 
-  if (loading) return <div className="page-shell"><p>Loading topics...</p></div>;
+  if (loading) return <div className="page-shell"><p>Loading topics…</p></div>;
 
   return (
     <div className="page-shell">
       <h1>Topics</h1>
       {error && <div className="auth-error" role="alert">{error}</div>}
-      <div style={{ marginBottom: 12 }}>
+      <div className="ft-actions">
         <button className="btn" onClick={() => setShowAdd((v) => !v)}>Add topic</button>{" "}
         <button className="btn" onClick={() => setShowBulk((v) => !v)}>Bulk add</button>
       </div>
 
       {showAdd && (
-        <form onSubmit={handleAdd} style={{ marginBottom: 16, padding: 12, border: "1px solid #e5e7eb", borderRadius: 8 }}>
+        <form onSubmit={handleAdd} className="ft-add-form">
           <div><label>Title<input value={addForm.title} onChange={(e) => setAddForm({ ...addForm, title: e.target.value })} required /></label></div>
           <div><label>Available from (YYYY-MM-DD)<input value={addForm.availableFrom} onChange={(e) => setAddForm({ ...addForm, availableFrom: e.target.value })} required /></label></div>
           <div><label>Status<select value={addForm.status} onChange={(e) => setAddForm({ ...addForm, status: e.target.value })}><option value="draft">draft</option><option value="published">published</option></select></label></div>
@@ -111,28 +111,32 @@ export default function FacultyTopics() {
       )}
 
       {showBulk && (
-        <div style={{ marginBottom: 16, padding: 12, border: "1px solid #e5e7eb", borderRadius: 8 }}>
+        <div className="ft-bulk-form">
           <div><label>Count<input type="number" value={bulk.count} onChange={(e) => setBulk({ ...bulk, count: Number(e.target.value) })} /></label></div>
           <div><label>Start date<input value={bulk.startDate} onChange={(e) => setBulk({ ...bulk, startDate: e.target.value })} /></label></div>
           <div><label>Title prefix<input value={bulk.titlePrefix} onChange={(e) => setBulk({ ...bulk, titlePrefix: e.target.value })} /></label></div>
-          <div><label>Meeting days{WEEKDAYS.map((d, i) => (<label key={d} style={{ marginRight: 8 }}><input type="checkbox" checked={bulk.meetingDays.includes(i)} onChange={(e) => { const next = e.target.checked ? [...bulk.meetingDays, i] : bulk.meetingDays.filter((x) => x !== i); setBulk({ ...bulk, meetingDays: next }); }} />{d}</label>))}</label></div>
+          <div><label>Meeting days{WEEKDAYS.map((d, i) => (
+            <label key={d} className="ft-weekday-label">
+              <input type="checkbox" checked={bulk.meetingDays.includes(i)} onChange={(e) => { const next = e.target.checked ? [...bulk.meetingDays, i] : bulk.meetingDays.filter((x) => x !== i); setBulk({ ...bulk, meetingDays: next }); }} />{d}
+            </label>
+          ))}</label></div>
           <button type="button" onClick={handleBulkPreview}>Preview dates</button>
-          {bulkPreview.length > 0 && (<ul style={{ maxHeight: 120, overflow: "auto" }}>{bulkPreview.map((d) => <li key={d}>{d}</li>)}</ul>)}
-          <div style={{ marginTop: 8 }}><button type="button" className="btn" onClick={handleBulkSave} disabled={bulkPreview.length === 0}>Save bulk</button></div>
+          {bulkPreview.length > 0 && (<ul className="ft-preview-list">{bulkPreview.map((d) => <li key={d}>{d}</li>)}</ul>)}
+          <div className="ft-save-btn">          <button type="button" className="btn" onClick={handleBulkSave} disabled={bulkPreview.length === 0} aria-disabled={bulkPreview.length === 0}>Save bulk</button></div>
         </div>
       )}
 
       {topics.length === 0 ? <p>No topics yet.</p> : (
-        <ul style={{ listStyle: "none", padding: 0 }}>
+        <ul className="ft-topic-list">
           {topics.map((t, idx) => (
-            <li key={t.id} style={{ padding: 10, border: "1px solid #e5e7eb", borderRadius: 8, marginBottom: 8, display: "flex", alignItems: "center", gap: 10 }}>
-              <span style={{ fontWeight: 600 }}>{t.position}.</span>
-              <div style={{ flex: 1 }}>
-                <div>{t.title}</div>
-                <div style={{ fontSize: 12, color: "#6b7280" }}>{formatDate(t.availableFrom)} <StatusBadge status={t.status} /></div>
+            <li key={t.id} className="ft-topic-item">
+              <span className="ft-topic-position">{t.position}.</span>
+              <div className="ft-topic-content">
+                <div className="ft-topic-title">{t.title}</div>
+                <div className="ft-topic-meta">{formatDate(t.availableFrom)} <StatusBadge status={t.status} /></div>
               </div>
-              <button onClick={() => handleReorder(idx, -1)} disabled={idx === 0}>?</button>
-              <button onClick={() => handleReorder(idx, 1)} disabled={idx === topics.length - 1}>?</button>
+              <button onClick={() => handleReorder(idx, -1)} disabled={idx === 0} aria-disabled={idx === 0}>?</button>
+              <button onClick={() => handleReorder(idx, 1)} disabled={idx === topics.length - 1} aria-disabled={idx === topics.length - 1}>?</button>
               <button onClick={() => handleTogglePublish(t)}>{t.status === "published" ? "Unpublish" : "Publish"}</button>
               <Link to={`/faculty/topics/${t.id}`}>Edit</Link>
               <button onClick={() => handleDelete(t)}>Delete</button>

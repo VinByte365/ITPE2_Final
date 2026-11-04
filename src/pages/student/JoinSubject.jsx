@@ -40,7 +40,7 @@ export default function JoinSubject() {
             onChange={(e) => setCode(e.target.value.toUpperCase())}
             required
             placeholder="e.g. ABCD1234"
-            style={{ textTransform: 'uppercase' }}
+            className="js-code-input"
           />
         </label>
         <button type="submit" disabled={submitting}>

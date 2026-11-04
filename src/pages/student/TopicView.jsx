@@ -3,11 +3,7 @@ import { Link, useParams, useNavigate } from "react-router-dom";
 import MarkdownView from "../../components/MarkdownView";
 import SlidesEmbed from "../../components/SlidesEmbed";
 import StatusBadge from "../../components/StatusBadge";
-import {
-  CheckIcon,
-  HourglassIcon,
-  RotateIcon,
-} from "../../components/Icons";
+import { ArrowLeft, CheckIcon, CloseIcon, HourglassIcon, LockIcon, RotateIcon } from "../../components/Icons";
 import {
   getStudentTopic,
   listStudentTopicContent,
@@ -86,32 +82,33 @@ export default function TopicView() {
   if (loading) {
     return (
       <div className="page-shell">
-        <p>Loading topic...</p>
+        <p>Loading topic…</p>
       </div>
     );
   }
 
   if (blockedState) {
     return (
-      <div className="page-shell" style={{ maxWidth: 640, margin: "40px auto", textAlign: "center" }}>
-        <div style={{ fontSize: 48, marginBottom: 16 }}>
-          <HourglassIcon />
+      <div className="page-shell tv-blocked">
+        <div className="tv-glyph">
+          {blockedState.type === "scheduled" ? (
+            <HourglassIcon />
+          ) : (
+            <LockIcon />
+          )}
         </div>
-        <h1 style={{ fontSize: 24, marginBottom: 8 }}>
+        <h1 className="tv-title">
           {blockedState.type === "scheduled" ? "Topic Not Available Yet" : "Topic Locked"}
         </h1>
-        <p style={{ color: "var(--muted)", fontSize: 16, marginBottom: 16 }}>
-          {blockedState.message}
-        </p>
+        <p className="tv-lead">{blockedState.message}</p>
 
         {blockedState.availableFrom && (
-          <p style={{ fontSize: 14, color: "var(--muted)", marginBottom: 24 }}>
-            Scheduled to open on:{" "}
-            <strong>{new Date(blockedState.availableFrom).toLocaleString()}</strong>
+          <p className="tv-scheduled">
+            Scheduled to open on: <strong>{new Date(blockedState.availableFrom).toLocaleString()}</strong>
           </p>
         )}
 
-        <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
+        <div className="tv-actions">
           {blockedState.blockedByTopicId && (
             <Link
               to={`/student/topics/${blockedState.blockedByTopicId}`}
@@ -136,7 +133,7 @@ export default function TopicView() {
     return (
       <div className="page-shell">
         <div className="auth-error" role="alert">{error}</div>
-        <div style={{ marginTop: 16 }}>
+        <div className="tv-back">
           <button type="button" className="btn" onClick={() => navigate(-1)}>
             Go Back
           </button>
@@ -147,28 +144,19 @@ export default function TopicView() {
 
   return (
     <div className="page-shell" id="content">
-      <div style={{ marginBottom: 16 }}>
+      <div className="tv-back">
         <Link
           to={`/student/subjects/${topic?.subjectId}`}
-          style={{ fontSize: 14, textDecoration: "none", color: "var(--accent-ink)" }}
+          className="tv-back-link"
         >
-          ← Back to subject
+          <ArrowLeft /> Back to subject
         </Link>
       </div>
 
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "flex-start",
-          gap: 12,
-          flexWrap: "wrap",
-          marginBottom: 12,
-        }}
-      >
+      <div className="tv-meta">
         <div>
-          <h1 style={{ margin: "0 0 6px" }}>{topic?.title}</h1>
-          <p style={{ fontSize: 13, color: "var(--muted)", margin: 0 }}>
+          <h1 className="tv-topic-title">{topic?.title}</h1>
+          <p className="tv-available">
             Available from: {topic ? new Date(topic.availableFrom).toLocaleDateString() : ""}
           </p>
         </div>
@@ -176,24 +164,13 @@ export default function TopicView() {
       </div>
 
       {topic?.description && (
-        <p style={{ fontSize: 15, color: "var(--ink-soft)", marginBottom: 20 }}>
-          {topic.description}
-        </p>
+        <p className="tv-description">{topic.description}</p>
       )}
 
-      {/* Content Blocks */}
-      <div style={{ display: "flex", flexDirection: "column", gap: 16, marginBottom: 24 }}>
+      <div className="tv-blocks">
         {blocks.map((b) => (
-          <div
-            key={b.id}
-            style={{
-              padding: 16,
-              border: "1px solid var(--line)",
-              borderRadius: 2,
-              background: "var(--paper-2)",
-            }}
-          >
-            {b.title && <h3 style={{ marginTop: 0, marginBottom: 12 }}>{b.title}</h3>}
+          <div key={b.id} className="tv-block">
+            {b.title && <h3 className="tv-block-title">{b.title}</h3>}
             {b.type === "presentation" && (
               <SlidesEmbed
                 url={b.url}
@@ -203,52 +180,38 @@ export default function TopicView() {
               />
             )}
             {b.type === "video" && b.url && (
-              <p style={{ margin: 0 }}>
-                <a href={b.url} target="_blank" rel="noopener noreferrer">
-                  <RotateIcon /> Watch video
-                </a>
+              <p className="tv-video-link">
+                <RotateIcon /> Watch video
               </p>
             )}
             {b.body && <MarkdownView content={b.body} />}
             {b.type === "presentation" && b.url && !b.body && (
-              <p style={{ margin: "8px 0 0" }}>
-                <a href={b.url} target="_blank" rel="noopener noreferrer">
-                  Open presentation link
-                </a>
+              <p className="tv-presentation-link">
+                Open presentation link
               </p>
             )}
           </div>
         ))}
       </div>
 
-      {/* Topic Completion or Quiz Action */}
-      <div
-        style={{
-          marginTop: 24,
-          padding: 20,
-          background: "var(--paper-2)",
-          border: "1px solid var(--line)",
-          borderRadius: 2,
-        }}
-      >
+      <div className="tv-completion">
         {topic?.quiz ? (
-          <div className="qr-result">
-            <div className="qr-quiz-head">
-              <h2 style={{ fontSize: 18, margin: 0 }}>Quiz: {topic.quiz.title}</h2>
-              <span className="qr-lead">
+          <div className="tv-quiz">
+            <div className="tv-quiz-head">
+              <h2 className="tv-quiz-title">Quiz: {topic.quiz.title}</h2>
+              <span className="tv-quiz-mode">
                 {topic.quiz.mode === "uploaded" ? "Manual Review" : "Built-in"}
               </span>
             </div>
 
             {topic.quiz.instructions && (
-              <p className="qr-lead">{topic.quiz.instructions}</p>
+              <p className="tv-lead">{topic.quiz.instructions}</p>
             )}
 
-            {/* Attempt status */}
             {topic.state === "pending_review" && (
-              <div className="qr-review">
+              <div>
                 <StatusBadge status="pending_review" />
-                <p style={{ margin: "8px 0 0", fontSize: 14, color: "var(--ink-soft)" }}>
+                <p className="tv-pending-text">
                   Waiting for your instructor to grade.
                 </p>
               </div>
@@ -267,13 +230,9 @@ export default function TopicView() {
                       ({percentOf(latestGradedAttempt.score, latestGradedAttempt.total)}%)
                     </p>
                     {latestGradedAttempt.feedback && (
-                      <div style={{ marginTop: 12, textAlign: "left" }}>
-                        <p style={{ margin: "0 0 4px", fontSize: 13, color: "var(--muted)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em" }}>
-                          Feedback
-                        </p>
-                        <p style={{ margin: 0, fontSize: 14, color: "var(--ink-soft)", whiteSpace: "pre-wrap" }}>
-                          {latestGradedAttempt.feedback}
-                        </p>
+                      <div className="tv-feedback">
+                        <p className="tv-feedback-label">Feedback</p>
+                        <p className="tv-feedback-text">{latestGradedAttempt.feedback}</p>
                       </div>
                     )}
                   </div>
@@ -290,13 +249,9 @@ export default function TopicView() {
                     </p>
                     <p className="qr-result-note">Score below passing mark. Retake allowed.</p>
                     {latestGradedAttempt.feedback && (
-                      <div style={{ marginTop: 12, textAlign: "left" }}>
-                        <p style={{ margin: "0 0 4px", fontSize: 13, color: "var(--muted)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em" }}>
-                          Feedback
-                        </p>
-                        <p style={{ margin: 0, fontSize: 14, color: "var(--ink-soft)", whiteSpace: "pre-wrap" }}>
-                          {latestGradedAttempt.feedback}
-                        </p>
+                      <div className="tv-feedback">
+                        <p className="tv-feedback-label">Feedback</p>
+                        <p className="tv-feedback-text">{latestGradedAttempt.feedback}</p>
                       </div>
                     )}
                   </div>
@@ -305,11 +260,10 @@ export default function TopicView() {
             )}
 
             {topic.quiz.mode === "built" ? (
-              <div className="qr-actions qr-cta-top">
+              <div className="tv-actions">
                 <Link
                   to={`/student/topics/${topic.id}/quiz`}
                   className="btn btn-solid"
-                  style={{ textDecoration: "none" }}
                 >
                   {topic.state === "completed"
                     ? "Retake Quiz"
@@ -319,24 +273,22 @@ export default function TopicView() {
                 </Link>
               </div>
             ) : (
-              <div className="qr-actions qr-cta-top">
+              <div className="tv-actions">
                 <Link
                   to={`/student/topics/${topic.id}/quiz`}
                   className="btn btn-solid"
-                  style={{ textDecoration: "none" }}
                 >
                   Submit Quiz Image
                 </Link>
               </div>
             )}
 
-            {/* Attempt history */}
             {topic.attempts && topic.attempts.length > 1 && (
               <div className="qr-history">
                 <h3>Attempts</h3>
-                <ul>
+                <ul className="qr-review-list">
                   {topic.attempts.map((a) => (
-                    <li key={a.id} className={`qr-review-status-${a.passed ? "passed" : "failed"}`}>
+                    <li key={a.id} className="qr-review-item">
                       <span>Attempt {a.attemptNo}</span>
                       <span>
                         {a.status === "graded"
@@ -352,14 +304,13 @@ export default function TopicView() {
             )}
           </div>
         ) : (
-          /* Quiz-less topic */
           <div>
-            <h2 style={{ fontSize: 18, margin: "0 0 8px" }}>Topic Completion</h2>
-            <p style={{ fontSize: 14, color: "var(--muted)", margin: "0 0 16px" }}>
+            <h2 className="tv-completion-heading">Topic Completion</h2>
+            <p className="tv-completion-text">
               This topic has no quiz. Mark it as done when you have reviewed all the material.
             </p>
             {completed ? (
-              <p style={{ color: "var(--ink)", fontWeight: 600, margin: 0 }}>
+              <p className="tv-completed">
                 <CheckIcon /> You have completed this topic.
               </p>
             ) : (
@@ -367,8 +318,9 @@ export default function TopicView() {
                 className="btn btn-solid"
                 onClick={handleComplete}
                 disabled={completing}
+                aria-disabled={completing}
               >
-                {completing ? "Saving..." : "Mark as done"}
+                {completing ? "Saving…" : "Mark as done"}
               </button>
             )}
           </div>
@@ -376,7 +328,7 @@ export default function TopicView() {
       </div>
 
       {error && (
-        <div className="auth-error" role="alert" style={{ marginTop: 16 }}>
+        <div className="tv-error auth-error" role="alert">
           {error}
         </div>
       )}
