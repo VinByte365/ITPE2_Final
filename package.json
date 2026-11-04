@@ -12,6 +12,7 @@
     "db:schema": "node server/scripts/apply-schema.js",
     "db:migrate": "node server/scripts/migrate.js",
     "db:seed": "node server/scripts/seed.js",
+    "db:seed:lms": "node server/scripts/seed-lms.js",
     "make:admin": "node server/scripts/make-admin.js",
     "storage:setup": "node server/scripts/setup-storage.js",
     "storage:cleanup": "node server/scripts/cleanup-orphans.js",
