@@ -10,7 +10,7 @@ Depends on: 06. Specs: `../specs/05-reports.md`, `../specs/03-business-rules.md`
   - Files: service, routes · Done when: returns each quiz with every attempt (date, score, total, percent, source, result) and best; only for the owning faculty
 - [x] RPT-03 Student own grades endpoint
   - Files: service, routes · Done when: only the student's own data; no answer keys; includes average and remark
-- [ ] RPT-04 Performance check
+- [x] RPT-04 Performance check (@kilo, 2026-11-04)
   - Files: repository, migrations (indexes if needed) · Done when: 100 students × 16 quizzes responds in under 1 s locally; `EXPLAIN` shows indexes used
 
 ## Frontend
