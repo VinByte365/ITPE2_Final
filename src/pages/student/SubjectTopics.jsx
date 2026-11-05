@@ -4,6 +4,7 @@ import TopicCard from "../../components/TopicCard";
 import StatusBadge from "../../components/StatusBadge";
 import { getStudentSubject } from "../../api/subjects";
 import { listStudentTopics } from "../../api/topics";
+import Loading from "../../components/Loading";
 
 export default function SubjectTopics() {
   const { id: subjectId } = useParams();
@@ -33,7 +34,7 @@ export default function SubjectTopics() {
     return () => { cancelled = true; };
   }, [subjectId]);
 
-  if (loading) return <div className="page-shell"><p>Loading...</p></div>;
+  if (loading) return <Loading label="Loading topics" />;
 
   return (
     <div className="page-shell">

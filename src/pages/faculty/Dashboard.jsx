@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { listFacultySubjects } from '../../api/subjects';
+import Loading from '../../components/Loading';
 
 export default function FacultyDashboard() {
   const [subjects, setSubjects] = useState([]);
@@ -23,7 +24,7 @@ export default function FacultyDashboard() {
     return () => { cancelled = true; };
   }, []);
 
-  if (loading) return <div className="auth-page"><p>Loading...</p></div>;
+  if (loading) return <Loading label="Loading your dashboard" />;
 
   return (
     <div className="page-shell">

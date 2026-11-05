@@ -2,6 +2,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { listProfiles, updateProfile } from '../../api/admin.js';
 import { useAuth } from '../../auth/AuthContext';
+import Loading from '../../components/Loading';
 
 export default function AdminUsers() {
   const { profile } = useAuth();
@@ -58,7 +59,7 @@ export default function AdminUsers() {
     }
   };
 
-  if (loading) return <div className="auth-page"><p>Loading...</p></div>;
+  if (loading) return <Loading label="Loading users" />;
 
   return (
     <div className="auth-page">

@@ -1,13 +1,14 @@
 // src/auth/ProtectedRoute.jsx
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from './AuthContext';
+import Loading from '../components/Loading';
 
 export default function ProtectedRoute({ roles, children }) {
   const { status, profile } = useAuth();
   const location = useLocation();
 
   if (status === 'loading') {
-    return null;
+    return <Loading label="Checking your session" />;
   }
 
   if (status !== 'authenticated' || !profile) {
