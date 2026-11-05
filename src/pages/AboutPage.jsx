@@ -12,7 +12,7 @@ const pad = (value) => String(value).padStart(2, '0');
 const courseFacts = [
   { label: 'University', value: 'Technological University of the Philippines – Taguig' },
   { label: 'Program', value: 'BS Information Technology' },
-  { label: 'Section', value: 'NS-3A' },
+  { label: 'Section', value: 'NS-4A' },
   { label: 'Subject', value: 'ITPE — Computer System & Platform Technology' },
 ];
 
@@ -41,7 +41,7 @@ export default function AboutPage() {
           <Reveal className="about-hero-copy">
             <p className="eyebrow">
               <span className="eyebrow-dot" />
-              About / BSIT-NS-3A
+              About / BSIT-NS-4A
             </p>
             <h1>
               The class behind
@@ -49,7 +49,7 @@ export default function AboutPage() {
               the index<span className="accent">.</span>
             </h1>
             <p className="about-lead">
-              <span className="nowrap">BSIT-NS-3A</span> is a section of BS
+              <span className="nowrap">BSIT-NS-4A</span> is a section of BS
               Information Technology students at the Technological University of
               the Philippines – Taguig. This site
               collects the sixteen module presentations we produced for ITPE:
@@ -80,7 +80,7 @@ export default function AboutPage() {
             <figure>
               <img
                 src={classPhotoOne}
-                alt="BSIT-NS-3A students seated together for a class photo in a lecture hall"
+                alt="BSIT-NS-4A students seated together for a class photo in a lecture hall"
               />
               <figcaption>
                 <span>fig. 01</span> The section after the final presentations.
@@ -91,7 +91,7 @@ export default function AboutPage() {
             <figure>
               <img
                 src={classPhotoTwo}
-                alt="BSIT-NS-3A students posing in rows during a class gathering"
+                alt="BSIT-NS-4A students posing in rows during a class gathering"
               />
               <figcaption>
                 <span>fig. 02</span> TUP Taguig, ITPE Final.
@@ -156,7 +156,7 @@ export default function AboutPage() {
               </p>
               <h2>Prof. Julius Delfin Silang</h2>
               <p>
-                Guided BSIT-NS-3A through the final module presentations collected
+                Guided BSIT-NS-4A through the final module presentations collected
                 in this index.
               </p>
             </div>

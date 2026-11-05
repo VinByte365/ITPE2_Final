@@ -12,13 +12,13 @@ export default function SiteFooter() {
           <div className="footer-brand">
             <Link to="/" className="footer-brandline">
               <span className="footer-mark" aria-hidden="true">
-                3A
+                4A
               </span>
               <span>{PRODUCT_NAME}</span>
             </Link>
             <p>
               Sixteen modules on the hardware, software, and platforms that run
-              modern computing. Built from the final presentations of BSIT-NS-3A.
+              modern computing. Built from the final presentations of BSIT-NS-4A.
             </p>
           </div>
 
@@ -39,7 +39,7 @@ export default function SiteFooter() {
 
         <div className="footer-bottom">
           <span>
-            © {year} BSIT-NS-3A. All rights reserved.
+            © {year} BSIT-NS-4A. All rights reserved.
           </span>
           <a href="#top" className="footer-top">
             Back to top <ArrowUpRight />
