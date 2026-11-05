@@ -45,8 +45,8 @@ Until phase 06, "access to quiz" uses the schedule-only check from phase 03; GAT
 
 ## Phase verification
 
-- [ ] QUIZ-V1 Build a 10-question quiz (mix of choice and text); publish is blocked at 9 and works at 10; a 21st question is refused
-- [ ] QUIZ-V2 Import 12 questions from the CSV template, one with `ñ`; bad rows are reported clearly
+- [x] QUIZ-V1 Build a 10-question quiz (mix of choice and text); publish is blocked at 9 and works at 10; a 21st question is refused (@kilo, 2026-11-05)
+- [x] QUIZ-V2 Import 12 questions from the CSV template, one with `ñ`; bad rows are reported clearly (@kilo, 2026-11-05)
 - [x] QUIZ-V3 Student takes the quiz; inspect network responses: no answer keys anywhere (@kilo, 2026-11-05)
 - [x] QUIZ-V4 Score 8/10 at passing 75 (@kilo, 2026-11-05) → Passed; change the passing % to 90 → the same attempt now shows Failed without any other action
-- [ ] QUIZ-V5 Faculty fixes a wrong key, presses Regrade, the student's score changes
+- [x] QUIZ-V5 Faculty fixes a wrong key, presses Regrade, the student's score changes (@kilo, 2026-11-05)

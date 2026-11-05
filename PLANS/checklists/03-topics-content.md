@@ -45,7 +45,7 @@ Note: until phase 06, student topic states are **schedule-only** (`scheduled` or
 
 ## Phase verification
 
-- [ ] TOPIC-V1 Generate 12 topics (Tue/Thu from a chosen date); dates are right; reorder and edit one date
+- [x] TOPIC-V1 Generate 12 topics (Tue/Thu from a chosen date); dates are right; reorder and edit one date (@kilo, 2026-11-05)
 - [x] TOPIC-V2 Student sees past topics open and future topics grayed; opening a future topic by URL is refused (@kilo, 2026-11-05)
-- [ ] TOPIC-V3 Upload a PDF presentation and a Google Slides link; both display; a `.exe` renamed `.pdf` is rejected
+- [x] TOPIC-V3 Upload a PDF presentation and a Google Slides link; both display; a `.exe` renamed `.pdf` is rejected (@kilo, 2026-11-05)
 - [ ] TOPIC-V4 Faculty-only note is invisible to the student; draft topic is invisible to the student

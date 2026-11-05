@@ -38,7 +38,7 @@ Depends on: 01. Specs: `../specs/01-data-model.md` (002), `../specs/02-api.md` (
 
 ## Phase verification
 
-- [ ] SUBJ-V1 Faculty A creates `IT101 · 1st Semester · 2026-2027`; Faculty B cannot see or edit it
-- [ ] SUBJ-V2 Student joins with the code; wrong code, closed enrollment and double join each show the right message
-- [ ] SUBJ-V3 Regenerating the code breaks the old one; student already enrolled keeps access
+- [x] SUBJ-V1 Faculty A creates `IT101 · 1st Semester · 2026-2027`; Faculty B cannot see or edit it (@kilo, 2026-11-05)
+- [x] SUBJ-V2 Student joins with the code; wrong code, closed enrollment and double join each show the right message (@kilo, 2026-11-05)
+- [x] SUBJ-V3 Regenerating the code breaks the old one; student already enrolled keeps access (@kilo, 2026-11-05)
 - [x] SUBJ-V4 Changing passing % from 75 to 50 and back saves and displays correctly (@kilo, 2026-11-05)
