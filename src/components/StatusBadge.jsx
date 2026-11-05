@@ -26,6 +26,8 @@ const STATUS_CONFIG = {
   completed: { label: 'Completed', icon: CheckIcon },
   pending_review: { label: 'Pending Review', icon: HourglassIcon },
   failed: { label: 'Repeat Topic', icon: RotateIcon },
+  passed: { label: 'Passed', icon: CheckIcon },
+  not_passed: { label: 'Failed', icon: CloseIcon },
   graded: { label: 'Graded', icon: CheckIcon },
   in_progress: { label: 'In Progress', icon: PlayIcon },
 };

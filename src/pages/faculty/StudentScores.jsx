@@ -1,8 +1,8 @@
 // src/pages/faculty/StudentScores.jsx
 // RPT-10: Per-student summary page for faculty. All quizzes and attempts for
 // one student; Print, PDF and Excel buttons reuse the exporters.
-import { useCallback, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useCallback, useEffect, useState } from 'react';
+import { Link, useParams } from 'react-router-dom';
 import { getStudentScores } from '../../api/subjects';
 import { exportPdf } from '../../lib/exportPdf';
 import { exportXlsx } from '../../lib/exportXlsx';
@@ -32,13 +32,17 @@ export default function StudentScores() {
     }
   }, [subjectId, studentId]);
 
+  useEffect(() => { load(); }, [load]);
+
+  const { subject, student } = data ?? {};
+  const quizzes = data?.quizzes ?? [];
+  const reportLike = student ? buildReportLike({ subject, student, quizzes }) : null;
+  const exportColumns = quizzes.map((q) => `quiz-${q.quizId}`);
+
   const handleDownloadPdf = async () => {
     if (!reportLike) return;
     try {
-      await exportPdf(reportLike, {
-        passingPercent,
-        columns: data.quizzes.map((q) => `quiz-${q.quizId}`),
-      });
+      await exportPdf(reportLike, { passingPercent, columns: exportColumns });
     } catch (err) {
       setError(err?.message || 'Failed to generate PDF.');
     }
@@ -47,10 +51,7 @@ export default function StudentScores() {
   const handleDownloadExcel = async () => {
     if (!reportLike) return;
     try {
-      await exportXlsx(reportLike, {
-        passingPercent,
-        columns: data.quizzes.map((q) => `quiz-${q.quizId}`),
-      });
+      await exportXlsx(reportLike, { passingPercent, columns: exportColumns });
     } catch (err) {
       setError(err?.message || 'Failed to generate Excel.');
     }
@@ -59,10 +60,7 @@ export default function StudentScores() {
   const handleDownloadCsv = () => {
     if (!reportLike) return;
     try {
-      exportCsv(reportLike, {
-        passingPercent,
-        columns: data.quizzes.map((q) => `quiz-${q.quizId}`),
-      });
+      exportCsv(reportLike, { passingPercent, columns: exportColumns });
     } catch (err) {
       setError(err?.message || 'Failed to generate CSV.');
     }
@@ -71,23 +69,30 @@ export default function StudentScores() {
   if (loading) {
     return (
       <div className="page-shell">
-        <p>Loading student scores…</p>
+        <p className="sr-only" role="status">Loading student scores…</p>
+        <div className="rv-report-skeleton" aria-hidden="true">
+          <div className="rv-report-skeleton-head">
+            <span className="skeleton-line rv-skeleton-title" />
+            <span className="skeleton-line rv-skeleton-meta" />
+            <span className="skeleton-line rv-skeleton-meta rv-skeleton-short" />
+          </div>
+          <div className="rv-report-skeleton-controls">
+            <span className="skeleton-line" />
+            <span className="skeleton-line" />
+            <span className="skeleton-line" />
+            <span className="skeleton-line" />
+          </div>
+          <div className="rv-report-skeleton-table">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <span key={i} className="skeleton-line" />
+            ))}
+          </div>
+        </div>
       </div>
     );
   }
 
-  const { subject, student, quizzes } = data ?? {};
-  const reportLike = buildReportLike({ subject, student, quizzes });
-
-  if (loading) {
-    return (
-      <div className="page-shell">
-        <p>Loading student scores…</p>
-      </div>
-    );
-  }
-
-  if (error) {
+  if (error && !data) {
     return (
       <div className="page-shell">
         <div className="auth-error" role="alert">{error}</div>
@@ -98,20 +103,36 @@ export default function StudentScores() {
     );
   }
 
-  if (!data || !data.student) {
+  if (!student) {
     return (
       <div className="page-shell">
-        <h1>Student scores</h1>
-        <p>No scores available.</p>
-        <button type="button" className="btn btn-solid" onClick={load}>
-          Retry
-        </button>
+        <div className="state-panel">
+          <p className="eyebrow">
+            <span className="eyebrow-dot" />
+            Student report
+          </p>
+          <h1 className="state-panel-title">No scores for this student</h1>
+          <p className="state-panel-text">
+            This student is not enrolled, or their record is no longer available.
+            Check the roster, then reload the page.
+          </p>
+          <div className="state-panel-actions">
+            <button type="button" className="btn btn-solid" onClick={load}>
+              Reload
+            </button>
+            <Link className="btn btn-line" to={`/faculty/subjects/${subjectId}/report`}>
+              Back to report
+            </Link>
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
     <div className="page-shell">
+      {error && <div className="auth-error" role="alert">{error}</div>}
+
       <div className="rv-report-header-block">
         <div>
           <h1 style={{ margin: "0 0 4px" }}>Student scores</h1>
@@ -130,71 +151,98 @@ export default function StudentScores() {
           </p>
         </div>
         <div style={{ textAlign: "right" }}>
-          <StatusBadge status={student.remark === "Passed" ? "completed" : "failed"} />
+          {quizzes.length > 0 && (
+            <StatusBadge status={student.remark === "Passed" ? "passed" : "not_passed"} />
+          )}
         </div>
       </div>
 
-      <div style={{ display: "flex", gap: "0.75rem", marginBottom: "1rem" }}>
-        <button type="button" className="btn btn-solid" onClick={() => { }}>
-          Print
-        </button>
-        <button type="button" className="btn btn-solid" onClick={handleDownloadPdf}>
-          Download PDF
-        </button>
-        <button type="button" className="btn btn-solid" onClick={handleDownloadExcel}>
-          Download Excel
-        </button>
-        <button type="button" className="btn" onClick={handleDownloadCsv}>
-          CSV
-        </button>
-      </div>
+      {quizzes.length > 0 && (
+        <div className="rv-report-actions">
+          <button type="button" className="btn btn-solid" onClick={() => window.print()}>
+            Print
+          </button>
+          <button type="button" className="btn btn-line" onClick={handleDownloadPdf}>
+            Download PDF
+          </button>
+          <button type="button" className="btn btn-line" onClick={handleDownloadExcel}>
+            Download Excel
+          </button>
+          <button type="button" className="btn btn-line" onClick={handleDownloadCsv}>
+            Download CSV
+          </button>
+        </div>
+      )}
 
-      <div className="rv-report-table-wrap">
-        <table className="rv-report-table">
-          <thead>
-            <tr>
-              <th className="rv-report-th">#</th>
-              <th className="rv-report-th">Topic / Quiz</th>
-              <th className="rv-report-th">Best score</th>
-              <th className="rv-report-th">Percent</th>
-              <th className="rv-report-th">Result</th>
-              <th className="rv-report-th">Attempts</th>
-            </tr>
-          </thead>
-          <tbody>
-            {quizzes.map((q, i) => {
-              const score = student.scores.find((s) => s && s.quizId === q.quizId);
-              const passed = score
-                ? Math.round(score.score * 100) * 100 >=
-                  passingPercent * Math.round(score.total * 100)
-                : false;
-              return (
-                <tr key={q.quizId} className="rv-report-row">
-                  <td className="rv-report-td">{i + 1}</td>
-                  <td className="rv-report-td">{q.topicTitle}</td>
-                  <td className="rv-report-td">
-                    {score ? `${score.score}/${score.total}` : '—'}
-                  </td>
-                  <td className="rv-report-td">
-                    {score ? `${score.percent}%` : '—'}
-                  </td>
-                  <td className={`rv-report-td ${passed ? "" : "rv-report-td-failed"}`}>
-                    {score ? (passed ? "Passed" : "Failed") : "—"}
-                  </td>
-                  <td className="rv-report-td">{score ? score.attempts : 0}</td>
+      {quizzes.length === 0 ? (
+        <div className="state-panel">
+          <p className="eyebrow">
+            <span className="eyebrow-dot" />
+            Report
+          </p>
+          <h2 className="state-panel-title">No quizzes yet</h2>
+          <p className="state-panel-text">
+            Scores appear here once the subject has published quizzes and their
+            topics are open. Publish a quiz from the topic editor, then reload
+            this page.
+          </p>
+          <div className="state-panel-actions">
+            <Link className="btn btn-line" to={`/faculty/subjects/${subjectId}/topics`}>
+              Back to topics
+            </Link>
+            <button type="button" className="btn" onClick={load}>
+              Reload
+            </button>
+          </div>
+        </div>
+      ) : (
+        <>
+          <div className="rv-report-table-wrap">
+            <table className="rv-report-table">
+              <thead>
+                <tr>
+                  <th className="rv-report-th">#</th>
+                  <th className="rv-report-th">Topic / Quiz</th>
+                  <th className="rv-report-th">Best score</th>
+                  <th className="rv-report-th">Percent</th>
+                  <th className="rv-report-th">Result</th>
+                  <th className="rv-report-th">Attempts</th>
                 </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
+              </thead>
+              <tbody>
+                {quizzes.map((q, i) => {
+                  const score = student.scores.find((s) => s && s.quizId === q.quizId);
+                  return (
+                    <tr key={q.quizId} className="rv-report-row">
+                      <td className="rv-report-td">{i + 1}</td>
+                      <td className="rv-report-td">{q.topicTitle}</td>
+                      <td className="rv-report-td">
+                        {score ? `${score.score}/${score.total}` : '—'}
+                      </td>
+                      <td className="rv-report-td">
+                        {score ? `${score.percent}%` : '—'}
+                      </td>
+                      <td className="rv-report-td">
+                        {score ? (
+                          <StatusBadge status={score.passed ? "passed" : "not_passed"} />
+                        ) : '—'}
+                      </td>
+                      <td className="rv-report-td">{score ? score.attempts : 0}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
 
-      <div className="rv-report-footer">
-        <p style={{ margin: 0, fontSize: "0.92rem", color: "var(--ink)" }}>
-          Quizzes: {student.passedCount}/{student.quizCount} passed · Average:{" "}
-          {student.average}% · Remark: <strong>{student.remark}</strong>
-        </p>
-      </div>
+          <div className="rv-report-footer">
+            <p style={{ margin: 0, fontSize: "0.92rem", color: "var(--ink)" }}>
+              Quizzes: {student.passedCount}/{student.quizCount} passed · Average:{" "}
+              {student.average}% · Remark: <strong>{student.remark}</strong>
+            </p>
+          </div>
+        </>
+      )}
     </div>
   );
 }

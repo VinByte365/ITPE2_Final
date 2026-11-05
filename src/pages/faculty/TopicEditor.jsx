@@ -109,7 +109,28 @@ export default function TopicEditor() {
     } catch (err) { setError(err?.message || "Save block failed."); }
   };
 
-  if (loading) return <div className="page-shell"><p>Loading…</p></div>;
+  if (loading) {
+    return (
+      <div className="page-shell">
+        <p className="sr-only" role="status">Loading topic editor…</p>
+        <div className="te-skeleton" aria-hidden="true">
+          <span className="skeleton-line te-skeleton-title" />
+          <div className="te-skeleton-form">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <span key={i} className="skeleton-line" />
+            ))}
+          </div>
+          <span className="skeleton-line te-skeleton-subtitle" />
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="te-skeleton-block">
+              <span className="skeleton-line te-skeleton-short" />
+              <span className="skeleton-line" />
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="page-shell">
@@ -122,38 +143,44 @@ export default function TopicEditor() {
         <div><label>Description<textarea value={description} onChange={(e) => setDescription(e.target.value)} /></label></div>
         <div><label>Available from<input value={availableFrom} onChange={(e) => setAvailableFrom(e.target.value)} /></label></div>
         <div><label>Status<select value={status} onChange={(e) => setStatus(e.target.value)}><option value="draft">draft</option><option value="published">published</option></select></label></div>
-        <button type="submit" className="btn" disabled={saving} aria-disabled={saving}>{saving ? "Saving…" : "Save details"}</button>
+        <button type="submit" className="btn btn-solid" disabled={saving} aria-disabled={saving}>{saving ? "Saving…" : "Save details"}</button>
       </form>
 
       <h2>Content blocks</h2>
-      {blocks.length === 0 && <p>No content blocks yet.</p>}
-      <ul className="te-block-list">
-        {blocks.map((b, idx) => (
-          <li key={b.id} className="te-block-item">
-            <div className="te-block-header">
-              <strong>{b.type}</strong>
-              {b.title && <span>-- {b.title}</span>}
-              <span className="te-block-visibility">
-                {b.visibleToStudents ? "students" : "faculty-only"}
-              </span>
-            </div>
-            {b.type === "file" && (
-              <div className="te-block-body">
-                <p><strong>{b.title || b.fileName}</strong> {b.fileName && b.title !== b.fileName ? `(${b.fileName})` : ''}</p>
-                {b.filePath && <a href="#" onClick={(e) => { e.preventDefault(); /* faculty can see info */ }}>File uploaded</a>}
+      {blocks.length === 0 ? (
+        <div className="empty-state">
+          No content blocks yet. Add text, a summary, a presentation, a video,
+          or a file below.
+        </div>
+      ) : (
+        <ul className="te-block-list">
+          {blocks.map((b, idx) => (
+            <li key={b.id} className="te-block-item">
+              <div className="te-block-header">
+                <strong>{b.type}</strong>
+                {b.title && <span>· {b.title}</span>}
+                <span className="te-block-visibility">
+                  {b.visibleToStudents ? "students" : "faculty-only"}
+                </span>
               </div>
-            )}
-            {b.url && <p className="te-block-link"><a href={b.url} target="_blank" rel="noopener noreferrer">{b.url}</a></p>}
-            {b.filePath && <SlidesEmbed fileUrl={`#`} fileName={b.fileName} title={b.title} />}
-            <div className="te-block-actions">
-              <button onClick={() => handleReorderBlock(idx, -1)} disabled={idx === 0} aria-disabled={idx === 0}>?</button>
-              <button onClick={() => handleReorderBlock(idx, 1)} disabled={idx === blocks.length - 1} aria-disabled={idx === blocks.length - 1}>?</button>
-              <button onClick={() => handleToggleVisible(b)}>{b.visibleToStudents ? "Make faculty-only" : "Make visible"}</button>
-              <button onClick={() => handleDeleteBlock(b.id)}>Delete</button>
-            </div>
-          </li>
-        ))}
-      </ul>
+              {b.type === "file" && (
+                <div className="te-block-body">
+                  <p><strong>{b.title || b.fileName}</strong> {b.fileName && b.title !== b.fileName ? `(${b.fileName})` : ''}</p>
+                  {b.filePath && <span className="te-block-note">File uploaded</span>}
+                </div>
+              )}
+              {b.url && <p className="te-block-link"><a href={b.url} target="_blank" rel="noopener noreferrer">{b.url}</a></p>}
+              {b.filePath && <SlidesEmbed fileUrl={`#`} fileName={b.fileName} title={b.title} />}
+              <div className="te-block-actions">
+                <button type="button" className="btn btn-line" onClick={() => handleReorderBlock(idx, -1)} disabled={idx === 0} aria-disabled={idx === 0} aria-label="Move block up">↑</button>
+                <button type="button" className="btn btn-line" onClick={() => handleReorderBlock(idx, 1)} disabled={idx === blocks.length - 1} aria-disabled={idx === blocks.length - 1} aria-label="Move block down">↓</button>
+                <button type="button" className="btn btn-line" onClick={() => handleToggleVisible(b)}>{b.visibleToStudents ? "Make faculty-only" : "Make visible"}</button>
+                <button type="button" className="btn btn-line" onClick={() => handleDeleteBlock(b.id)}>Delete</button>
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
 
       <div className="te-add-block">
         <h3>Add block</h3>
@@ -193,16 +220,16 @@ export default function TopicEditor() {
 
         {newType === "presentation" && (
           <div>
-            <button type="button" className="btn te-add-btn" onClick={handleAddBlock}>Add presentation link</button>
+            <button type="button" className="btn btn-solid te-add-btn" onClick={handleAddBlock}>Add presentation link</button>
           </div>
         )}
 
         {newType === "video" && (
-          <button type="button" className="btn te-add-btn" onClick={handleAddBlock}>Add video link</button>
+          <button type="button" className="btn btn-solid te-add-btn" onClick={handleAddBlock}>Add video link</button>
         )}
 
         {!["presentation", "video", "file"].includes(newType) && (
-          <button type="button" className="btn te-add-btn" onClick={handleAddBlock}>Add block</button>
+          <button type="button" className="btn btn-solid te-add-btn" onClick={handleAddBlock}>Add block</button>
         )}
       </div>
     </div>
