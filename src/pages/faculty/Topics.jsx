@@ -175,6 +175,7 @@ export default function FacultyTopics() {
                 <button type="button" className="btn btn-line ft-join-regen" onClick={handleRegenerate}>Regenerate</button>
               </div>
               <div className="ft-header-actions ft-header-actions-inline">
+                <Link className="btn btn-line" to={`/faculty/subjects/${subjectId}/grading`}>Grading</Link>
                 <Link className="btn btn-line" to={`/faculty/subjects/${subjectId}/students`}>Students</Link>
                 <Link className="btn btn-line" to={`/faculty/subjects/${subjectId}/settings`}>Settings</Link>
               </div>
