@@ -34,10 +34,10 @@ function cellValue(cell) {
 }
 
 export async function exportXlsx(report, options = {}) {
-  const { passingPercent = report.subject?.passingPercent ?? 75, columns } = options;
+  const { passingPercent = report.subject?.passingPercent ?? 75, columns, mode = 'detail' } = options;
   const Excel = (await import('exceljs')).default;
 
-  const table = toTable(report, { passingPercent, columns });
+  const table = toTable(report, { passingPercent, columns, mode });
   const { columns: tblColumns, rows: tblRows, summary } = table;
 
   const workbook = new Excel.Workbook();
@@ -64,12 +64,6 @@ export async function exportXlsx(report, options = {}) {
       if (!cell) return '';
       if (c.key.startsWith('quiz-')) {
         if (cell.missing) return '—';
-        if (cell.failed) {
-          return `${cell.value}`;
-        }
-        return cell.value;
-      }
-      if (c.key === 'average' || c.key === 'passedCount') {
         return cell.value;
       }
       return cell.value;
@@ -96,8 +90,6 @@ export async function exportXlsx(report, options = {}) {
       } else if (colKey === 'average') {
         cell.numFmt = '0.00';
         cell.font = { size: 10 };
-      } else if (colKey === 'passedCount') {
-        cell.font = { size: 10 };
       } else {
         cell.font = { size: 10 };
       }
@@ -116,13 +108,12 @@ export async function exportXlsx(report, options = {}) {
 
   // Auto column widths.
   for (let i = 0; i < tblColumns.length; i++) {
-    const colLetter = Excel.columnToString(i + 1);
     let maxWidth = tblColumns[i].label.length;
     for (const r of tblRows) {
       const v = cellValue(r.cells[tblColumns[i].key]);
       maxWidth = Math.max(maxWidth, String(v).length);
     }
-    sheet.getColumn(colLetter).width = Math.min(Math.max(maxWidth + 2, 8), 40);
+    sheet.getColumn(i + 1).width = Math.min(Math.max(maxWidth + 2, 8), 40);
   }
 
   const buffer = await workbook.xlsx.writeBuffer();

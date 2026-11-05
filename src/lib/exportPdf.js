@@ -34,11 +34,11 @@ function cellText(cell) {
 }
 
 export async function exportPdf(report, options = {}) {
-  const { passingPercent = report.subject?.passingPercent ?? 75, columns } = options;
+  const { passingPercent = report.subject?.passingPercent ?? 75, columns, mode = 'summary' } = options;
   const { jsPDF } = await import('jspdf');
   const { default: autotable } = await import('jspdf-autotable');
 
-  const table = toTable(report, { passingPercent, columns });
+  const table = toTable(report, { passingPercent, columns, mode });
   const { columns: tblColumns, rows: tblRows, summary } = table;
 
   const doc = new jsPDF({

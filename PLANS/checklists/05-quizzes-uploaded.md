@@ -37,7 +37,7 @@ Flow: the student takes the quiz elsewhere, uploads an image showing the score, 
 
 ## Phase verification
 
-- [ ] UPL-V1 Student uploads a phone photo over 5 MB; it is downscaled and accepted; a 12 MB PDF is rejected before upload starts
-- [ ] UPL-V2 Student cannot see another student's image URL; a second faculty cannot grade it
-- [ ] UPL-V3 Faculty grades 17/20 at passing 75 → Passed; student sees the result and feedback
-- [ ] UPL-V4 Student replaces a pending submission; the old object is gone from storage
+- [x] UPL-V1 Student uploads a phone photo over 5 MB; it is downscaled and accepted; a 12 MB PDF is rejected before upload starts (@kilo, 2026-11-05)
+- [x] UPL-V2 Student cannot see another student's image URL; a second faculty cannot grade it (@kilo, 2026-11-05)
+- [x] UPL-V3 Faculty grades 17/20 at passing 75 → Passed; student sees the result and feedback (@kilo, 2026-11-05)
+- [x] UPL-V4 Student replaces a pending submission; the old object is gone from storage (@kilo, 2026-11-05)

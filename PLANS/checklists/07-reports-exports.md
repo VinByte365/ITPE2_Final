@@ -34,7 +34,7 @@ Depends on: 06. Specs: `../specs/05-reports.md`, `../specs/03-business-rules.md`
 
 ## Phase verification
 
-- [ ] RPT-V1 Seeded class of 40: sort by surname A–Z and Z–A, by score high–low and low–high; order is correct including `Ñ` names
+- [x] RPT-V1 Seeded class of 40: sort by surname A–Z and Z–A, by score high–low and low–high; order is correct including `Ñ` names (@kilo, 2026-11-05)
 - [x] RPT-V2 Change passing % on the preview from 75 to 50; fails flip automatically; PDF, Excel and print all show the same values as the screen (@kilo, 2026-11-05)
-- [ ] RPT-V3 Print a 40-student report: header repeats and rows are not cut across pages
-- [ ] RPT-V4 Open the `.xlsx` in Excel or LibreOffice: numbers sort numerically; open the CSV: accents are correct
+- [x] RPT-V3 Print a 40-student report: header repeats and rows are not cut across pages (@kilo, 2026-11-05)
+- [x] RPT-V4 Open the `.xlsx` in Excel or LibreOffice: numbers sort numerically; open the CSV: accents are correct (@kilo, 2026-11-05)

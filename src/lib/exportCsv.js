@@ -41,8 +41,8 @@ function cellText(cell) {
 }
 
 export function buildCsv(report, options = {}) {
-  const { passingPercent = report.subject?.passingPercent ?? 75, columns } = options;
-  const table = toTable(report, { passingPercent, columns });
+  const { passingPercent = report.subject?.passingPercent ?? 75, columns, mode = 'detail' } = options;
+  const table = toTable(report, { passingPercent, columns, mode });
   const { columns: tblColumns, rows: tblRows, summary } = table;
 
   const lines = [];

@@ -2,7 +2,7 @@
 // Report preview page: header block, sort controls, passing % live recompute,
 // column picker, failed cells with color + symbol, footer totals,
 // loading/empty/error states.
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { getFacultyReport } from '../../api/reports';
 import { toTable } from '../../lib/reportTable';
@@ -21,7 +21,6 @@ export default function Report() {
   const [sort, setSort] = useState('surname');
   const [dir, setDir] = useState('asc');
   const [passingPercent, setPassingPercent] = useState(75);
-  const [selectedQuizIds, setSelectedQuizIds] = useState(new Set());
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -30,7 +29,6 @@ export default function Report() {
       const d = await getFacultyReport(id, { sort, dir });
       if (!d) throw new Error('No report returned.');
       setReport(d);
-      setSelectedQuizIds(new Set(d.quizzes.map((q) => q.quizId)));
       setPassingPercent(d.subject?.passingPercent ?? 75);
     } catch (err) {
       setError(err?.message || 'Failed to load report.');
@@ -38,6 +36,8 @@ export default function Report() {
       setLoading(false);
     }
   }, [id, sort, dir]);
+
+  useEffect(() => { load(); }, [load]);
 
   const handleRetry = () => {
     setError('');
@@ -53,30 +53,23 @@ export default function Report() {
     }
   };
 
-  const columns = useMemo(() => {
-    const quizzes = report ? report.quizzes.filter((q) => selectedQuizIds.has(q.quizId)) : [];
-    const allColumns = [
-      { key: 'num', label: '#' },
-      { key: 'studentNumber', label: 'Student number' },
-      { key: 'lastName', label: 'Surname' },
-      { key: 'firstName', label: 'First name' },
-      ...quizzes.map((q) => ({
-        key: `quiz-${q.quizId}`,
-        label: q.topicTitle,
-        quizId: q.quizId,
-      })),
-      { key: 'average', label: 'Average' },
-      { key: 'passedCount', label: 'Passed' },
-      { key: 'remark', label: 'Remark' },
-    ];
-    return allColumns;
-  }, [report, selectedQuizIds]);
+  const columns = useMemo(() => ([
+    { key: 'num', label: '#' },
+    { key: 'studentNumber', label: 'Student number' },
+    { key: 'lastName', label: 'Surname' },
+    { key: 'firstName', label: 'First name' },
+    { key: 'total', label: 'Total (all quizzes)' },
+    { key: 'average', label: 'Average' },
+    { key: 'passedCount', label: 'Passed' },
+    { key: 'remark', label: 'Remark' },
+  ]), []);
 
   const table = useMemo(() => {
     if (!report) return { columns: [], rows: [], summary: null };
     return toTable(report, {
       passingPercent,
       columns: columns.map((c) => c.key),
+      mode: 'summary',
     });
   }, [report, passingPercent, columns]);
 
@@ -87,19 +80,13 @@ export default function Report() {
     }
   };
 
-  const toggleQuiz = (quizId) => {
-    const next = new Set(selectedQuizIds);
-    if (next.has(quizId)) next.delete(quizId);
-    else next.add(quizId);
-    setSelectedQuizIds(next);
-  };
-
   const handleDownloadPdf = async () => {
     if (!report) return;
     try {
       await exportPdf(report, {
         passingPercent,
         columns: columns.map((c) => c.key),
+        mode: 'summary',
       });
     } catch (err) {
       setError(err?.message || 'Failed to generate PDF.');
@@ -111,7 +98,7 @@ export default function Report() {
     try {
       await exportXlsx(report, {
         passingPercent,
-        columns: columns.map((c) => c.key),
+        mode: 'detail',
       });
     } catch (err) {
       setError(err?.message || 'Failed to generate Excel.');
@@ -123,7 +110,7 @@ export default function Report() {
     try {
       exportCsv(report, {
         passingPercent,
-        columns: columns.map((c) => c.key),
+        mode: 'detail',
       });
     } catch (err) {
       setError(err?.message || 'Failed to generate CSV.');
@@ -280,33 +267,20 @@ export default function Report() {
               style={{ width: "6rem" }}
               aria-label="Passing percent"
             />
-            <span style={{ fontSize: "0.82rem", color: "var(--muted)" }}>
-              Live recompute — confirm by saving the subject setting
-            </span>
           </div>
         </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
           <label style={{ fontSize: "0.82rem", color: "var(--muted)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em", fontFamily: "var(--font-mono)" }}>
-            Columns
+            Quizzes
           </label>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
-            {report.quizzes.map((q) => (
-              <button
-                key={q.quizId}
-                type="button"
-                className={`btn ${selectedQuizIds.has(q.quizId) ? "btn-solid" : "btn-line"}`}
-                aria-pressed={selectedQuizIds.has(q.quizId)}
-                onClick={() => toggleQuiz(q.quizId)}
-              >
-                {q.topicTitle}
-              </button>
-            ))}
-          </div>
+          <p style={{ margin: 0, fontSize: "0.92rem", color: "var(--ink-soft)" }}>
+            Total includes all current quizzes ({report.quizzes.length}). Updates when quizzes change.
+          </p>
         </div>
 
-        <div style={{ display: "flex", gap: "0.75rem" }}>
-          <button type="button" className="btn btn-solid" onClick={() => { }}>
+        <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap", alignItems: "flex-end" }}>
+          <button type="button" className="btn btn-solid" onClick={() => window.print()}>
             Print
           </button>
           <button type="button" className="btn btn-solid" onClick={handleDownloadPdf}>
@@ -334,28 +308,15 @@ export default function Report() {
             </tr>
           </thead>
           <tbody>
-            {table.rows.map((r) => (
-              <tr key={`${r.studentId}-${r.studentNumber}`} className="rv-report-row">
-                {columns.map((c) => {
-                  const cell = r.cells[c.key];
-                  if (!cell) return <td key={c.key} className="rv-report-td" />;
-                  if (c.key.startsWith("quiz-")) {
-                    const failed = cell.failed;
-                    return (
-                      <td key={c.key} className={`rv-report-td rv-report-td-quiz ${failed ? "rv-report-td-failed" : ""}`}>
-                        <span style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
-                          <span style={{ fontSize: "0.82rem", color: failed ? "var(--accent-ink)" : "var(--ink)" }}>
-                            {failed ? "× " : ""}
-                          </span>
-                          {cell.value}
-                        </span>
-                      </td>
-                    );
-                  }
-                  return <td key={c.key} className="rv-report-td">{cell.value}</td>;
-                })}
-              </tr>
-            ))}
+              {table.rows.map((r) => (
+                <tr key={`${r.studentId}-${r.studentNumber}`} className="rv-report-row">
+                  {columns.map((c) => {
+                    const cell = r.cells[c.key];
+                    if (!cell) return <td key={c.key} className="rv-report-td" />;
+                    return <td key={c.key} className="rv-report-td">{cell.value}</td>;
+                  })}
+                </tr>
+              ))}
           </tbody>
         </table>
       </div>

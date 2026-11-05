@@ -3971,7 +3971,10 @@ main:focus {
   border: 1px solid var(--line);
   border-radius: 2px;
   background: var(--paper-2);
+  min-width: 0;
 }
+.rv-report-controls > * { min-width: 0; }
+.rv-report-controls .btn { max-width: 100%; }
 
 .rv-report-table-wrap {
   overflow-x: auto;

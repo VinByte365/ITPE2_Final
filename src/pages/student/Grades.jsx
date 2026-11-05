@@ -1,7 +1,7 @@
 // src/pages/student/Grades.jsx
 // RPT-11: Student grades page. Own scores, best per quiz, pass/fail,
 // average and remark.
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { getStudentGrades } from '../../api/subjects';
 
@@ -24,6 +24,8 @@ export default function Grades() {
       setLoading(false);
     }
   }, [subjectId]);
+
+  useEffect(() => { load(); }, [load]);
 
   if (loading) {
     return (

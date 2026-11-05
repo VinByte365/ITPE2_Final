@@ -319,11 +319,13 @@ export async function getStudentGrades(studentId, subjectId) {
   return {
     subject: report.subject,
     quizzes: report.quizzes,
-    scores: row?.scores || [],
-    passedCount: row?.passedCount || 0,
-    quizCount: row?.quizCount || 0,
-    average: row?.average || 0,
-    remark: row?.remark || 'No quizzes yet',
+    student: {
+      scores: row?.scores || [],
+      passedCount: row?.passedCount || 0,
+      quizCount: row?.quizCount || 0,
+      average: row?.average || 0,
+      remark: row?.remark || 'No quizzes yet',
+    },
     passingPercent: subject.passingPercent,
   };
 }

@@ -48,23 +48,34 @@ export function recomputePassFail(score, total, passingPercent) {
  * @returns {Object} { columns, rows, summary }
  */
 export function toTable(report, options = {}) {
-  const { passingPercent = report.subject?.passingPercent ?? 75, columns } = options;
+  const { passingPercent = report.subject?.passingPercent ?? 75, columns, mode = 'detail' } = options;
   const { quizzes = [], rows = [], summary } = report;
 
-  const allColumns = [
-    { key: 'num', label: '#' },
-    { key: 'studentNumber', label: 'Student number' },
-    { key: 'lastName', label: 'Surname' },
-    { key: 'firstName', label: 'First name' },
-    ...quizzes.map((q) => ({
-      key: `quiz-${q.quizId}`,
-      label: q.topicTitle,
-      quizId: q.quizId,
-    })),
-    { key: 'average', label: 'Average' },
-    { key: 'passedCount', label: 'Passed' },
-    { key: 'remark', label: 'Remark' },
-  ];
+  const allColumns = mode === 'summary'
+    ? [
+        { key: 'num', label: '#' },
+        { key: 'studentNumber', label: 'Student number' },
+        { key: 'lastName', label: 'Surname' },
+        { key: 'firstName', label: 'First name' },
+        { key: 'total', label: 'Total (all quizzes)' },
+        { key: 'average', label: 'Average' },
+        { key: 'passedCount', label: 'Passed' },
+        { key: 'remark', label: 'Remark' },
+      ]
+    : [
+        { key: 'num', label: '#' },
+        { key: 'studentNumber', label: 'Student number' },
+        { key: 'lastName', label: 'Surname' },
+        { key: 'firstName', label: 'First name' },
+        ...quizzes.map((q) => ({
+          key: `quiz-${q.quizId}`,
+          label: q.topicTitle,
+          quizId: q.quizId,
+        })),
+        { key: 'average', label: 'Average' },
+        { key: 'passedCount', label: 'Passed' },
+        { key: 'remark', label: 'Remark' },
+      ];
 
   const visibleColumns = columns
     ? allColumns.filter((c) => columns.includes(c.key))
@@ -89,6 +100,22 @@ export function toTable(report, options = {}) {
         case 'average':
           cells[c.key] = { value: r.average };
           break;
+        case 'total': {
+          let earned = 0;
+          let possible = 0;
+          quizzes.forEach((q) => {
+            const score = r.scores.find((s) => s && s.quizId === q.quizId);
+            if (score) {
+              earned += Number(score.score) || 0;
+              possible += Number(score.total) || 0;
+            } else {
+              possible += Number(q.totalItems) || 0;
+            }
+          });
+          const totalPct = possible > 0 ? Math.round((earned / possible) * 100 * 100) / 100 : 0;
+          cells[c.key] = { value: quizzes.length ? `${earned}/${possible} · ${totalPct}%` : '—' };
+          break;
+        }
         case 'passedCount':
           cells[c.key] = { value: `${r.passedCount}/${r.quizCount}` };
           break;
