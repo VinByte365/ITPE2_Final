@@ -81,6 +81,15 @@ export default function UploadSubmission({ quiz, onStatusChange }) {
   const pendingAttempt = history?.attempts?.find((a) => a.status === "pending_review");
   const latestGraded = history?.attempts?.slice().reverse().find((a) => a.status === "graded");
 
+  const clearSelectedFile = useCallback(() => {
+    setSelectedFile(null);
+    setPreviewUrl((prev) => {
+      if (prev) URL.revokeObjectURL(prev);
+      return null;
+    });
+    setUploadProgress(null);
+  }, []);
+
   const loadHistory = useCallback(async () => {
     try {
       const h = await getAttemptHistory(quizId);
@@ -91,10 +100,12 @@ export default function UploadSubmission({ quiz, onStatusChange }) {
       if (shown) {
         try {
           const { url } = await getAttemptImageUrl(shown.id);
-          setServerImageUrl(url);
+          setServerImageUrl(url || null);
         } catch {
-          // The proof image is optional; the attempt above is still shown without it.
+          setServerImageUrl(null);
         }
+      } else {
+        setServerImageUrl(null);
       }
     } catch {
       // History is informational: a failed load must not block a new submission.
@@ -105,11 +116,15 @@ export default function UploadSubmission({ quiz, onStatusChange }) {
     if (quizId) loadHistory();
   }, [quizId, loadHistory]);
 
+  useEffect(() => () => {
+    if (previewUrl) URL.revokeObjectURL(previewUrl);
+  }, [previewUrl]);
+
   const handleFileSelect = async (e) => {
     const file = e.target.files?.[0];
+    e.target.value = "";
     if (!file) return;
 
-    // Validate type and size client-side first
     const validTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
     if (!validTypes.includes(file.type.toLowerCase())) {
       setError("Only JPG, PNG, and WebP images are accepted.");
@@ -125,6 +140,7 @@ export default function UploadSubmission({ quiz, onStatusChange }) {
       return;
     }
 
+    clearSelectedFile();
     setSelectedFile(processed);
     setPreviewUrl(URL.createObjectURL(processed));
   };
@@ -150,15 +166,13 @@ export default function UploadSubmission({ quiz, onStatusChange }) {
       // 3. Create submission
       await submitQuizImage(quiz.id, path);
 
-      setSuccess("Submission received! It is now pending instructor grading.");
-      setSelectedFile(null);
-      setPreviewUrl(null);
-      setUploadProgress(null);
+      setSuccess("Submission received. It is now pending instructor grading.");
+      clearSelectedFile();
       await loadHistory();
       if (onStatusChange) onStatusChange();
     } catch (err) {
       if (err?.code === "PENDING_REVIEW_EXISTS") {
-        setError("You already have a submission pending review. Replace or delete it first.");
+        setError("You already have a submission pending review. Remove it before uploading a new one.");
       } else if (err?.code === "MAX_ATTEMPTS_REACHED") {
         setError("Maximum submission attempts reached for this quiz.");
       } else {
@@ -172,13 +186,14 @@ export default function UploadSubmission({ quiz, onStatusChange }) {
 
   const handleDeletePending = async () => {
     if (!pendingAttempt) return;
-    if (!window.confirm("Remove this pending submission so you can upload a new one?")) return;
+    if (!window.confirm("Remove this submitted photo? You can upload a new one after it is deleted.")) return;
     setSubmitting(true);
     setError("");
+    setSuccess("");
     try {
       await deletePendingAttempt(pendingAttempt.id);
-      setSuccess("Pending submission removed.");
-      setServerImageUrl(null);
+      setSuccess("Submission removed. You can upload a new photo.");
+      clearSelectedFile();
       await loadHistory();
       if (onStatusChange) onStatusChange();
     } catch (err) {
@@ -282,46 +297,69 @@ export default function UploadSubmission({ quiz, onStatusChange }) {
 
       {!pendingAttempt && (
         <div className="upload-submission-form">
-          <label className="upload-submission-label" htmlFor="quiz-proof-upload">
-            Upload score screenshot or photo (JPG, PNG, WebP, up to 5 MB)
-          </label>
-
-          <input
-            id="quiz-proof-upload"
-            type="file"
-            accept="image/jpeg,image/png,image/webp"
-            capture="environment"
-            onChange={handleFileSelect}
-            disabled={submitting}
-            className="upload-submission-file"
-          />
-
-          {previewUrl && (
-            <div className="upload-submission-proof">
-              <p className="upload-submission-proof-label">Preview</p>
-              <img src={previewUrl} alt="Upload preview" className="upload-submission-image" />
-            </div>
+          {latestGraded && (
+            <p className="upload-submission-meta">
+              Uploading a new photo submits a new attempt (subject to attempt limits).
+            </p>
           )}
 
-          {uploadProgress !== null && (
-            <div className="upload-submission-progress" aria-live="polite">
-              <div className="upload-submission-progress-track">
-                <div className="upload-submission-progress-bar" style={{ width: `${uploadProgress}%` }} />
-              </div>
-              <span className="upload-submission-progress-text">Uploading: {uploadProgress}%</span>
-            </div>
-          )}
-
-          {selectedFile && (
-            <div className="upload-submission-actions">
-              <button
-                type="button"
-                className="btn btn-solid"
-                onClick={handleUploadSubmit}
+          {!selectedFile ? (
+            <label className="upload-submission-picker" htmlFor="quiz-proof-upload">
+              <span className="upload-submission-picker-title">Choose photo to upload</span>
+              <span className="upload-submission-picker-help">JPG, PNG, or WebP · up to 5 MB</span>
+              <input
+                id="quiz-proof-upload"
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                capture="environment"
+                onChange={handleFileSelect}
                 disabled={submitting}
-              >
-                {submitting ? "Uploading..." : "Submit for grading"}
-              </button>
+                className="upload-submission-file upload-submission-file-hidden"
+              />
+            </label>
+          ) : (
+            <div className="upload-submission-selected">
+              <div className="upload-submission-row">
+                <div>
+                  <p className="upload-submission-status">Selected photo</p>
+                  <p className="upload-submission-meta">{selectedFile.name}</p>
+                </div>
+                <button
+                  type="button"
+                  className="btn btn-line upload-submission-action"
+                  onClick={clearSelectedFile}
+                  disabled={submitting}
+                >
+                  Remove selected
+                </button>
+              </div>
+
+              {previewUrl && (
+                <div className="upload-submission-proof">
+                  <p className="upload-submission-proof-label">Preview</p>
+                  <img src={previewUrl} alt="Upload preview" className="upload-submission-image" />
+                </div>
+              )}
+
+              {uploadProgress !== null && (
+                <div className="upload-submission-progress" aria-live="polite">
+                  <div className="upload-submission-progress-track">
+                    <div className="upload-submission-progress-bar" style={{ width: `${uploadProgress}%` }} />
+                  </div>
+                  <span className="upload-submission-progress-text">Uploading: {uploadProgress}%</span>
+                </div>
+              )}
+
+              <div className="upload-submission-actions">
+                <button
+                  type="button"
+                  className="btn btn-solid"
+                  onClick={handleUploadSubmit}
+                  disabled={submitting}
+                >
+                  {submitting ? "Uploading..." : "Submit for grading"}
+                </button>
+              </div>
             </div>
           )}
         </div>
