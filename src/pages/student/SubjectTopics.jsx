@@ -37,11 +37,18 @@ export default function SubjectTopics() {
 
   return (
     <div className="page-shell">
-      <div className="page-back">
-        <Link className="page-back-link" to="/student">← Back to subjects</Link>
+      <div className="ft-header" style={{ alignItems: 'flex-start' }}>
+        <div>
+          <div className="page-back">
+            <Link className="page-back-link" to="/student">← Back to subjects</Link>
+          </div>
+          <h1>{subject?.name || "Subject"}</h1>
+          {subject && <p>Passing: {subject.passingPercent}%</p>}
+        </div>
+        <div className="ft-header-actions">
+          <Link className="btn btn-line" to={`/student/subjects/${subjectId}/grades`}>My grades</Link>
+        </div>
       </div>
-      <h1>{subject?.name || "Subject"}</h1>
-      {subject && <p>Passing: {subject.passingPercent}%</p>}
       {error && <div className="auth-error" role="alert">{error}</div>}
       {topics.length === 0 ? (
         <div className="empty-state">No topics yet.</div>

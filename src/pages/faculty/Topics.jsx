@@ -176,6 +176,7 @@ export default function FacultyTopics() {
               </div>
               <div className="ft-header-actions ft-header-actions-inline">
                 <Link className="btn btn-line" to={`/faculty/subjects/${subjectId}/grading`}>Grading</Link>
+                <Link className="btn btn-line" to={`/faculty/subjects/${subjectId}/report`}>Report</Link>
                 <Link className="btn btn-line" to={`/faculty/subjects/${subjectId}/students`}>Students</Link>
                 <Link className="btn btn-line" to={`/faculty/subjects/${subjectId}/settings`}>Settings</Link>
               </div>
