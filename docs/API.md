@@ -348,6 +348,9 @@ PUT    /faculty/quizzes/:id/questions/order
 POST   /faculty/quizzes/:id/questions/import
 POST   /faculty/quizzes/:id/regrade
 POST   /faculty/quizzes/:id/attachment/upload-url
+GET    /faculty/topics/:id/ppt-sources
+POST   /faculty/topics/:id/quiz/generate-preview
+POST   /faculty/topics/:id/quiz/save-generated
 ```
 
 `GET /faculty/topics/:id/quiz` responds `{ "data": quiz }` with the quiz and its
@@ -380,6 +383,36 @@ of the quiz from stored answers and returns `{ "data": { regraded, changed } }`.
 
 `POST /faculty/quizzes/:id/attachment/upload-url` accepts `{ fileName, mime, size, kind? }`
 and returns `{ "data": { uploadUrl, token, path } }` for uploaded-mode quiz attachments.
+
+### AI quiz generation from topic PPTX
+
+```http
+GET  /faculty/topics/:id/ppt-sources
+POST /faculty/topics/:id/quiz/generate-preview
+POST /faculty/topics/:id/quiz/save-generated
+```
+
+These endpoints are faculty/admin only and server-side only. The client never receives
+`GROQ_API_KEY` and the API never returns raw presentation text.
+
+`GET /faculty/topics/:id/ppt-sources` returns PPTX topic content blocks (`presentation`
+or `file`, `.pptx`) that can be used as generation sources.
+
+`POST /faculty/topics/:id/quiz/generate-preview` accepts
+`{ "contentBlockId": "<uuid>", "count": 10 }` where `count` is 10–20 (default 10).
+It parses PPTX text from the selected topic content block, generates multiple-choice
+draft questions via Groq, validates the response, and returns
+`{ "data": { topicId, contentBlockId, fileName, questions } }`. Questions are not
+persisted until save. This route is rate-limited.
+
+`POST /faculty/topics/:id/quiz/save-generated` accepts
+`{ "questions": [...] }` (server-validated, 10–20 MCQs, exactly 4 options). It ensures a
+built-in draft quiz for the topic and replaces questions only when the quiz has no
+attempts. If attempts exist, it returns `409 QUIZ_HAS_ATTEMPTS`.
+
+Relevant errors: `503 AI_NOT_CONFIGURED` (missing `GROQ_API_KEY`), `422 PPT_PARSE_FAILED`,
+`422 AI_GENERATION_FAILED`, `404` for missing/inaccessible topic or source block,
+`409 QUIZ_HAS_ATTEMPTS`.
 
 ### Quiz taking (student, built-in)
 

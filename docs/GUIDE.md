@@ -13,8 +13,13 @@
 4. **Add content.** Open a topic → add text/markdown blocks, upload presentations
    or files, and reorder blocks.
 5. **Build a quiz.** Open a topic → Quiz. Add 10–20 multiple-choice (4 options) or
-   text-input questions, or import via CSV. Publish when ready. For an uploaded
-   quiz, set mode to "uploaded" and let students submit a score image.
+   text-input questions, import via CSV, or generate a draft from an uploaded topic
+   PPTX. For AI generation, add a PPTX content block to the topic, choose the source
+   and question count (10–20, default 10), preview the generated multiple-choice
+   questions, then save. Saving creates/replaces a built-in **draft** quiz only when
+   the quiz has no attempts. Review and edit questions before publishing. AI
+   generation requires `GROQ_API_KEY` on the server. For an uploaded quiz, set mode to
+   "uploaded" and let students submit a score image.
 6. **Grade & review.** Grading queue shows pending submissions. Type the score for
    uploaded quizzes. Built-in quizzes are auto-graded.
 7. **Reports.** Subject report → preview, sort by surname/score, print, download

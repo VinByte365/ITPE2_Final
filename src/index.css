@@ -3382,6 +3382,31 @@ main:focus {
   margin: 0;
 }
 
+.qb-ai-preview {
+  margin: 0;
+  padding-left: 1.25rem;
+  display: grid;
+  gap: 0.9rem;
+}
+
+.qb-ai-prompt {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.qb-ai-options {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.15rem;
+}
+
+.qb-ai-correct {
+  color: var(--ink);
+  font-weight: 600;
+}
+
 .qb-head-row {
   display: flex;
   justify-content: space-between;

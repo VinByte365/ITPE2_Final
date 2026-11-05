@@ -65,6 +65,9 @@ Legacy public content routes (`/content`, `/modules`, ...) are unchanged.
 | `POST /faculty/quizzes/:id/questions/import` | `{ questions: [...] }` atomic; whole payload rejected with row-level `details` if any row is invalid or the total exceeds 20. |
 | `POST /faculty/quizzes/:id/regrade` | Recomputes score and total of all `auto` attempts from stored answers. Returns counts changed. |
 | `POST /faculty/quizzes/:id/attachment/upload-url` | Same contract as topic files; for uploaded-mode quiz files. |
+| `GET /faculty/topics/:id/ppt-sources` | Lists PPTX topic content blocks available for AI quiz generation. |
+| `POST /faculty/topics/:id/quiz/generate-preview` | `{ contentBlockId, count? (10-20, default 10) }`. Parses PPTX server-side, generates MCQ draft questions via Groq, validates response; returns preview questions without persisting. Rate-limited. `503 AI_NOT_CONFIGURED`, `422 PPT_PARSE_FAILED`/`AI_GENERATION_FAILED`. |
+| `POST /faculty/topics/:id/quiz/save-generated` | `{ questions }` (10-20 server-validated MCQs). Ensures built-in draft quiz and replaces questions only when quiz has no attempts; else `409 QUIZ_HAS_ATTEMPTS`. |
 
 ## Quiz taking (student, built-in)
 
@@ -106,6 +109,6 @@ Legacy public content routes (`/content`, `/modules`, ...) are unchanged.
 `TOPIC_NOT_AVAILABLE` (403) · `TOPIC_LOCKED` (403) · `QUIZ_NOT_PUBLISHED` (403) · `JOIN_CODE_INVALID` (404) ·
 `ENROLLMENT_CLOSED` (403) · `ALREADY_ENROLLED` (409) · `MAX_ATTEMPTS_REACHED` (409) · `PENDING_REVIEW_EXISTS` (409) ·
 `ATTEMPT_ALREADY_SUBMITTED` (409) · `TOPIC_HAS_ATTEMPTS` (409) · `QUIZ_QUESTION_COUNT` (422) · `UPLOAD_INVALID` (422) ·
-`ORIGIN_NOT_ALLOWED` (403).
+`AI_NOT_CONFIGURED` (503) · `PPT_PARSE_FAILED` (422) · `AI_GENERATION_FAILED` (422) · `ORIGIN_NOT_ALLOWED` (403).
 
 Whenever an endpoint is implemented or changed, update this file in the same commit.

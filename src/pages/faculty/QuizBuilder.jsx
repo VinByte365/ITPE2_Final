@@ -10,6 +10,9 @@ import {
   deleteQuestion,
   regradeQuiz,
   getQuizAttachmentUploadUrl,
+  listQuizPptSources,
+  previewGeneratedQuiz,
+  saveGeneratedQuiz,
 } from "../../api/quizzes";
 import { uploadToSignedUrl } from "../../api/client";
 import QuestionImport from "../../components/QuestionImport";
@@ -69,6 +72,12 @@ export default function QuizBuilder() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [aiSources, setAiSources] = useState([]);
+  const [aiSourceId, setAiSourceId] = useState("");
+  const [aiCount, setAiCount] = useState(10);
+  const [aiPreview, setAiPreview] = useState(null);
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiSaving, setAiSaving] = useState(false);
 
   // Meta state
   const [title, setTitle] = useState("Quiz");
@@ -87,7 +96,16 @@ export default function QuizBuilder() {
     setLoading(true);
     setError("");
     try {
-      const q = await getFacultyQuiz(topicId);
+      const [q, sourcesResult] = await Promise.all([
+        getFacultyQuiz(topicId),
+        listQuizPptSources(topicId).catch(() => []),
+      ]);
+      const sources = Array.isArray(sourcesResult) ? sourcesResult : [];
+      setAiSources(sources);
+      setAiSourceId((current) => {
+        if (current && sources.some((s) => s.id === current)) return current;
+        return sources[0]?.id || "";
+      });
       setQuiz(q);
       if (q) {
         setTitle(q.title || "Quiz");
@@ -301,6 +319,50 @@ export default function QuizBuilder() {
     }
   };
 
+  const handleSaveGenerated = async () => {
+    if (!aiPreview?.questions?.length) return;
+    if (quiz && (await hasAttemptsWarning())) return;
+    setAiSaving(true);
+    setError("");
+    setSuccess("");
+    try {
+      await saveGeneratedQuiz(topicId, { questions: aiPreview.questions });
+      setAiPreview(null);
+      setSuccess("Generated quiz saved as draft. Review the questions before publishing.");
+      await load();
+    } catch (err) {
+      if (err?.code === "QUIZ_HAS_ATTEMPTS") {
+        setError("Cannot replace questions because this quiz already has attempts.");
+      } else {
+        setError(err?.message || "Failed to save generated quiz.");
+      }
+    } finally {
+      setAiSaving(false);
+    }
+  };
+
+  const hasAttemptsWarning = async () => false;
+
+  const handleGeneratePreview = async () => {
+    if (!aiSourceId) return;
+    setAiLoading(true);
+    setError("");
+    setSuccess("");
+    try {
+      const preview = await previewGeneratedQuiz(topicId, {
+        contentBlockId: aiSourceId,
+        count: Math.max(10, Math.min(20, Number(aiCount) || 10)),
+      });
+      setAiPreview(preview);
+      setSuccess(`Generated ${preview?.questions?.length || 0} draft questions. Review before saving.`);
+    } catch (err) {
+      setAiPreview(null);
+      setError(err?.details?.reason ? `${err.message} (${err.details.reason})` : (err?.message || "Failed to generate quiz."));
+    } finally {
+      setAiLoading(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="page-shell qb-page">
@@ -344,6 +406,74 @@ export default function QuizBuilder() {
 
       {error && <div className="auth-error" role="alert">{error}</div>}
       {success && <div className="qb-success">{success}</div>}
+
+      <div className="qb-panel">
+        <h2>Generate quiz from presentation</h2>
+        <div className="qb-stack">
+          <p className="qb-muted-note">
+            Choose an uploaded PPTX content block from this topic, generate 10–20 multiple-choice draft questions, review them, then save. Saving creates or replaces a built-in draft quiz only when no attempts exist.
+          </p>
+          {aiSources.length === 0 ? (
+            <div className="empty-state">No PPTX topic content blocks found. Add a PPTX file in the topic editor first.</div>
+          ) : (
+            <>
+              <div className="qb-grid">
+                <div>
+                  <label className="qb-label">Presentation source (PPTX)</label>
+                  <select className="input" value={aiSourceId} onChange={(e) => setAiSourceId(e.target.value)}>
+                    {aiSources.map((s) => (
+                      <option key={s.id} value={s.id}>{s.title || s.fileName || 'Presentation'}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="qb-label">Question count</label>
+                  <input
+                    type="number"
+                    min={10}
+                    max={20}
+                    className="input"
+                    value={aiCount}
+                    onChange={(e) => setAiCount(Math.max(10, Math.min(20, Number(e.target.value) || 10)))}
+                  />
+                </div>
+              </div>
+              <div className="qb-actions">
+                <button type="button" className="btn btn-solid" onClick={handleGeneratePreview} disabled={aiLoading || !aiSourceId}>
+                  {aiLoading ? "Generating…" : "Generate draft questions"}
+                </button>
+                {aiPreview && (
+                  <>
+                    <button type="button" className="btn btn-solid" onClick={handleSaveGenerated} disabled={aiSaving}>
+                      {aiSaving ? "Saving…" : "Save as draft quiz"}
+                    </button>
+                    <button type="button" className="btn" onClick={() => setAiPreview(null)} disabled={aiSaving}>Discard preview</button>
+                  </>
+                )}
+              </div>
+            </>
+          )}
+          {aiPreview?.questions?.length ? (
+            <div className="qb-stack-tight">
+              <strong>Preview ({aiPreview.questions.length} questions)</strong>
+              <ol className="qb-ai-preview">
+                {aiPreview.questions.map((q, idx) => (
+                  <li key={`${idx}-${q.prompt}`}>
+                    <div className="qb-ai-prompt">{q.prompt}</div>
+                    <ul className="qb-ai-options">
+                      {(q.options || []).map((o, i) => (
+                        <li key={i} className={i === q.correctOptionIndex ? "qb-ai-correct" : ""}>
+                          {String.fromCharCode(65 + i)}. {o.label}{i === q.correctOptionIndex ? " (correct)" : ""}
+                        </li>
+                      ))}
+                    </ul>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          ) : null}
+        </div>
+      </div>
 
       {/* Meta Editor */}
       <div className="qb-panel">

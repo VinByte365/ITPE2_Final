@@ -66,6 +66,12 @@ export const env = {
     maxFileMb: parsePositiveNumber(read('MAX_FILE_MB', '25'), 25),
     maxImageMb: parsePositiveNumber(read('MAX_IMAGE_MB', '5'), 5),
   },
+  groq: {
+    apiKey: read('GROQ_API_KEY'),
+    model: read('GROQ_MODEL', 'openai/gpt-oss-120b'),
+    timeoutMs: parsePositiveNumber(read('GROQ_TIMEOUT_MS', '60000'), 60000),
+    maxInputChars: parsePositiveNumber(read('GROQ_MAX_INPUT_CHARS', '12000'), 12000),
+  },
   defaultTimezone: read('DEFAULT_TIMEZONE', 'Asia/Manila'),
   passwordResetRedirectUrl: read(
     'PASSWORD_RESET_REDIRECT_URL',
@@ -78,6 +84,7 @@ export const supabaseConfigured =
   !isPlaceholder(env.supabase.url) && !isPlaceholder(env.supabase.anonKey);
 export const supabaseServiceConfigured =
   supabaseConfigured && !isPlaceholder(env.supabase.serviceRoleKey);
+export const groqConfigured = !isPlaceholder(env.groq.apiKey);
 
 if (!env.corsOrigins.length) {
   console.warn('[config] CORS_ORIGIN is empty. Browser API requests will be blocked.');

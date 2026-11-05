@@ -241,6 +241,36 @@ export async function createQuestionsBulk(quizId, items) {
   });
 }
 
+export async function replaceQuestions(quizId, items) {
+  return withTransaction(async (client) => {
+    await client.query(`delete from public.questions where quiz_id = $1`, [quizId]);
+    const results = [];
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i];
+      const { rows } = await client.query(
+        `insert into public.questions
+           (quiz_id, position, type, prompt, options, correct_option_id,
+            accepted_answers, points)
+         values ($1,$2,$3,$4,$5,$6,$7,$8)
+         returning id, quiz_id, position, type, prompt, options, correct_option_id,
+                   accepted_answers, points, created_at, updated_at`,
+        [
+          quizId,
+          i + 1,
+          item.type,
+          item.prompt,
+          item.options ? JSON.stringify(item.options) : null,
+          item.correctOptionId ?? null,
+          item.acceptedAnswers ?? null,
+          item.points ?? 1,
+        ],
+      );
+      results.push(mapQuestion(rows[0]));
+    }
+    return results;
+  });
+}
+
 // ---------------------------------------------------------------------------
 // Attempts
 // ---------------------------------------------------------------------------

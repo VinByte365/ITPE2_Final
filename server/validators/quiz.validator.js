@@ -94,3 +94,24 @@ export const submissionSchema = z
     path: z.string().trim().min(1, 'Path is required.'),
   })
   .strict();
+
+export const generateQuizPreviewSchema = z
+  .object({
+    contentBlockId: z.string().uuid(),
+    count: z.coerce.number().int().min(10).max(20).default(10),
+  })
+  .strict();
+
+export const generatedQuestionSchema = z.object({
+  type: z.literal('choice'),
+  prompt: promptSchema,
+  options: z.array(optionSchema).length(4, 'Multiple choice must have exactly 4 options.'),
+  correctOptionIndex: z.coerce.number().int().min(0).max(3),
+  points: pointsSchema.optional(),
+});
+
+export const saveGeneratedQuizSchema = z
+  .object({
+    questions: z.array(generatedQuestionSchema).min(10).max(20),
+  })
+  .strict();

@@ -62,6 +62,18 @@ export async function gradeFacultyAttempt(attemptId, payload) {
   return patch(`/faculty/attempts/${attemptId}/grade`, payload);
 }
 
+export async function listQuizPptSources(topicId) {
+  return get(`/faculty/topics/${topicId}/ppt-sources`);
+}
+
+export async function previewGeneratedQuiz(topicId, payload) {
+  return post(`/faculty/topics/${topicId}/quiz/generate-preview`, payload);
+}
+
+export async function saveGeneratedQuiz(topicId, payload) {
+  return post(`/faculty/topics/${topicId}/quiz/save-generated`, payload);
+}
+
 // Student
 export async function startAttempt(quizId) {
   return post(`/student/quizzes/${quizId}/attempts`);

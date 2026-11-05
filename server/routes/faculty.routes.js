@@ -45,6 +45,11 @@ import {
   getQuizAttachmentUploadUrl,
 } from '../services/quizzes.service.js';
 import {
+  listPptSources,
+  previewGeneratedQuiz,
+  saveGeneratedQuiz,
+} from '../services/quiz-generation.service.js';
+import {
   getSubjectReport,
   getStudentScores,
 } from '../services/report.service.js';
@@ -55,6 +60,7 @@ import {
   gradeManualAttempt,
 } from '../services/attempts.service.js';
 
+import { aiGenerationLimiter } from '../middleware/rateLimit.js';
 import {
   contentBlockSchema,
   updateContentBlockSchema,
@@ -75,6 +81,8 @@ import {
   updateQuestionSchema,
   gradeAttemptSchema,
   uploadUrlSchema,
+  generateQuizPreviewSchema,
+  saveGeneratedQuizSchema,
 } from '../validators/quiz.validator.js';
 
 const router = Router();
@@ -345,6 +353,42 @@ router.post(
     }).parse(req.body);
     const isAdmin = req.auth.profile?.role === 'admin';
     const result = await getUploadUrl(req.auth.profile.id, topicId, kind, { fileName, mime, size }, isAdmin);
+    res.json({ data: result });
+  }),
+);
+
+// GET /faculty/topics/:id/ppt-sources
+router.get(
+  '/topics/:id/ppt-sources',
+  asyncHandler(async (req, res) => {
+    const topicId = uuidSchema.parse(req.params.id);
+    const isAdmin = req.auth.profile?.role === 'admin';
+    const sources = await listPptSources(req.auth.profile.id, topicId, isAdmin);
+    res.json({ data: sources });
+  }),
+);
+
+// POST /faculty/topics/:id/quiz/generate-preview
+router.post(
+  '/topics/:id/quiz/generate-preview',
+  aiGenerationLimiter,
+  asyncHandler(async (req, res) => {
+    const topicId = uuidSchema.parse(req.params.id);
+    const input = generateQuizPreviewSchema.parse(req.body || {});
+    const isAdmin = req.auth.profile?.role === 'admin';
+    const result = await previewGeneratedQuiz(req.auth.profile.id, topicId, input, isAdmin);
+    res.json({ data: result });
+  }),
+);
+
+// POST /faculty/topics/:id/quiz/save-generated
+router.post(
+  '/topics/:id/quiz/save-generated',
+  asyncHandler(async (req, res) => {
+    const topicId = uuidSchema.parse(req.params.id);
+    const input = saveGeneratedQuizSchema.parse(req.body || {});
+    const isAdmin = req.auth.profile?.role === 'admin';
+    const result = await saveGeneratedQuiz(req.auth.profile.id, topicId, input, isAdmin);
     res.json({ data: result });
   }),
 );

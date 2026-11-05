@@ -79,3 +79,17 @@ export const submissionsLimiter = rateLimit({
     },
   },
 });
+
+export const aiGenerationLimiter = rateLimit({
+  windowMs: 10 * 60 * 1000,
+  limit: 6,
+  keyGenerator: (req) => req.auth?.profile?.id || ipKeyGenerator(req),
+  standardHeaders: 'draft-7',
+  legacyHeaders: false,
+  message: {
+    error: {
+      code: 'RATE_LIMITED',
+      message: 'Too many AI quiz generation requests. Try again later.',
+    },
+  },
+});
