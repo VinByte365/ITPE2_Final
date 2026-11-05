@@ -3,7 +3,7 @@
 // column picker, failed cells with color + symbol, footer totals,
 // loading/empty/error states.
 import { useCallback, useMemo, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { getFacultyReport } from '../../api/reports';
 import { toTable } from '../../lib/reportTable';
 import { exportPdf } from '../../lib/exportPdf';
@@ -133,7 +133,24 @@ export default function Report() {
   if (loading) {
     return (
       <div className="page-shell">
-        <p>Loading report…</p>
+        <p className="sr-only" role="status">Loading report…</p>
+        <div className="rv-report-skeleton" aria-hidden="true">
+          <div className="rv-report-skeleton-head">
+            <span className="skeleton-line rv-skeleton-title" />
+            <span className="skeleton-line rv-skeleton-meta" />
+            <span className="skeleton-line rv-skeleton-meta rv-skeleton-short" />
+          </div>
+          <div className="rv-report-skeleton-controls">
+            <span className="skeleton-line" />
+            <span className="skeleton-line" />
+            <span className="skeleton-line" />
+          </div>
+          <div className="rv-report-skeleton-table">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <span key={i} className="skeleton-line" />
+            ))}
+          </div>
+        </div>
       </div>
     );
   }
@@ -152,11 +169,26 @@ export default function Report() {
   if (!report || report.rows.length === 0) {
     return (
       <div className="page-shell">
-        <h1>Report</h1>
-        <p>No report data available.</p>
-        <button type="button" className="btn btn-solid" onClick={handleRetry}>
-          Retry
-        </button>
+        <div className="state-panel">
+          <p className="eyebrow">
+            <span className="eyebrow-dot" />
+            Report
+          </p>
+          <h1 className="state-panel-title">No report data yet</h1>
+          <p className="state-panel-text">
+            This report fills in once students are enrolled and their quizzes
+            have scores. If the roster is empty, add students first; otherwise
+            reload to check again.
+          </p>
+          <div className="state-panel-actions">
+            <button type="button" className="btn btn-solid" onClick={handleRetry}>
+              Reload report
+            </button>
+            <Link className="btn btn-line" to={`/faculty/subjects/${id}/topics`}>
+              Back to topics
+            </Link>
+          </div>
+        </div>
       </div>
     );
   }
@@ -166,6 +198,12 @@ export default function Report() {
 
   return (
     <div className="page-shell">
+      {error && (
+        <div className="auth-error" role="alert">
+          {error}
+        </div>
+      )}
+
       {/* Header block */}
       <div className="rv-report-header-block">
         <div>

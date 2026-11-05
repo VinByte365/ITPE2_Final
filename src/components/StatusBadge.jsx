@@ -3,6 +3,7 @@ import {
   BookIcon,
   CheckIcon,
   ClockIcon,
+  CloseIcon,
   GlobeIcon,
   HourglassIcon,
   LockIcon,
@@ -14,6 +15,9 @@ import {
 // Colours live in `src/index.css` (`.status-badge.status-<status>`): attention states use
 // `--accent-ink`, neutral or done states use `--ink`, inactive states use `--muted`.
 const STATUS_CONFIG = {
+  pending: { label: 'Pending', icon: HourglassIcon },
+  approved: { label: 'Approved', icon: CheckIcon },
+  rejected: { label: 'Rejected', icon: CloseIcon },
   draft: { label: 'Draft', icon: PencilIcon },
   published: { label: 'Published', icon: GlobeIcon },
   scheduled: { label: 'Scheduled', icon: ClockIcon },

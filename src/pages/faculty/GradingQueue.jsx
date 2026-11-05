@@ -25,11 +25,13 @@ export default function GradingQueue() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  const loadSubmissions = async (keepSelection = true) => {
+  const loadSubmissions = async (keepSelection = true, overrides = {}) => {
+    const status = overrides.status ?? statusFilter;
+    const q = overrides.q ?? searchTerm;
     try {
       const subs = await listFacultySubmissions(subjectId, {
-        status: statusFilter === "all" ? undefined : statusFilter,
-        q: searchTerm || undefined,
+        status: status === "all" ? undefined : status,
+        q: q || undefined,
       });
       setSubmissions(Array.isArray(subs) ? subs : []);
 
@@ -139,11 +141,43 @@ export default function GradingQueue() {
   };
 
   const pendingCount = submissions.filter((s) => s.status === "pending_review").length;
+  const filtersActive = searchTerm !== "" || statusFilter !== "all";
+
+  const handleClearFilters = () => {
+    setSearchTerm("");
+    if (statusFilter !== "all") {
+      setStatusFilter("all");
+    } else {
+      loadSubmissions(false, { q: "" });
+    }
+  };
 
   if (loading) {
     return (
-      <div className="page-shell">
-        <p>Loading grading queue…</p>
+      <div className="page-shell gq-shell">
+        <p className="sr-only" role="status">Loading grading queue…</p>
+        <div className="gq-skeleton" aria-hidden="true">
+          <div className="gq-skeleton-head">
+            <span className="skeleton-line gq-skeleton-title" />
+            <span className="skeleton-line gq-skeleton-sub" />
+          </div>
+          <div className="gq-skeleton-layout">
+            <div className="gq-skeleton-list">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <div className="gq-skeleton-item" key={i}>
+                  <span className="skeleton-line" />
+                  <span className="skeleton-line gq-skeleton-short" />
+                </div>
+              ))}
+            </div>
+            <div className="gq-skeleton-detail">
+              <span className="skeleton-line gq-skeleton-title" />
+              <span className="skeleton-line gq-skeleton-short" />
+              <span className="skeleton-line gq-skeleton-block" />
+              <span className="skeleton-line gq-skeleton-block" />
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
@@ -224,7 +258,25 @@ export default function GradingQueue() {
       <div className="gq-layout">
         <div className="gq-list-card">
           {submissions.length === 0 ? (
-            <p className="gq-empty">No submissions match this filter.</p>
+            <div className="gq-empty">
+              <p className="gq-empty-title">
+                {filtersActive ? "No submissions match filters" : "No submissions yet"}
+              </p>
+              <p className="gq-empty-text">
+                {filtersActive
+                  ? "Try another status, or clear the filters to see the whole queue."
+                  : "Student submissions will appear here once they upload their work."}
+              </p>
+              {filtersActive && (
+                <button
+                  type="button"
+                  className="btn btn-sm"
+                  onClick={handleClearFilters}
+                >
+                  Clear filters
+                </button>
+              )}
+            </div>
           ) : (
             submissions.map((sub) => {
               const isSelected = sub.id === selectedAttemptId;
@@ -330,7 +382,7 @@ export default function GradingQueue() {
                   disabled={grading}
                   aria-disabled={grading}
                 >
-                  Save and Next <ArrowLeft />
+                  Save and Next <ArrowRight />
                 </button>
               </div>
             </div>
