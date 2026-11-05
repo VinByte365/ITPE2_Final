@@ -30,7 +30,7 @@ export default function HomePage() {
             <p className="hero-lead">
               A field guide to the hardware, software, and platforms that run
               the modern world — assembled from sixteen module presentations by{' '}
-              <span className="nowrap">BSIT-NS-4A</span> at TUP Taguig.
+              <span className="nowrap">BSIT-NS-3A</span> at TUP Taguig.
             </p>
 
             <div className="hero-actions">
@@ -66,7 +66,7 @@ export default function HomePage() {
               </div>
               <div>
                 <dt>Class</dt>
-                <dd>NS-4A</dd>
+                <dd>NS-3A</dd>
               </div>
             </dl>
           </Reveal>
