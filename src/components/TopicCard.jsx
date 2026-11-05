@@ -2,6 +2,12 @@
 import { Link } from 'react-router-dom';
 import StatusBadge from './StatusBadge';
 
+function truncate(text, n = 30) {
+  const s = String(text || '').trim();
+  if (!s) return '';
+  return s.length > n ? `${s.slice(0, n).trimEnd()}...` : s;
+}
+
 export default function TopicCard({ topic, isStudent }) {
   const isScheduled = topic.state === 'scheduled' || (topic.status === 'published' && topic.state !== 'open' && topic.state !== 'failed' && topic.state !== 'pending_review' && topic.state !== 'completed' && topic.state !== 'locked' && new Date(topic.availableFrom) > new Date());
   const isLocked = topic.state === 'locked';
@@ -24,28 +30,21 @@ export default function TopicCard({ topic, isStudent }) {
 
   const card = (
     <div
-      className={`subject-card ${isBlocked ? 'topic-blocked' : ''}`}
-      style={isBlocked ? { cursor: 'not-allowed' } : {}}
+      className={`subject-card topic-card ${isBlocked ? 'topic-blocked' : ''}`}
       aria-disabled={isBlocked ? 'true' : undefined}
     >
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '8px' }}>
-        <h3 style={{ margin: '0 0 4px', fontSize: 16 }}>
+      <div className="topic-card-head">
+        <h3 className="topic-card-title">
           {topic.position}. {topic.title}
         </h3>
         <StatusBadge status={topic.state || topic.status} />
       </div>
 
-      {topic.description && (
-        <p style={{ margin: '4px 0 8px', fontSize: 13, color: 'var(--muted)' }}>
-          {topic.description}
-        </p>
-      )}
+      <p className="topic-card-desc">{truncate(topic.description, 30)}</p>
 
-      {helperText && (
-        <p style={{ margin: '4px 0 0', fontSize: 12, color: isLocked || isScheduled ? 'var(--muted)' : 'var(--ink)', fontWeight: 500 }}>
-          {helperText}
-        </p>
-      )}
+      <p className={`topic-card-helper ${isLocked || isScheduled ? 'is-muted' : ''}`}>
+        {helperText || '\u00a0'}
+      </p>
     </div>
   );
 
@@ -53,7 +52,7 @@ export default function TopicCard({ topic, isStudent }) {
     return (
       <Link
         to={`/student/topics/${topic.id}`}
-        style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}
+        className="topic-card-link"
       >
         {card}
       </Link>

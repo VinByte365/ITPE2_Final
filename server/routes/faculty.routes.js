@@ -239,6 +239,18 @@ router.put(
   }),
 );
 
+// GET /faculty/topics/:id
+router.get(
+  '/topics/:id',
+  asyncHandler(async (req, res) => {
+    const topicId = uuidSchema.parse(req.params.id);
+    const isAdmin = req.auth.profile?.role === 'admin';
+    const { getFacultyTopic } = await import('../services/topics.service.js');
+    const topic = await getFacultyTopic(req.auth.profile.id, topicId, isAdmin);
+    res.json({ data: topic });
+  }),
+);
+
 // PATCH /faculty/topics/:id
 router.patch(
   '/topics/:id',

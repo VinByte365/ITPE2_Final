@@ -316,10 +316,10 @@ export default function QuizRun() {
 
   return (
     <div className="page-shell qr-quiz">
-      <div className="qr-cta-top">
+      <div className="page-back">
         <Link
           to={topic ? `/student/topics/${topic.id}` : -1}
-          className="qr-back-link"
+          className="page-back-link"
         >
           <ArrowLeft /> Back to topic
         </Link>

@@ -77,6 +77,7 @@ export function mapSubject(row) {
     timezone: row.timezone,
     startDate: row.start_date,
     meetingDay: row.meeting_day,
+    studentCount: row.student_count != null ? Number(row.student_count) : null,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };

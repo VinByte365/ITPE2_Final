@@ -158,6 +158,7 @@ export default function Report() {
   if (error && !report) {
     return (
       <div className="page-shell">
+        <div className="page-back"><Link className="page-back-link" to={`/faculty/subjects/${id}/topics`}>← Back to topics</Link></div>
         <div className="auth-error" role="alert">{error}</div>
         <button type="button" className="btn btn-solid" onClick={handleRetry}>
           Retry
@@ -169,6 +170,7 @@ export default function Report() {
   if (!report || report.rows.length === 0) {
     return (
       <div className="page-shell">
+        <div className="page-back"><Link className="page-back-link" to={`/faculty/subjects/${id}/topics`}>← Back to topics</Link></div>
         <div className="state-panel">
           <p className="eyebrow">
             <span className="eyebrow-dot" />
@@ -198,6 +200,7 @@ export default function Report() {
 
   return (
     <div className="page-shell">
+      <div className="page-back"><Link className="page-back-link" to={`/faculty/subjects/${id}/topics`}>← Back to topics</Link></div>
       {error && (
         <div className="auth-error" role="alert">
           {error}

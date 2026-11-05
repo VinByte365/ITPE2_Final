@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import StatusBadge from "../../components/StatusBadge";
+import { CopyIcon, CheckIcon } from "../../components/Icons";
 import { listFacultyTopics, createTopic, reorderTopics, updateTopic, deleteTopic } from "../../api/topics";
-import { getFacultySubject } from "../../api/subjects";
+import { getFacultySubject, regenerateJoinCode } from "../../api/subjects";
 
 const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -18,6 +19,8 @@ export default function FacultyTopics() {
   const [error, setError] = useState("");
   const [addingIndex, setAddingIndex] = useState(null);
   const [addForm, setAddForm] = useState({ title: "", status: "draft" });
+  const [copied, setCopied] = useState(false);
+  const copyTimer = useRef(null);
   const [subject, setSubject] = useState(null);
 
   useEffect(() => {
@@ -124,59 +127,122 @@ export default function FacultyTopics() {
     catch (err) { setError(err?.message || "Delete failed."); }
   };
 
+  const handleCopyCode = async () => {
+    const code = subject?.joinCode;
+    if (!code) return;
+    try {
+      await navigator.clipboard.writeText(code);
+    } catch {
+      const ta = document.createElement('textarea');
+      ta.value = code; ta.setAttribute('readonly', ''); ta.style.position = 'absolute'; ta.style.left = '-9999px';
+      document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+    }
+    setCopied(true);
+    if (copyTimer.current) clearTimeout(copyTimer.current);
+    copyTimer.current = setTimeout(() => setCopied(false), 1800);
+  };
+
+  useEffect(() => () => { if (copyTimer.current) clearTimeout(copyTimer.current); }, []);
+
+  const handleRegenerate = async () => {
+    if (!window.confirm("Regenerate join code? The old code will stop working.")) return;
+    setError("");
+    try {
+      const updated = await regenerateJoinCode(subjectId);
+      setSubject(updated);
+    } catch (err) { setError(err?.message || "Failed to regenerate code."); }
+  };
+
   if (loading) return <div className="page-shell"><p>Loading topics…</p></div>;
 
   return (
     <div className="page-shell">
-      <h1>Topics</h1>
+      <div className="ft-header">
+        <div className="ft-header-main">
+          <div className="page-back">
+            <Link className="page-back-link" to="/faculty">← Back to subjects</Link>
+          </div>
+          <h1>Topics</h1>
+          {subject && <p className="ft-subject-meta">{subject.code} · {subject.name}</p>}
+          {subject && (
+            <div className="ft-join-row">
+              <div className="ft-join-code" aria-label="Join code">
+                <span className="ft-join-label">Join code</span>
+                <button type="button" className="ft-join-copy" onClick={handleCopyCode} title={copied ? 'Copied' : 'Copy join code'} aria-label={copied ? 'Join code copied' : 'Copy join code'}>
+                  <strong className="ft-join-value">{subject.joinCode || '—'}</strong>
+                  <span className="ft-join-icon" aria-hidden="true">{copied ? <CheckIcon width="14" height="14" /> : <CopyIcon width="14" height="14" />}</span>
+                </button>
+                <button type="button" className="btn btn-line ft-join-regen" onClick={handleRegenerate}>Regenerate</button>
+              </div>
+              <div className="ft-header-actions ft-header-actions-inline">
+                <Link className="btn btn-line" to={`/faculty/subjects/${subjectId}/students`}>Students</Link>
+                <Link className="btn btn-line" to={`/faculty/subjects/${subjectId}/settings`}>Settings</Link>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
       {error && <div className="auth-error" role="alert">{error}</div>}
 
       {topics.length === 0 ? (
-        <div className="ft-list">
-          <div className="ft-empty">No topics yet.</div>
-          <button type="button" className="ft-add-row" onClick={() => { setAddingIndex(0); setAddForm({ title: "", status: "draft" }); }} aria-label="Add topic">
-            <span className="ft-plus">+</span>
-          </button>
+        <ul className="te-block-list ft-topic-list">
+          <li className="ft-empty te-block-item">No topics yet.</li>
+          <li className="ft-add-item">
+            <button type="button" className="ft-add-row" onClick={() => { setAddingIndex(0); setAddForm({ title: "", status: "draft" }); }} aria-label="Add topic">
+              <span className="ft-plus">+</span>
+            </button>
+          </li>
           {addingIndex === 0 && (
-            <form onSubmit={handleAdd} className="ft-inline-form ft-inline-form-row">
-              <input placeholder="Topic title" value={addForm.title} onChange={(e) => setAddForm({ ...addForm, title: e.target.value })} required />
-              <select value={addForm.status} onChange={(e) => setAddForm({ ...addForm, status: e.target.value })}><option value="draft">draft</option><option value="published">published</option></select>
-              <button type="submit" className="btn">Add</button>
-              <button type="button" className="btn" onClick={() => setAddingIndex(null)}>Cancel</button>
-            </form>
+            <li className="te-block-item">
+              <form onSubmit={handleAdd} className="ft-inline-form ft-inline-form-row">
+                <input className="input" placeholder="Topic title" value={addForm.title} onChange={(e) => setAddForm({ ...addForm, title: e.target.value })} required />
+                <select className="input" value={addForm.status} onChange={(e) => setAddForm({ ...addForm, status: e.target.value })}><option value="draft">draft</option><option value="published">published</option></select>
+                <button type="submit" className="btn btn-solid">Add</button>
+                <button type="button" className="btn btn-line" onClick={() => setAddingIndex(null)}>Cancel</button>
+              </form>
+            </li>
           )}
-        </div>
+        </ul>
       ) : (
-        <div className="ft-list">
+        <ul className="te-block-list ft-topic-list">
           {topics.map((t, idx) => (
-            <div key={t.id} className="ft-row">
-              <span className="ft-row-num">{t.position}.</span>
-              <div className="ft-row-main">
-                <div className="ft-row-title">{t.title}</div>
-                <div className="ft-row-meta">{formatDate(t.availableFrom)} <StatusBadge status={t.status} /></div>
+            <li key={t.id} className="te-block-item ft-topic-item">
+              <div className="ft-topic-row">
+                <div className="ft-topic-reorder" aria-label="Reorder">
+                  <button type="button" className="btn btn-line ft-reorder-btn" onClick={() => handleReorder(idx, -1)} disabled={idx === 0} aria-disabled={idx === 0} aria-label="Move up">↑</button>
+                  <button type="button" className="btn btn-line ft-reorder-btn" onClick={() => handleReorder(idx, 1)} disabled={idx === topics.length - 1} aria-disabled={idx === topics.length - 1} aria-label="Move down">↓</button>
+                </div>
+                <div className="ft-topic-body">
+                  <div className="te-block-header ft-topic-header">
+                    <strong className="ft-topic-title"><span className="ft-row-num">{t.position}.</span> {t.title}</strong>
+                    <span className="ft-topic-meta">{formatDate(t.availableFrom)} <StatusBadge status={t.status} /></span>
+                  </div>
+                  <div className="te-block-actions ft-topic-actions">
+                    <button type="button" className="btn btn-line" onClick={() => handleTogglePublish(t)}>{t.status === "published" ? "Unpublish" : "Publish"}</button>
+                    <Link className="btn btn-line" to={`/faculty/topics/${t.id}`}>Edit</Link>
+                    <Link className="btn btn-line" to={`/faculty/topics/${t.id}/quiz`}>Quiz</Link>
+                    <button type="button" className="btn btn-line ft-btn-danger" onClick={() => handleDelete(t)}>Delete</button>
+                  </div>
+                </div>
               </div>
-              <div className="ft-row-actions">
-                <button onClick={() => handleReorder(idx, -1)} disabled={idx === 0} aria-disabled={idx === 0}>↑</button>
-                <button onClick={() => handleReorder(idx, 1)} disabled={idx === topics.length - 1} aria-disabled={idx === topics.length - 1}>↓</button>
-                <button onClick={() => handleTogglePublish(t)}>{t.status === "published" ? "Unpublish" : "Publish"}</button>
-                <Link to={`/faculty/topics/${t.id}`}>Edit</Link>
-                <Link to={`/faculty/topics/${t.id}/quiz`}>Quiz</Link>
-                <button onClick={() => handleDelete(t)}>Delete</button>
-              </div>
-            </div>
+            </li>
           ))}
-          <button type="button" className="ft-add-row" onClick={() => { setAddingIndex(topics.length); setAddForm({ title: "", status: "draft" }); }} aria-label="Add topic">
-            <span className="ft-plus">+</span>
-          </button>
+          <li className="ft-add-item">
+            <button type="button" className="ft-add-row" onClick={() => { setAddingIndex(topics.length); setAddForm({ title: "", status: "draft" }); }} aria-label="Add topic">
+              <span className="ft-plus">+</span>
+            </button>
+          </li>
           {addingIndex === topics.length && (
-            <form onSubmit={handleAdd} className="ft-inline-form ft-inline-form-row">
-              <input placeholder="Topic title" value={addForm.title} onChange={(e) => setAddForm({ ...addForm, title: e.target.value })} required />
-              <select value={addForm.status} onChange={(e) => setAddForm({ ...addForm, status: e.target.value })}><option value="draft">draft</option><option value="published">published</option></select>
-              <button type="submit" className="btn">Add</button>
-              <button type="button" className="btn" onClick={() => setAddingIndex(null)}>Cancel</button>
-            </form>
+            <li className="te-block-item">
+              <form onSubmit={handleAdd} className="ft-inline-form ft-inline-form-row">
+                <input className="input" placeholder="Topic title" value={addForm.title} onChange={(e) => setAddForm({ ...addForm, title: e.target.value })} required />
+                <select className="input" value={addForm.status} onChange={(e) => setAddForm({ ...addForm, status: e.target.value })}><option value="draft">draft</option><option value="published">published</option></select>
+                <button type="submit" className="btn btn-solid">Add</button>
+                <button type="button" className="btn btn-line" onClick={() => setAddingIndex(null)}>Cancel</button>
+              </form>
+            </li>
           )}
-        </div>
+        </ul>
       )}
     </div>
   );

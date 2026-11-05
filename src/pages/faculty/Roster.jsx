@@ -2,7 +2,7 @@
 // Faculty progress view: grid of students × topics with state icons.
 // Filters for "failed" and "pending" students.
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { getFacultyProgress } from "../../api/subjects";
 import StatusBadge from "../../components/StatusBadge";
 
@@ -61,6 +61,7 @@ export default function Roster() {
   if (loading) {
     return (
       <div className="page-shell">
+        <div className="page-back"><Link className="page-back-link" to={`/faculty/subjects/${id}/topics`}>← Back to topics</Link></div>
         <p>Loading progress…</p>
       </div>
     );
@@ -69,6 +70,7 @@ export default function Roster() {
   if (error && !data) {
     return (
       <div className="page-shell">
+        <div className="page-back"><Link className="page-back-link" to={`/faculty/subjects/${id}/topics`}>← Back to topics</Link></div>
         <div className="auth-error" role="alert">{error}</div>
       </div>
     );
@@ -77,6 +79,7 @@ export default function Roster() {
   if (!students || students.length === 0) {
     return (
       <div className="page-shell">
+        <div className="page-back"><Link className="page-back-link" to={`/faculty/subjects/${id}/topics`}>← Back to topics</Link></div>
         <h1>{subject ? subject.name : "Progress"}</h1>
         <p>No students enrolled yet.</p>
       </div>
@@ -85,6 +88,7 @@ export default function Roster() {
 
   return (
     <div className="page-shell">
+      <div className="page-back"><Link className="page-back-link" to={`/faculty/subjects/${id}/topics`}>← Back to topics</Link></div>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap", marginBottom: 16 }}>
         <div>
           <h1 style={{ margin: "0 0 4px" }}>{subject ? subject.name : "Progress"}</h1>

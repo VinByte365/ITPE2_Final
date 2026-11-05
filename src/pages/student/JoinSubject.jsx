@@ -1,6 +1,6 @@
 // src/pages/student/JoinSubject.jsx
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { enroll } from '../../api/subjects';
 
 export default function JoinSubject() {
@@ -30,6 +30,7 @@ export default function JoinSubject() {
 
   return (
     <div className="auth-page">
+      <div className="page-back"><Link className="page-back-link" to="/student">← Back to subjects</Link></div>
       <h1>Join a subject</h1>
       {error && <div className="auth-error" role="alert">{error}</div>}
       <form onSubmit={handleSubmit}>

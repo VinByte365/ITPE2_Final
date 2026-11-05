@@ -1,6 +1,6 @@
 // src/pages/faculty/SubjectNew.jsx
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { createSubject } from '../../api/subjects';
 
 const TERMS = ['1st Semester', '2nd Semester', '3rd Semester', 'Summer'];
@@ -52,6 +52,7 @@ export default function SubjectNew() {
 
   return (
     <div className="auth-page">
+      <div className="page-back"><Link className="page-back-link" to="/faculty">← Back to subjects</Link></div>
       <h1>Create subject</h1>
       {error && <div className="auth-error" role="alert">{error}</div>}
       <form onSubmit={handleSubmit}>

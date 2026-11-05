@@ -1,5 +1,5 @@
 // server/services/topics.service.js
-import { AppError } from "../lib/errors.js";
+import { AppError, notFound } from "../lib/errors.js";
 import { generateSchedule } from "../utils/schedule.js";
 import * as topicsRepoModule from "../repositories/topics.repository.js";
 import * as subjectsRepoModule from "../repositories/subjects.repository.js";
@@ -149,4 +149,12 @@ export async function rescheduleTopicsFromStart(facultyId, subjectId, startDate,
   });
 
   return deps.topicsRepo.listTopicsBySubject(subjectId);
+}
+export async function getFacultyTopic(facultyId, topicId, isAdmin=false){
+  const t = await deps.topicsRepo.findTopicById(topicId);
+  if(!t) throw notFound('Topic not found');
+  const subj = await deps.subjectsRepo.findSubjectById(t.subjectId);
+  if(!subj) throw notFound('Subject not found');
+  if(!isAdmin && subj.facultyId !== facultyId) throw notFound('Topic not found');
+  return t;
 }

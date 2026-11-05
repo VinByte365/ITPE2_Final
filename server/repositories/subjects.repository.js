@@ -32,19 +32,21 @@ export async function findSubjectByJoinCode(joinCode) {
 
 export async function listSubjectsByFaculty(facultyId, status) {
   const params = [facultyId];
-  let where = 'where faculty_id = $1';
+  let where = 'where s.faculty_id = $1';
   if (status) {
     params.push(status);
-    where += ` and status = $${params.length}`;
+    where += ` and s.status = $${params.length}`;
   }
   const { rows } = await dbQuery(
-    `select id, faculty_id, code, name, description, term, school_year,
-            join_code, passing_percent, enrollment_open, status, timezone,
-            start_date, meeting_day,
-            created_at, updated_at
-       from public.subjects
+    `select s.id, s.faculty_id, s.code, s.name, s.description, s.term, s.school_year,
+            s.join_code, s.passing_percent, s.enrollment_open, s.status, s.timezone,
+            s.start_date, s.meeting_day, s.created_at, s.updated_at,
+            count(e.id) filter (where e.status = 'active')::int as student_count
+       from public.subjects s
+       left join public.enrollments e on e.subject_id = s.id
        ${where}
-     order by created_at desc`,
+     group by s.id
+     order by s.created_at desc`,
     params,
   );
   return rows.map(mapSubject);
@@ -55,16 +57,18 @@ export async function listAllSubjects(status) {
   let where = '';
   if (status) {
     params.push(status);
-    where = `where status = $${params.length}`;
+    where = `where s.status = $${params.length}`;
   }
   const { rows } = await dbQuery(
-    `select id, faculty_id, code, name, description, term, school_year,
-            join_code, passing_percent, enrollment_open, status, timezone,
-            start_date, meeting_day,
-            created_at, updated_at
-       from public.subjects
+    `select s.id, s.faculty_id, s.code, s.name, s.description, s.term, s.school_year,
+            s.join_code, s.passing_percent, s.enrollment_open, s.status, s.timezone,
+            s.start_date, s.meeting_day, s.created_at, s.updated_at,
+            count(e.id) filter (where e.status = 'active')::int as student_count
+       from public.subjects s
+       left join public.enrollments e on e.subject_id = s.id
        ${where}
-     order by created_at desc`,
+     group by s.id
+     order by s.created_at desc`,
     params,
   );
   return rows.map(mapSubject);
@@ -225,8 +229,9 @@ export async function listSubjectsByStudent(studentId) {
   const { rows } = await dbQuery(
     `select s.id, s.faculty_id, s.code, s.name, s.description, s.term,
             s.school_year, s.join_code, s.passing_percent, s.enrollment_open,
-            s.status, s.timezone, s.created_at, s.updated_at,
-            p.first_name as faculty_first, p.last_name as faculty_last
+            s.status, s.timezone, s.start_date, s.meeting_day, s.created_at, s.updated_at,
+            p.first_name as faculty_first, p.last_name as faculty_last,
+            (select count(*)::int from public.enrollments e2 where e2.subject_id = s.id and e2.status = 'active') as student_count
        from public.subjects s
        join public.enrollments e on e.subject_id = s.id
        left join public.profiles p on p.id = s.faculty_id

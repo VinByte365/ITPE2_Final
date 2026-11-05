@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import TopicCard from "../../components/TopicCard";
-import StatusBadge from "../../components/StatusBadge";
 import { getStudentSubject } from "../../api/subjects";
 import { listStudentTopics } from "../../api/topics";
 import Skeleton from "../../components/Skeleton";
@@ -38,6 +37,9 @@ export default function SubjectTopics() {
 
   return (
     <div className="page-shell">
+      <div className="page-back">
+        <Link className="page-back-link" to="/student">← Back to subjects</Link>
+      </div>
       <h1>{subject?.name || "Subject"}</h1>
       {subject && <p>Passing: {subject.passingPercent}%</p>}
       {error && <div className="auth-error" role="alert">{error}</div>}

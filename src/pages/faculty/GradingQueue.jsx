@@ -184,10 +184,10 @@ export default function GradingQueue() {
 
   return (
     <div className="page-shell gq-shell">
-      <div className="gq-back">
+      <div className="page-back">
         <Link
           to={`/faculty/subjects/${subjectId}/topics`}
-          className="gq-back-link"
+          className="page-back-link"
         >
           <ArrowLeft /> Back to topics
         </Link>

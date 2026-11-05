@@ -95,6 +95,7 @@ export default function StudentScores() {
   if (error && !data) {
     return (
       <div className="page-shell">
+        <div className="page-back"><Link className="page-back-link" to={`/faculty/subjects/${subjectId}/report`}>← Back to report</Link></div>
         <div className="auth-error" role="alert">{error}</div>
         <button type="button" className="btn btn-solid" onClick={load}>
           Retry
@@ -106,6 +107,7 @@ export default function StudentScores() {
   if (!student) {
     return (
       <div className="page-shell">
+        <div className="page-back"><Link className="page-back-link" to={`/faculty/subjects/${subjectId}/report`}>← Back to report</Link></div>
         <div className="state-panel">
           <p className="eyebrow">
             <span className="eyebrow-dot" />
@@ -131,6 +133,7 @@ export default function StudentScores() {
 
   return (
     <div className="page-shell">
+      <div className="page-back"><Link className="page-back-link" to={`/faculty/subjects/${subjectId}/report`}>← Back to report</Link></div>
       {error && <div className="auth-error" role="alert">{error}</div>}
 
       <div className="rv-report-header-block">

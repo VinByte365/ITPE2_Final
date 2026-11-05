@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import MarkdownView from "../../components/MarkdownView";
 import SlidesEmbed from "../../components/SlidesEmbed";
 import FileUpload from "../../components/FileUpload";
@@ -11,6 +11,7 @@ import {
   deleteContentBlock,
   reorderContentBlocks,
   updateTopic,
+  getTopic,
 } from "../../api/topics";
 
 const BLOCK_TYPES = ["text", "summary", "notes", "presentation", "video", "file"];
@@ -21,7 +22,9 @@ export default function TopicEditor() {
   const [description, setDescription] = useState("");
   const [availableFrom, setAvailableFrom] = useState("");
   const [status, setStatus] = useState("draft");
+  const [savedDetails, setSavedDetails] = useState({ title: "", description: "", availableFrom: "", status: "draft" });
   const [blocks, setBlocks] = useState([]);
+  const [subjectId, setSubjectId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
@@ -36,19 +39,52 @@ export default function TopicEditor() {
   const load = useCallback(async () => {
     setLoading(true); setError("");
     try {
-      const content = await listTopicContent(topicId);
-      setBlocks(Array.isArray(content) ? content : []);
+      const [topicResult, contentResult] = await Promise.allSettled([
+        getTopic(topicId),
+        listTopicContent(topicId),
+      ]);
+      if (topicResult.status === 'fulfilled' && topicResult.value) {
+        const topic = topicResult.value;
+        const details = {
+          title: topic.title || "",
+          description: topic.description || "",
+          availableFrom: topic.availableFrom ? String(topic.availableFrom).slice(0, 10) : "",
+          status: topic.status || "draft",
+        };
+        setTitle(details.title);
+        setDescription(details.description);
+        setAvailableFrom(details.availableFrom);
+        setStatus(details.status);
+        setSavedDetails(details);
+        setSubjectId(topic.subjectId || null);
+      }
+      if (contentResult.status === 'fulfilled') {
+        setBlocks(Array.isArray(contentResult.value) ? contentResult.value : []);
+      } else {
+        setError(contentResult.reason?.message || "Failed to load content.");
+      }
     } catch (err) { setError(err?.message || "Failed to load content."); }
     finally { setLoading(false); }
   }, [topicId]);
 
   useEffect(() => { load(); }, [load]);
 
+  const detailsDirty =
+    title !== savedDetails.title ||
+    description !== savedDetails.description ||
+    availableFrom !== savedDetails.availableFrom ||
+    status !== savedDetails.status;
+  const canSaveDetails = detailsDirty && !saving;
+
   const handleSaveDetails = async (e) => {
     e.preventDefault();
+    if (!canSaveDetails) return;
     setSaving(true);
+    setError("");
     try {
-      await updateTopic(topicId, { title, description, availableFrom, status });
+      const payload = { title, description, availableFrom, status };
+      await updateTopic(topicId, payload);
+      setSavedDetails(payload);
     } catch (err) { setError(err?.message || "Save failed."); }
     finally { setSaving(false); }
   };
@@ -56,12 +92,13 @@ export default function TopicEditor() {
   const handleAddBlock = async (e) => {
     e.preventDefault();
     try {
+      const visible = newType === "notes" ? false : newVisible;
       const payload = {
         type: newType,
         title: newTitle || null,
         body: ["text", "summary", "notes"].includes(newType) ? newBody : null,
         url: ["presentation", "video"].includes(newType) ? (newUrl || null) : null,
-        visibleToStudents: newVisible,
+        visibleToStudents: visible,
       };
       await createContentBlock(topicId, payload);
       setNewTitle(""); setNewBody(""); setNewUrl("");
@@ -103,7 +140,7 @@ export default function TopicEditor() {
         fileName: file?.name || newTitle || "file",
         fileMime: file?.type,
         fileSize: file?.size,
-        visibleToStudents: newVisible,
+        visibleToStudents: newType === "notes" ? false : newVisible,
       });
       load();
     } catch (err) { setError(err?.message || "Save block failed."); }
@@ -112,6 +149,9 @@ export default function TopicEditor() {
   if (loading) {
     return (
       <div className="page-shell">
+        <div className="page-back">
+          <Link className="page-back-link" to="/faculty">← Back to topics</Link>
+        </div>
         <p className="sr-only" role="status">Loading topic editor…</p>
         <div className="te-skeleton" aria-hidden="true">
           <span className="skeleton-line te-skeleton-title" />
@@ -134,21 +174,43 @@ export default function TopicEditor() {
 
   return (
     <div className="page-shell">
+      <div className="page-back">
+        <Link className="page-back-link" to="/faculty">← Back to subjects</Link>
+      </div>
       <h1>Topic Editor</h1>
       {error && <div className="auth-error" role="alert">{error}</div>}
 
-      <form onSubmit={handleSaveDetails} className="te-details-form">
-        <h2>Details</h2>
-        <div><label>Title<input value={title} onChange={(e) => setTitle(e.target.value)} /></label></div>
-        <div><label>Description<textarea value={description} onChange={(e) => setDescription(e.target.value)} /></label></div>
-        <div><label>Available from<input value={availableFrom} onChange={(e) => setAvailableFrom(e.target.value)} /></label></div>
-        <div><label>Status<select value={status} onChange={(e) => setStatus(e.target.value)}><option value="draft">draft</option><option value="published">published</option></select></label></div>
-        <button type="submit" className="btn btn-solid" disabled={saving} aria-disabled={saving}>{saving ? "Saving…" : "Save details"}</button>
+      <form onSubmit={handleSaveDetails} className="te-details-form te-panel">
+        <h2 className="te-section-title">Details</h2>
+        <div className="te-field">
+          <label className="qb-label" htmlFor="te-title">Title</label>
+          <input id="te-title" className="input" value={title} onChange={(e) => setTitle(e.target.value)} />
+        </div>
+        <div className="te-field">
+          <label className="qb-label" htmlFor="te-desc">Description</label>
+          <textarea id="te-desc" className="input" rows={3} value={description} onChange={(e) => setDescription(e.target.value)} />
+        </div>
+        <div className="te-field-row">
+          <div className="te-field">
+            <label className="qb-label" htmlFor="te-date">Available from</label>
+            <input id="te-date" type="date" className="input" value={availableFrom} onChange={(e) => setAvailableFrom(e.target.value)} />
+          </div>
+          <div className="te-field">
+            <label className="qb-label" htmlFor="te-status">Status</label>
+            <select id="te-status" className="input" value={status} onChange={(e) => setStatus(e.target.value)}>
+              <option value="draft">draft</option>
+              <option value="published">published</option>
+            </select>
+          </div>
+        </div>
+        <div className="te-form-actions">
+          <button type="submit" className="btn btn-solid" disabled={!canSaveDetails} aria-disabled={!canSaveDetails}>{saving ? "Saving…" : "Save details"}</button>
+        </div>
       </form>
 
-      <h2>Content blocks</h2>
+      <h2 className="te-section-title te-section-gap">Content blocks</h2>
       {blocks.length === 0 ? (
-        <div className="empty-state">
+        <div className="empty-state te-panel">
           No content blocks yet. Add text, a summary, a presentation, a video,
           or a file below.
         </div>
@@ -182,55 +244,70 @@ export default function TopicEditor() {
         </ul>
       )}
 
-      <div className="te-add-block">
-        <h3>Add block</h3>
-        <div>
-          <label>Type
-            <select value={newType} onChange={(e) => setNewType(e.target.value)}>
+      <div className="te-add-block te-panel">
+        <h3 className="te-section-title">Add block</h3>
+        <div className="te-field-row">
+          <div className="te-field">
+            <label className="qb-label" htmlFor="te-new-type">Type</label>
+            <select id="te-new-type" className="input" value={newType} onChange={(e) => setNewType(e.target.value)}>
               {BLOCK_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
             </select>
-          </label>
+          </div>
+          <div className="te-field te-field-grow">
+            <label className="qb-label" htmlFor="te-new-title">Title</label>
+            <input id="te-new-title" className="input" value={newTitle} onChange={(e) => setNewTitle(e.target.value)} placeholder="Optional title" />
+          </div>
         </div>
-        <div><label>Title<input value={newTitle} onChange={(e) => setNewTitle(e.target.value)} /></label></div>
+
         {(["text", "summary", "notes"].includes(newType)) && (
-          <div>
-            <label>Body (markdown)
-              <textarea value={newBody} onChange={(e) => setNewBody(e.target.value)} rows={6} />
+          <div className="te-field">
+            <label className="qb-label" htmlFor="te-new-body">Body (markdown)</label>
+            <textarea id="te-new-body" className="input" value={newBody} onChange={(e) => setNewBody(e.target.value)} rows={6} />
+            <label className="qb-check te-check">
+              <input type="checkbox" checked={preview} onChange={(e) => setPreview(e.target.checked)} />
+              <span className="qb-check-label">Preview markdown</span>
             </label>
-            <label><input type="checkbox" checked={preview} onChange={(e) => setPreview(e.target.checked)} /> Preview markdown</label>
-            {preview && <MarkdownView content={newBody} />}
+            {preview && <div className="te-preview"><MarkdownView content={newBody} /></div>}
           </div>
         )}
+
         {(["presentation", "video"].includes(newType)) && (
-          <div><label>URL<input value={newUrl} onChange={(e) => setNewUrl(e.target.value)} /></label></div>
+          <div className="te-field">
+            <label className="qb-label" htmlFor="te-new-url">URL</label>
+            <input id="te-new-url" className="input" value={newUrl} onChange={(e) => setNewUrl(e.target.value)} placeholder="https://…" />
+          </div>
         )}
-        <div><label><input type="checkbox" checked={newVisible} onChange={(e) => setNewVisible(e.target.checked)} /> Visible to students</label></div>
+
+        {newType !== "notes" && (
+          <label className="qb-check te-check">
+            <input type="checkbox" checked={newVisible} onChange={(e) => setNewVisible(e.target.checked)} />
+            <span className="qb-check-label">Visible to students</span>
+          </label>
+        )}
 
         {newType === "file" && (
-          <div className="te-file-upload">
+          <div className="te-file-upload te-field">
             <FileUpload
               accept=".pdf,.pptx,.doc,.docx,.txt,.png,.jpg,.jpeg,.webp"
               maxSizeMb={25}
               getUploadUrl={(info) => getUploadUrl(topicId, { ...info, kind: "file" })}
-              onUploaded={handleUpload}
+              onUploaded={(path, file) => handleUpload(path, file)}
               onError={setError}
             />
           </div>
         )}
 
-        {newType === "presentation" && (
-          <div>
+        <div className="te-form-actions">
+          {newType === "presentation" && (
             <button type="button" className="btn btn-solid te-add-btn" onClick={handleAddBlock}>Add presentation link</button>
-          </div>
-        )}
-
-        {newType === "video" && (
-          <button type="button" className="btn btn-solid te-add-btn" onClick={handleAddBlock}>Add video link</button>
-        )}
-
-        {!["presentation", "video", "file"].includes(newType) && (
-          <button type="button" className="btn btn-solid te-add-btn" onClick={handleAddBlock}>Add block</button>
-        )}
+          )}
+          {newType === "video" && (
+            <button type="button" className="btn btn-solid te-add-btn" onClick={handleAddBlock}>Add video link</button>
+          )}
+          {!["presentation", "video", "file"].includes(newType) && (
+            <button type="button" className="btn btn-solid te-add-btn" onClick={handleAddBlock}>Add block</button>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -2,7 +2,7 @@
 // RPT-11: Student grades page. Own scores, best per quiz, pass/fail,
 // average and remark.
 import { useCallback, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { getStudentGrades } from '../../api/subjects';
 
 export default function Grades() {
@@ -28,6 +28,7 @@ export default function Grades() {
   if (loading) {
     return (
       <div className="page-shell">
+        <div className="page-back"><Link className="page-back-link" to={`/student/subjects/${subjectId}`}>← Back to subject</Link></div>
         <p>Loading grades…</p>
       </div>
     );
@@ -36,6 +37,7 @@ export default function Grades() {
   if (error) {
     return (
       <div className="page-shell">
+        <div className="page-back"><Link className="page-back-link" to={`/student/subjects/${subjectId}`}>← Back to subject</Link></div>
         <div className="auth-error" role="alert">{error}</div>
         <button type="button" className="btn btn-solid" onClick={load}>
           Retry
@@ -47,6 +49,7 @@ export default function Grades() {
   if (!data || !data.student) {
     return (
       <div className="page-shell">
+        <div className="page-back"><Link className="page-back-link" to={`/student/subjects/${subjectId}`}>← Back to subject</Link></div>
         <h1>My grades</h1>
         <p>No grades available.</p>
         <button type="button" className="btn btn-solid" onClick={load}>
@@ -60,6 +63,7 @@ export default function Grades() {
 
   return (
     <div className="page-shell">
+      <div className="page-back"><Link className="page-back-link" to={`/student/subjects/${subjectId}`}>← Back to subject</Link></div>
       <div className="rv-report-header-block">
         <div>
           <h1 style={{ margin: "0 0 4px" }}>My grades</h1>

@@ -1,6 +1,6 @@
 ﻿import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { getFacultySubject, updateSubject, regenerateJoinCode, toggleEnrollment, archiveSubject } from '../../api/subjects';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { getFacultySubject, updateSubject, toggleEnrollment, archiveSubject } from '../../api/subjects';
 import PassingPercentControl from '../../components/PassingPercentControl';
 
 const WEEKDAYS = [
@@ -76,16 +76,6 @@ export default function SubjectSettings() {
     }
   };
 
-  const handleRegenerate = async () => {
-    if (!window.confirm('Regenerate join code? The old code will stop working.')) return;
-    try {
-      const updated = await regenerateJoinCode(id);
-      setSubject(updated);
-    } catch (err) {
-      setError(err?.message || 'Failed to regenerate code.');
-    }
-  };
-
   const handleToggleEnrollment = async () => {
     const open = !subject.enrollmentOpen;
     if (!window.confirm(open ? 'Open enrollment?' : 'Close enrollment?')) return;
@@ -112,6 +102,7 @@ export default function SubjectSettings() {
 
   return (
     <div className='page-shell'>
+      <div className="page-back"><Link className="page-back-link" to={`/faculty/subjects/${id}/topics`}>← Back to topics</Link></div>
       <h1>Subject Settings</h1>
       <h2>{subject.code} · {subject.name}</h2>
       {error && <div className='auth-error' role='alert'>{error}</div>}
@@ -142,14 +133,9 @@ export default function SubjectSettings() {
       </section>
 
       <section>
-        <h3>Join code</h3>
-        <p><strong>{subject.joinCode}</strong></p>
-        <button className='btn' onClick={handleRegenerate}>Regenerate join code</button>
-      </section>
-
-      <section>
         <h3>Enrollment</h3>
         <p>Status: {subject.enrollmentOpen ? 'Open' : 'Closed'}</p>
+        <p className='help'>Students join using the code shown on the Topics page.</p>
         <button className='btn' onClick={handleToggleEnrollment}>{subject.enrollmentOpen ? 'Close enrollment' : 'Open enrollment'}</button>
       </section>
 

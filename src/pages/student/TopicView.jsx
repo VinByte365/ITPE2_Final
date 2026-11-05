@@ -155,10 +155,10 @@ export default function TopicView() {
 
   return (
     <div className="page-shell" id="content">
-      <div className="tv-back">
+      <div className="page-back">
         <Link
           to={`/student/subjects/${topic?.subjectId}`}
-          className="tv-back-link"
+          className="page-back-link"
         >
           <ArrowLeft /> Back to subject
         </Link>

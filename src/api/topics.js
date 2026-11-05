@@ -50,6 +50,11 @@ export async function getUploadUrl(topicId, { fileName, mime, size, kind }) {
   return post(`/faculty/topics/${topicId}/content/upload-url`, { fileName, mime, size, kind });
 }
 
+export async function getTopic(id) {
+  // falls back to student shape not available; faculty endpoint added server-side if needed
+  return get(`/faculty/topics/${id}`);
+}
+
 // Student
 export async function listStudentTopics(subjectId) {
   return get(`/student/subjects/${subjectId}/topics`);

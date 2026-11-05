@@ -209,6 +209,25 @@ export const CheckIcon = (props) => (
   </svg>
 );
 
+export const CopyIcon = (props) => (
+  <svg
+    viewBox="0 0 24 24"
+    width="16"
+    height="16"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.8"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+    focusable="false"
+    {...props}
+  >
+    <rect x="9" y="9" width="10" height="10" rx="1.5" />
+    <path d="M15 9V6.5A1.5 1.5 0 0 0 13.5 5h-7A1.5 1.5 0 0 0 5 6.5v7A1.5 1.5 0 0 0 6.5 15H9" />
+  </svg>
+);
+
 export const HourglassIcon = (props) => (
   <svg
     viewBox="0 0 24 24"

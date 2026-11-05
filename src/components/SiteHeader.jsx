@@ -6,14 +6,7 @@ import { ArrowUpRight } from './Icons';
 import { PRODUCT_NAME } from '../lib/product-name';
 
 const navItems = [
-  { index: '01', label: 'Home', to: '/', match: (path) => path === '/' },
-  {
-    index: '02',
-    label: 'Modules',
-    to: '/topics',
-    match: (path) => path.startsWith('/topics'),
-  },
-  { index: '03', label: 'About', to: '/about', match: (path) => path === '/about' },
+  { label: 'Home', to: '/', match: (path) => path === '/' },
 ];
 
 export default function SiteHeader() {
@@ -30,6 +23,13 @@ export default function SiteHeader() {
         : '/student';
 
   const isAuthenticated = status === 'authenticated';
+  const dashboardActive = isAuthenticated && (
+    profile?.role === 'admin'
+      ? location.pathname.startsWith('/admin')
+      : profile?.role === 'faculty'
+        ? location.pathname.startsWith('/faculty')
+        : location.pathname.startsWith('/student')
+  );
 
   useEffect(() => {
     if (!menuOpen) return undefined;
@@ -74,14 +74,12 @@ export default function SiteHeader() {
               aria-current={item.match(location.pathname) ? 'page' : undefined}
               onClick={() => setMenuOpen(false)}
             >
-              <span className="nav-index">{item.index}</span>
               {item.label}
             </Link>
           ))}
           {isAuthenticated ? (
             <>
-              <Link to={dashboardPath} className="nav-link" onClick={() => setMenuOpen(false)}>
-                <span className="nav-index">04</span>
+              <Link to={dashboardPath} className={`nav-link ${dashboardActive ? 'is-active' : ''}`} aria-current={dashboardActive ? 'page' : undefined} onClick={() => setMenuOpen(false)}>
                 Dashboard
               </Link>
               <span className="nav-link nav-user">{profile?.fullName || profile?.email}</span>
@@ -92,11 +90,9 @@ export default function SiteHeader() {
           ) : (
             <>
               <Link to="/login" className="nav-link" onClick={() => setMenuOpen(false)}>
-                <span className="nav-index">04</span>
                 Login
               </Link>
               <Link to="/register" className="nav-link" onClick={() => setMenuOpen(false)}>
-                <span className="nav-index">05</span>
                 Register
               </Link>
             </>
@@ -132,20 +128,17 @@ export default function SiteHeader() {
                 className={`mobile-nav-link ${item.match(location.pathname) ? 'is-active' : ''}`}
                 onClick={() => setMenuOpen(false)}
               >
-                <span className="mobile-nav-index">{item.index}</span>
                 <span>{item.label}</span>
                 <ArrowUpRight />
               </Link>
             ))}
             {isAuthenticated ? (
               <>
-                <Link to={dashboardPath} className="mobile-nav-link" onClick={() => setMenuOpen(false)}>
-                  <span className="mobile-nav-index">04</span>
+                <Link to={dashboardPath} className={`mobile-nav-link ${dashboardActive ? 'is-active' : ''}`} onClick={() => setMenuOpen(false)}>
                   <span>Dashboard</span>
                   <ArrowUpRight />
                 </Link>
                 <button type="button" className="mobile-nav-link" onClick={() => { setMenuOpen(false); logout(); }}>
-                  <span className="mobile-nav-index">05</span>
                   <span>Logout</span>
                   <ArrowUpRight />
                 </button>
@@ -153,12 +146,10 @@ export default function SiteHeader() {
             ) : (
               <>
                 <Link to="/login" className="mobile-nav-link" onClick={() => setMenuOpen(false)}>
-                  <span className="mobile-nav-index">04</span>
                   <span>Login</span>
                   <ArrowUpRight />
                 </Link>
                 <Link to="/register" className="mobile-nav-link" onClick={() => setMenuOpen(false)}>
-                  <span className="mobile-nav-index">05</span>
                   <span>Register</span>
                   <ArrowUpRight />
                 </Link>

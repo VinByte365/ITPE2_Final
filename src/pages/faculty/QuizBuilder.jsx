@@ -324,8 +324,8 @@ export default function QuizBuilder() {
 
   return (
     <div className="page-shell qb-page">
-      <div className="qb-back">
-        <Link className="back-link" to={`/faculty/topics/${topicId}`}>
+      <div className="page-back">
+        <Link className="page-back-link" to={`/faculty/topics/${topicId}`}>
           ← Back to topic editor
         </Link>
       </div>

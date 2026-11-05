@@ -17,30 +17,27 @@ export default function SiteFooter() {
               <span>{PRODUCT_NAME}</span>
             </Link>
             <p>
-              Sixteen modules on the hardware, software, and platforms that run
-              modern computing. Built from the final presentations of BSIT-NS-4A.
+              A class learning management system for subjects, topics, quizzes,
+              and grades. Made by BSIT-NS-4A at TUP Taguig.
             </p>
           </div>
+
+          <nav className="footer-nav" aria-label="Account">
+            <span className="footer-label">Get started</span>
+            <Link to="/login">Sign in</Link>
+            <Link to="/register">Create an account</Link>
+          </nav>
 
           <nav className="footer-nav" aria-label="Footer">
             <span className="footer-label">Explore</span>
             <Link to="/">Home</Link>
-            <Link to="/topics">Module index</Link>
+            <Link to="/topics">Topics</Link>
             <Link to="/about">About the class</Link>
           </nav>
-
-          <div className="footer-nav">
-            <span className="footer-label">Course</span>
-            <span>Computer System &amp; Platform Technology</span>
-            <span>ITPE Final</span>
-            <span>TUP Taguig</span>
-          </div>
         </div>
 
         <div className="footer-bottom">
-          <span>
-            © {year} BSIT-NS-4A. All rights reserved.
-          </span>
+          <span>© {year} BSIT-NS-4A. All rights reserved.</span>
           <a href="#top" className="footer-top">
             Back to top <ArrowUpRight />
           </a>
