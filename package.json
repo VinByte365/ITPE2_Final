@@ -26,6 +26,9 @@
     "deploy": "gh-pages -d dist",
     "db:seed:test-users": "node server/scripts/create-test-users.js"
   },
+  "engines": {
+    "node": ">=22.13.0"
+  },
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",

@@ -156,7 +156,7 @@ export default function ModuleDetailPage() {
                   {videos.length} video{videos.length > 1 ? 's' : ''}
                 </span>
               )}
-              <span>ITPE Final</span>
+              <span>Class LMS</span>
             </div>
           </div>
           <span className="module-head-number" aria-hidden="true">
@@ -365,7 +365,7 @@ export default function ModuleDetailPage() {
                   </div>
                   <div>
                     <dt>Course</dt>
-                    <dd>ITPE Final</dd>
+                    <dd>Class LMS</dd>
                   </div>
                 </dl>
               </div>

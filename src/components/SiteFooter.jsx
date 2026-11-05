@@ -12,13 +12,13 @@ export default function SiteFooter() {
           <div className="footer-brand">
             <Link to="/" className="footer-brandline">
               <span className="footer-mark" aria-hidden="true">
-                4A
+                LMS
               </span>
               <span>{PRODUCT_NAME}</span>
             </Link>
             <p>
               A class learning management system for subjects, topics, quizzes,
-              and grades. Made by BSIT-NS-4A at TUP Taguig.
+              grading, and reports.
             </p>
           </div>
 
@@ -37,7 +37,7 @@ export default function SiteFooter() {
         </div>
 
         <div className="footer-bottom">
-          <span>© {year} BSIT-NS-4A. All rights reserved.</span>
+          <span>© {year} {PRODUCT_NAME}</span>
           <a href="#top" className="footer-top">
             Back to top <ArrowUpRight />
           </a>

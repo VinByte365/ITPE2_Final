@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
-import { useContent } from '../data/ContentContext';
 import { ArrowUpRight } from './Icons';
 import { PRODUCT_NAME } from '../lib/product-name';
 
@@ -11,7 +10,6 @@ const navItems = [
 
 export default function SiteHeader() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const { modules } = useContent();
   const { status, profile, logout } = useAuth();
   const location = useLocation();
 
@@ -53,15 +51,15 @@ export default function SiteHeader() {
         <Link
           to="/"
           className="brand"
-          aria-label={PRODUCT_NAME + " � BSIT-NS-4A home"}
+          aria-label={PRODUCT_NAME + " home"}
           onClick={() => setMenuOpen(false)}
         >
           <span className="brand-mark" aria-hidden="true">
-            <span>4A</span>
+            <span>LMS</span>
           </span>
           <span className="brand-copy">
             <span className="brand-name">{PRODUCT_NAME}</span>
-            <span className="brand-sub">BSIT-NS-4A · TUP Taguig</span>
+            <span className="brand-sub">Subjects · Topics · Quizzes</span>
           </span>
         </Link>
 
@@ -157,8 +155,8 @@ export default function SiteHeader() {
             )}
           </nav>
           <div className="mobile-nav-meta">
-            <span>Computer System &amp; Platform Technology</span>
-            <span>BSIT-NS-4A · Technological University of the Philippines</span>
+            <span>{PRODUCT_NAME}</span>
+            <span>Class learning management system</span>
           </div>
         </div>
       )}
