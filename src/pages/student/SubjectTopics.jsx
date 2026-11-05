@@ -4,7 +4,7 @@ import TopicCard from "../../components/TopicCard";
 import StatusBadge from "../../components/StatusBadge";
 import { getStudentSubject } from "../../api/subjects";
 import { listStudentTopics } from "../../api/topics";
-import Loading from "../../components/Loading";
+import Skeleton from "../../components/Skeleton";
 
 export default function SubjectTopics() {
   const { id: subjectId } = useParams();
@@ -34,7 +34,7 @@ export default function SubjectTopics() {
     return () => { cancelled = true; };
   }, [subjectId]);
 
-  if (loading) return <Loading label="Loading topics" />;
+  if (loading) return <Skeleton lines={4} />;
 
   return (
     <div className="page-shell">
@@ -42,7 +42,7 @@ export default function SubjectTopics() {
       {subject && <p>Passing: {subject.passingPercent}%</p>}
       {error && <div className="auth-error" role="alert">{error}</div>}
       {topics.length === 0 ? (
-        <p>No topics yet.</p>
+        <div className="empty-state">No topics yet.</div>
       ) : (
         <div className="subject-grid">
           {topics.map((t) => (

@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { listFacultySubjects } from '../../api/subjects';
-import Loading from '../../components/Loading';
+import Skeleton from '../../components/Skeleton';
 
 export default function FacultyDashboard() {
   const [subjects, setSubjects] = useState([]);
@@ -24,7 +24,7 @@ export default function FacultyDashboard() {
     return () => { cancelled = true; };
   }, []);
 
-  if (loading) return <Loading label="Loading your dashboard" />;
+  if (loading) return <Skeleton lines={4} />;
 
   return (
     <div className="page-shell">
@@ -34,7 +34,7 @@ export default function FacultyDashboard() {
         <Link to="/faculty/subjects/new" className="btn">Create subject</Link>
       </p>
       {subjects.length === 0 ? (
-        <p>No subjects yet. Create your first subject to get started.</p>
+        <div className="empty-state">No subjects yet. Create your first subject to get started.</div>
       ) : (
         <div className="subject-grid">
           {subjects.map((s) => (

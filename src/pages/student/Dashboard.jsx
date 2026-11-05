@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { listStudentSubjects } from '../../api/subjects';
-import Loading from '../../components/Loading';
+import Skeleton from '../../components/Skeleton';
 
 export default function StudentDashboard() {
   const [subjects, setSubjects] = useState([]);
@@ -24,7 +24,7 @@ export default function StudentDashboard() {
     return () => { cancelled = true; };
   }, []);
 
-  if (loading) return <Loading label="Loading your dashboard" />;
+  if (loading) return <Skeleton lines={4} />;
 
   return (
     <div className="page-shell">
@@ -32,7 +32,9 @@ export default function StudentDashboard() {
       {error && <div className="auth-error" role="alert">{error}</div>}
       <p><Link to="/student/join" className="btn">Join a subject</Link></p>
       {subjects.length === 0 ? (
-        <p>You haven't joined any subjects yet.</p>
+        <div className="empty-state">
+          You haven't joined any subjects yet. Use a join code from your faculty to get started.
+        </div>
       ) : (
         <div className="subject-grid">
           {subjects.map((s) => (
