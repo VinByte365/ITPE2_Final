@@ -295,14 +295,8 @@ export default function UploadSubmission({ quiz, onStatusChange }) {
         </div>
       ) : null}
 
-      {!pendingAttempt && (
+      {!pendingAttempt && !latestGraded && (
         <div className="upload-submission-form">
-          {latestGraded && (
-            <p className="upload-submission-meta">
-              Uploading a new photo submits a new attempt (subject to attempt limits).
-            </p>
-          )}
-
           {!selectedFile ? (
             <label className="upload-submission-picker" htmlFor="quiz-proof-upload">
               <span className="upload-submission-picker-title">Choose photo to upload</span>
