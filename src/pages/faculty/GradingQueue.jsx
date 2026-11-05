@@ -6,7 +6,7 @@ import {
   getFacultyAttemptDetail,
   gradeFacultyAttempt,
 } from "../../api/quizzes";
-import { getSubject } from "../../api/subjects";
+import { getFacultySubject as getSubject } from "../../api/subjects";
 import ImageViewer from "../../components/ImageViewer";
 import StatusBadge from "../../components/StatusBadge";
 
