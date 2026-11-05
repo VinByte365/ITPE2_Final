@@ -9,6 +9,8 @@ const state = {
   subject: null,
   enrollment: null,
   recorded: [],
+  quiz: null,
+  attempts: [],
 };
 
 const fakeTopicsRepo = {
@@ -30,12 +32,12 @@ const fakeSubjectsRepo = {
 };
 
 const fakeQuizzesRepo = {
-  findQuizByTopic: async () => null,
+  findQuizByTopic: async () => state.quiz,
 };
 
 const fakeProgressRepo = {
   listPublishedQuizzesBySubject: async () => ({}),
-  listAttemptsByStudentSubject: async () => [],
+  listAttemptsByStudentSubject: async () => state.attempts,
   listProgressByStudentSubject: async () => new Set(state.recorded.map((k) => k.split(':')[1])),
 };
 
@@ -49,6 +51,8 @@ function reset() {
   state.subject = null;
   state.enrollment = null;
   state.recorded = [];
+  state.quiz = null;
+  state.attempts = [];
 }
 
 const SUBJECT_ID = 'subj-1';
@@ -200,5 +204,65 @@ test('completeTopic: records progress and returns completed (idempotent)', async
   const r2 = await completeTopic(STUDENT_ID, TOPIC_ID);
   assert.deepEqual(r2, { completed: true });
   assert.equal(state.recorded.length, 1);
+});
+
+test('getStudentTopic: returns attempts with passed flag when quiz exists', async () => {
+  reset();
+  state.topic = makeTopic();
+  state.subject = { ...makeSubject(), passingPercent: 75 };
+  state.enrollment = makeEnrollment();
+  state.quiz = {
+    id: 'quiz-1',
+    topicId: TOPIC_ID,
+    title: 'Quiz 1',
+    mode: 'uploaded',
+    totalItems: 20,
+    status: 'published',
+  };
+  state.attempts = [
+    { quizId: 'quiz-1', studentId: STUDENT_ID, attemptNo: 2, source: 'manual', status: 'graded', score: 15, total: 20, feedback: 'Good work', submittedAt: new Date().toISOString() },
+    { quizId: 'quiz-1', studentId: STUDENT_ID, attemptNo: 1, source: 'manual', status: 'pending_review', score: null, total: null, feedback: null, submittedAt: null },
+  ];
+  const result = await getStudentTopic(STUDENT_ID, TOPIC_ID);
+  assert.ok(Array.isArray(result.attempts));
+  assert.equal(result.attempts.length, 2);
+  assert.equal(result.attempts[0].attemptNo, 2);
+  assert.equal(result.attempts[0].status, 'graded');
+  assert.equal(result.attempts[0].passed, true);
+  assert.equal(result.attempts[1].attemptNo, 1);
+  assert.equal(result.attempts[1].status, 'pending_review');
+  assert.equal(result.attempts[1].passed, null);
+});
+
+test('getStudentTopic: passed flag is false when graded attempt fails', async () => {
+  reset();
+  state.topic = makeTopic();
+  state.subject = { ...makeSubject(), passingPercent: 75 };
+  state.enrollment = makeEnrollment();
+  state.quiz = {
+    id: 'quiz-1',
+    topicId: TOPIC_ID,
+    title: 'Quiz 1',
+    mode: 'uploaded',
+    totalItems: 20,
+    status: 'published',
+  };
+  state.attempts = [
+    { quizId: 'quiz-1', studentId: STUDENT_ID, attemptNo: 1, source: 'manual', status: 'graded', score: 10, total: 20, feedback: null, submittedAt: new Date().toISOString() },
+  ];
+  const result = await getStudentTopic(STUDENT_ID, TOPIC_ID);
+  assert.equal(result.attempts[0].passed, false);
+});
+
+test('getStudentTopic: returns empty attempts when no quiz', async () => {
+  reset();
+  state.topic = makeTopic();
+  state.subject = makeSubject();
+  state.enrollment = makeEnrollment();
+  state.quiz = null;
+  state.attempts = [];
+  const result = await getStudentTopic(STUDENT_ID, TOPIC_ID);
+  assert.ok(Array.isArray(result.attempts));
+  assert.equal(result.attempts.length, 0);
 });
 

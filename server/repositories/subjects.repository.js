@@ -6,6 +6,7 @@ export async function findSubjectById(id) {
   const { rows } = await dbQuery(
     `select id, faculty_id, code, name, description, term, school_year,
             join_code, passing_percent, enrollment_open, status, timezone,
+            start_date, meeting_day,
             created_at, updated_at
        from public.subjects
       where id = $1
@@ -19,6 +20,7 @@ export async function findSubjectByJoinCode(joinCode) {
   const { rows } = await dbQuery(
     `select id, faculty_id, code, name, description, term, school_year,
             join_code, passing_percent, enrollment_open, status, timezone,
+            start_date, meeting_day,
             created_at, updated_at
        from public.subjects
       where join_code = $1
@@ -38,6 +40,7 @@ export async function listSubjectsByFaculty(facultyId, status) {
   const { rows } = await dbQuery(
     `select id, faculty_id, code, name, description, term, school_year,
             join_code, passing_percent, enrollment_open, status, timezone,
+            start_date, meeting_day,
             created_at, updated_at
        from public.subjects
        ${where}
@@ -57,6 +60,7 @@ export async function listAllSubjects(status) {
   const { rows } = await dbQuery(
     `select id, faculty_id, code, name, description, term, school_year,
             join_code, passing_percent, enrollment_open, status, timezone,
+            start_date, meeting_day,
             created_at, updated_at
        from public.subjects
        ${where}
@@ -70,10 +74,11 @@ export async function createSubject(data) {
   const { rows } = await dbQuery(
     `insert into public.subjects
        (faculty_id, code, name, description, term, school_year, join_code,
-        passing_percent, enrollment_open, status, timezone)
-     values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+        passing_percent, enrollment_open, status, timezone, start_date, meeting_day)
+     values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
      returning id, faculty_id, code, name, description, term, school_year,
                join_code, passing_percent, enrollment_open, status, timezone,
+               start_date, meeting_day,
                created_at, updated_at`,
     [
       data.facultyId,
@@ -87,6 +92,8 @@ export async function createSubject(data) {
       data.enrollmentOpen ?? true,
       data.status ?? 'active',
       data.timezone ?? 'Asia/Manila',
+      data.startDate ?? null,
+      data.meetingDay ?? null,
     ],
   );
   return mapSubject(rows[0]);
@@ -108,6 +115,8 @@ export async function updateSubject(id, data) {
     timezone: 'timezone',
     code: 'code',
     joinCode: 'join_code',
+    startDate: 'start_date',
+    meetingDay: 'meeting_day',
   };
 
   for (const [key, column] of Object.entries(fieldMap)) {
@@ -127,6 +136,7 @@ export async function updateSubject(id, data) {
       where id = $1
       returning id, faculty_id, code, name, description, term, school_year,
                 join_code, passing_percent, enrollment_open, status, timezone,
+                start_date, meeting_day,
                 created_at, updated_at`,
     params,
   );

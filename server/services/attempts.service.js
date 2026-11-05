@@ -33,6 +33,9 @@ function stripKeys(question) {
   const q = { ...question };
   delete q.correctOptionId;
   delete q.acceptedAnswers;
+  if (Array.isArray(q.options)) {
+    q.options = q.options.map((o) => ({ id: o?.id ?? o?.optionId ?? null, label: o?.label ?? "" }));
+  }
   return q;
 }
 
@@ -66,17 +69,17 @@ export async function startAttempt(studentId, quizId) {
     await assertTopicAccessible(studentId, quiz.topicId);
   }
 
-  // max attempts
-  const count = await deps.attemptsRepo.countAttempts(quizId, studentId);
-  if (quiz.maxAttempts && count >= quiz.maxAttempts) {
-    throw new AppError(409, 'MAX_ATTEMPTS_REACHED', 'Maximum attempts reached.');
-  }
-
   // resume in_progress
   const inProgress = await deps.attemptsRepo.findInProgressAttempt(quizId, studentId);
   if (inProgress) {
     const questions = await deps.quizzesRepo.listQuestionsByQuiz(quizId);
     return { attempt: inProgress, questions: questions.map(stripKeys) };
+  }
+
+  // max attempts (only when starting a new attempt)
+  const count = await deps.attemptsRepo.countAttempts(quizId, studentId);
+  if (quiz.maxAttempts && count >= quiz.maxAttempts) {
+    throw new AppError(409, 'MAX_ATTEMPTS_REACHED', 'Maximum attempts reached.');
   }
 
   // new attempt

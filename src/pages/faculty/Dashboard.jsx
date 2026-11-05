@@ -45,6 +45,10 @@ export default function FacultyDashboard() {
               <p>Status: {s.status}</p>
               <Link to={`/faculty/subjects/${s.id}`}>View</Link>
               {' · '}
+              <Link to={`/faculty/subjects/${s.id}/topics`}>Topics</Link>
+              {' · '}
+              <Link to={`/faculty/subjects/${s.id}/students`}>Students</Link>
+              {' · '}
               <Link to={`/faculty/subjects/${s.id}/settings`}>Settings</Link>
             </div>
           ))}

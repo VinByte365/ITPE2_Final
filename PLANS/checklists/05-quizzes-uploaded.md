@@ -19,7 +19,7 @@ Flow: the student takes the quiz elsewhere, uploads an image showing the score, 
   - Files: service, routes · Done when: filter by status and student name; includes student name, topic, submitted time; detail returns a signed image URL and `totalItems`
 - [x] UPL-07 Grade endpoint
   - Files: service, route, validator · Done when: score within 0 to `totalItems` with up to 2 decimals; sets `graded`, `total`, `graded_by`, `graded_at`; re-grading allowed; only the subject's faculty (or admin); unit tests for bounds and ownership
-- [ ] UPL-08 Orphan cleanup script
+- [x] UPL-08 Orphan cleanup script (@kilo, 2026-11-04)
   - Files: `server/scripts/cleanup-orphans.js`, `package.json` (`storage:cleanup`) · Done when: lists storage objects with no matching attempt/content row older than 24 h; dry-run by default, deletes only with `--apply`
 
 ## Frontend
@@ -28,7 +28,7 @@ Flow: the student takes the quiz elsewhere, uploads an image showing the score, 
   - Files: `src/pages/faculty/QuizBuilder.jsx` · Done when: choose "Built-in" or "Uploaded"; uploaded mode shows total items, instructions, external link, attachment upload; switching mode is blocked after attempts exist with an explanation
 - [x] UPL-10 Student `UploadSubmission` component
   - Files: `src/components/UploadSubmission.jsx`, `FileUpload.jsx` · Done when: restricted `accept`, camera allowed on phones, client-side downscale and JPEG re-encode, preview, progress bar, replace while pending, clear error messages; shows the faculty's instructions, link and attachment
-- [ ] UPL-11 Student status display
+- [x] UPL-11 Student status display (@kilo, 2026-11-04)
   - Files: `TopicView.jsx`, `StatusBadge.jsx` · Done when: Pending review, Graded (score, percent, pass/fail, feedback), history of attempts
 - [x] UPL-12 Faculty grading queue `/faculty/subjects/:id/grading`
   - Files: `src/pages/faculty/GradingQueue.jsx`, `src/components/ImageViewer.jsx` · Done when: pending badge count; viewer with zoom, rotate and open-full-size; score field with total shown and validated; Save, then "Save and next"; feedback optional; already graded items can be corrected

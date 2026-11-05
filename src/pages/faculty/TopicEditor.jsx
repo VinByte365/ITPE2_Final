@@ -13,7 +13,7 @@ import {
   updateTopic,
 } from "../../api/topics";
 
-const BLOCK_TYPES = ["text", "summary", "notes", "presentation", "video"];
+const BLOCK_TYPES = ["text", "summary", "notes", "presentation", "video", "file"];
 
 export default function TopicEditor() {
   const { id: topicId } = useParams();
@@ -26,7 +26,6 @@ export default function TopicEditor() {
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
 
-  // new block form
   const [newType, setNewType] = useState("text");
   const [newTitle, setNewTitle] = useState("");
   const [newBody, setNewBody] = useState("");
@@ -95,57 +94,60 @@ export default function TopicEditor() {
     } catch (err) { setError(err?.message || "Reorder failed."); }
   };
 
-  const handleUpload = async (path) => {
+  const handleUpload = async (path, file) => {
     try {
       await createContentBlock(topicId, {
-        type: "presentation",
-        title: newTitle || null,
+        type: newType === "presentation" ? "presentation" : "file",
+        title: newTitle || file?.name || null,
         filePath: path,
-        fileName: newTitle || "file",
+        fileName: file?.name || newTitle || "file",
+        fileMime: file?.type,
+        fileSize: file?.size,
         visibleToStudents: newVisible,
       });
       load();
     } catch (err) { setError(err?.message || "Save block failed."); }
   };
 
-  if (loading) return <div className="page-shell"><p>Loading...</p></div>;
+  if (loading) return <div className="page-shell"><p>Loading…</p></div>;
 
   return (
     <div className="page-shell">
       <h1>Topic Editor</h1>
       {error && <div className="auth-error" role="alert">{error}</div>}
 
-      <form onSubmit={handleSaveDetails} style={{ marginBottom: 24, padding: 12, border: "1px solid #e5e7eb", borderRadius: 8 }}>
+      <form onSubmit={handleSaveDetails} className="te-details-form">
         <h2>Details</h2>
         <div><label>Title<input value={title} onChange={(e) => setTitle(e.target.value)} /></label></div>
         <div><label>Description<textarea value={description} onChange={(e) => setDescription(e.target.value)} /></label></div>
         <div><label>Available from<input value={availableFrom} onChange={(e) => setAvailableFrom(e.target.value)} /></label></div>
         <div><label>Status<select value={status} onChange={(e) => setStatus(e.target.value)}><option value="draft">draft</option><option value="published">published</option></select></label></div>
-        <button type="submit" className="btn" disabled={saving}>{saving ? "Saving..." : "Save details"}</button>
+        <button type="submit" className="btn" disabled={saving} aria-disabled={saving}>{saving ? "Saving…" : "Save details"}</button>
       </form>
 
       <h2>Content blocks</h2>
       {blocks.length === 0 && <p>No content blocks yet.</p>}
-      <ul style={{ listStyle: "none", padding: 0 }}>
+      <ul className="te-block-list">
         {blocks.map((b, idx) => (
-          <li key={b.id} style={{ padding: 10, border: "1px solid #e5e7eb", borderRadius: 8, marginBottom: 8 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <li key={b.id} className="te-block-item">
+            <div className="te-block-header">
               <strong>{b.type}</strong>
               {b.title && <span>-- {b.title}</span>}
-              <span style={{ marginLeft: "auto", fontSize: 12 }}>
+              <span className="te-block-visibility">
                 {b.visibleToStudents ? "students" : "faculty-only"}
               </span>
             </div>
-            {b.body && (
-              <div style={{ marginTop: 6 }}>
-                {preview ? <MarkdownView content={b.body} /> : <pre style={{ whiteSpace: "pre-wrap" }}>{b.body}</pre>}
+            {b.type === "file" && (
+              <div className="te-block-body">
+                <p><strong>{b.title || b.fileName}</strong> {b.fileName && b.title !== b.fileName ? `(${b.fileName})` : ''}</p>
+                {b.filePath && <a href="#" onClick={(e) => { e.preventDefault(); /* faculty can see info */ }}>File uploaded</a>}
               </div>
             )}
-            {b.url && <p style={{ marginTop: 6 }}><a href={b.url} target="_blank" rel="noopener noreferrer">{b.url}</a></p>}
+            {b.url && <p className="te-block-link"><a href={b.url} target="_blank" rel="noopener noreferrer">{b.url}</a></p>}
             {b.filePath && <SlidesEmbed fileUrl={`#`} fileName={b.fileName} title={b.title} />}
-            <div style={{ marginTop: 6, display: "flex", gap: 6 }}>
-              <button onClick={() => handleReorderBlock(idx, -1)} disabled={idx === 0}>?</button>
-              <button onClick={() => handleReorderBlock(idx, 1)} disabled={idx === blocks.length - 1}>?</button>
+            <div className="te-block-actions">
+              <button onClick={() => handleReorderBlock(idx, -1)} disabled={idx === 0} aria-disabled={idx === 0}>?</button>
+              <button onClick={() => handleReorderBlock(idx, 1)} disabled={idx === blocks.length - 1} aria-disabled={idx === blocks.length - 1}>?</button>
               <button onClick={() => handleToggleVisible(b)}>{b.visibleToStudents ? "Make faculty-only" : "Make visible"}</button>
               <button onClick={() => handleDeleteBlock(b.id)}>Delete</button>
             </div>
@@ -153,7 +155,7 @@ export default function TopicEditor() {
         ))}
       </ul>
 
-      <div style={{ marginTop: 16, padding: 12, border: "1px solid #e5e7eb", borderRadius: 8 }}>
+      <div className="te-add-block">
         <h3>Add block</h3>
         <div>
           <label>Type
@@ -177,20 +179,30 @@ export default function TopicEditor() {
         )}
         <div><label><input type="checkbox" checked={newVisible} onChange={(e) => setNewVisible(e.target.checked)} /> Visible to students</label></div>
 
-        {newType === "presentation" && (
-          <div style={{ marginTop: 8 }}>
+        {newType === "file" && (
+          <div className="te-file-upload">
             <FileUpload
-              accept=".pdf,.pptx"
+              accept=".pdf,.pptx,.doc,.docx,.txt,.png,.jpg,.jpeg,.webp"
               maxSizeMb={25}
-              getUploadUrl={(info) => getUploadUrl(topicId, { ...info, kind: "presentation" })}
+              getUploadUrl={(info) => getUploadUrl(topicId, { ...info, kind: "file" })}
               onUploaded={handleUpload}
               onError={setError}
             />
           </div>
         )}
 
-        {!(newType === "presentation") && (
-          <button type="button" className="btn" style={{ marginTop: 8 }} onClick={handleAddBlock}>Add block</button>
+        {newType === "presentation" && (
+          <div>
+            <button type="button" className="btn te-add-btn" onClick={handleAddBlock}>Add presentation link</button>
+          </div>
+        )}
+
+        {newType === "video" && (
+          <button type="button" className="btn te-add-btn" onClick={handleAddBlock}>Add video link</button>
+        )}
+
+        {!["presentation", "video", "file"].includes(newType) && (
+          <button type="button" className="btn te-add-btn" onClick={handleAddBlock}>Add block</button>
         )}
       </div>
     </div>

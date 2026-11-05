@@ -42,6 +42,7 @@ Status values: **confirmed** (the product owner said so) · **assumed** (reasona
 | DEC-32 | `StatusBadge` renders a stamped mono label (2 px radius) rather than a pill, and carries state with icon + word + one token (`--accent-ink` attention, `--ink` neutral/done, `--muted` inactive). The palette has no semantic hues, so no green/amber/red is introduced. | decided | |
 | DEC-33 | `PLANS/HANDOFF-LOG.md` is append-only at the byte level. It contains legacy non-UTF-8 bytes (raw `0xB7`), so a whole-file rewrite corrupts every historical entry. Agents must append; a diff with deletions on that file is a defect. | decided | |
 | DEC-34 | Public-site wrapper hooks with no rules (`home`, `about-page`, `topics-page`, `hero-copy`, `about-hero-copy`, `presenter-list`, `gallery-main`, `course-map`, `nav-user`, `nav-logout`) are accepted as semantic landmarks, not drift — their children carry the styling. Only `markdown-view` (a content block with no typography at all) and `slides-embed` (inline iframe sizing) are real gaps and are fixed in UI-04. | decided | |
+| DEC-35 | Report colour: failed uses symbol+text+accent-ink token only; red in PDF/Excel only with x symbol. | assumed | Matches RPT-07/08/09/12; DEC-32 no semantic hues. |
 
 ## Open questions (answer when known; defaults are in the table above)
 

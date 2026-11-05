@@ -54,6 +54,7 @@ export async function updateTopic(id, data) {
     description: 'description',
     availableFrom: 'available_from',
     status: 'status',
+    position: 'position',
   };
 
   for (const [key, column] of Object.entries(fieldMap)) {

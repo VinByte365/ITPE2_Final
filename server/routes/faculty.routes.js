@@ -48,6 +48,7 @@ import {
   getSubjectReport,
   getStudentScores,
 } from '../services/report.service.js';
+import { getFacultyProgress } from '../services/progress.service.js';
 import {
   listSubmissions,
   getFacultyAttemptDetail,
@@ -527,6 +528,17 @@ router.get(
     const isAdmin = req.auth.profile?.role === 'admin';
     const scores = await getStudentScores(req.auth.profile.id, req.params.id, studentId, isAdmin);
     res.json({ data: scores });
+  }),
+);
+
+// GET /faculty/subjects/:id/progress (GATE-06)
+router.get(
+  '/subjects/:id/progress',
+  requireSubjectOwner('id'),
+  asyncHandler(async (req, res) => {
+    const isAdmin = req.auth.profile?.role === 'admin';
+    const progress = await getFacultyProgress(req.auth.profile.id, req.params.id, isAdmin);
+    res.json({ data: progress });
   }),
 );
 

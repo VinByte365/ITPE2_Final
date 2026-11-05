@@ -3,6 +3,7 @@ import { AppError } from "../lib/errors.js";
 import { generateSchedule } from "../utils/schedule.js";
 import * as topicsRepoModule from "../repositories/topics.repository.js";
 import * as subjectsRepoModule from "../repositories/subjects.repository.js";
+import { withTransaction } from "../db/pool.js";
 
 export const deps = {
   topicsRepo: topicsRepoModule,
@@ -110,5 +111,42 @@ export async function reorderTopics(facultyId, subjectId, topicIds, isAdmin) {
   }
 
   await deps.topicsRepo.reorderTopics(subjectId, topicIds);
+  return deps.topicsRepo.listTopicsBySubject(subjectId);
+}
+
+export async function rescheduleTopicsFromStart(facultyId, subjectId, startDate, meetingDay, isAdmin) {
+  const subject = await deps.subjectsRepo.findSubjectById(subjectId);
+  requireSubjectOwnerCheck(subject, facultyId, isAdmin);
+  if (!startDate) throw new AppError(422, "VALIDATION_ERROR", "startDate is required.");
+
+  const topics = await deps.topicsRepo.listTopicsBySubject(subjectId);
+  if (!topics.length) return [];
+
+  const timezone = subject.timezone || "Asia/Manila";
+  let dates;
+  if (meetingDay !== null && meetingDay !== undefined && meetingDay !== "") {
+    dates = generateSchedule(topics.length, startDate, [Number(meetingDay)], timezone);
+  } else {
+    // Fallback: startDate for first, then +7 days
+    dates = [];
+    const [y, m, d] = String(startDate).split("-").map(Number);
+    const base = new Date(Date.UTC(y, (m || 1) - 1, d || 1, 12, 0, 0));
+    for (let i = 0; i < topics.length; i++) {
+      const dt = new Date(base);
+      dt.setUTCDate(dt.getUTCDate() + i * 7);
+      dates.push(dt.toISOString().slice(0, 10));
+    }
+  }
+
+  await withTransaction(async (client) => {
+    for (let i = 0; i < topics.length; i++) {
+      const date = dates[i] || dates[dates.length - 1];
+      await client.query(
+        `update public.topics set available_from = $1, updated_at = now() where id = $2`,
+        [`${date}T00:00:00.000Z`, topics[i].id],
+      );
+    }
+  });
+
   return deps.topicsRepo.listTopicsBySubject(subjectId);
 }

@@ -14,6 +14,7 @@ export const deps = {
   topicsRepo: topicsRepoModule,
   subjectsRepo: subjectsRepoModule,
   storage: storageModule,
+  attemptsRepo: quizzesRepoModule,
 };
 
 export function setDeps(overrides) {
@@ -21,6 +22,7 @@ export function setDeps(overrides) {
   if (overrides.topicsRepo) deps.topicsRepo = overrides.topicsRepo;
   if (overrides.subjectsRepo) deps.subjectsRepo = overrides.subjectsRepo;
   if (overrides.storage) deps.storage = overrides.storage;
+  if (overrides.attemptsRepo) deps.attemptsRepo = overrides.attemptsRepo;
 }
 
 async function checkTopicOwner(topicId, facultyId, isAdmin) {
@@ -128,17 +130,30 @@ export async function updateQuestion(facultyId, questionId, data, isAdmin) {
   await checkTopicOwner(quiz.topicId, facultyId, isAdmin);
 
   const updates = { ...data };
-  if (data.type === "choice" && Array.isArray(data.options)) {
-    const newOptions = data.options.map((o) => {
-      const existing = (question.options || []).find((x) => x.label === o.label);
-      return { id: existing ? existing.id : genOptionId(), label: o.label };
-    });
-    updates.options = newOptions;
-    if (typeof data.correctOptionIndex === "number" && newOptions[data.correctOptionIndex]) {
-      updates.correctOptionId = newOptions[data.correctOptionIndex].id;
+
+  // Choice questions: autosave payloads include options/correctOptionIndex (type may be omitted).
+  const isChoice = question.type === "choice" || data.type === "choice";
+  if (isChoice && (Array.isArray(data.options) || typeof data.correctOptionIndex === "number")) {
+    let newOptions = question.options || [];
+    if (Array.isArray(data.options)) {
+      const prev = question.options || [];
+      newOptions = data.options.map((o, idx) => {
+        // preserve existing option id by index when labels change; fallback to label match; else generate
+        const byIndex = prev[idx];
+        const byLabel = prev.find((x) => x.label === o.label);
+        return { id: (byIndex && byIndex.id) || (byLabel && byLabel.id) || genOptionId(), label: o.label };
+      });
+      updates.options = newOptions;
+    }
+    if (typeof data.correctOptionIndex === "number") {
+      const idx = Math.max(0, Math.min((newOptions.length || 4) - 1, data.correctOptionIndex));
+      const target = newOptions[idx];
+      if (target) updates.correctOptionId = target.id;
     }
   }
+
   delete updates.correctOptionIndex;
+  delete updates.type; // type changes not supported via this update path
 
   const updated = await deps.quizzesRepo.updateQuestion(questionId, updates);
   return updated;
@@ -260,18 +275,21 @@ export async function regradeQuiz(facultyId, quizId, isAdmin) {
     if (attempt.status !== "graded" && attempt.status !== "in_progress") continue;
     if (!attempt.answers) continue;
     total += 1;
-    const answers = Array.isArray(attempt.answers) ? attempt.answers : (attempt.answers?.answers || []);
+
+    const raw = attempt.answers;
+    const answers = Array.isArray(raw) ? raw : Array.isArray(raw?.answers) ? raw.answers : [];
     const answerMap = {};
     for (const a of answers) {
       if (a && a.questionId) {
-        answerMap[a.questionId] = a.optionId !== undefined ? a.optionId : a.text;
+        answerMap[a.questionId] = a.optionId !== undefined && a.optionId !== null ? a.optionId : a.text;
       }
     }
+
     const { score, total: tot } = gradeAttempt(questions, answerMap);
     const newScore = Math.round(score * 100) / 100;
     const newTotal = Math.round(tot * 100) / 100;
     if (newScore !== Number(attempt.score) || newTotal !== Number(attempt.total)) {
-      await deps.attemptsRepo.updateAttempt(attempt.id, { score: newScore, total: newTotal });
+      await deps.quizzesRepo.updateAttempt(attempt.id, { score: newScore, total: newTotal });
       changed += 1;
     }
   }

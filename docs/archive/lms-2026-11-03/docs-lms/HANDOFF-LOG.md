@@ -194,3 +194,11 @@ Append-only. Newest entry **at the bottom**. Never edit old entries; add a corre
 - **Decisions / assumptions:** Gating precedence follows BR-06 strictly (scheduled over locked). Pass/fail is never stored in DB. Student endpoints never receive answer keys. Pending manual submissions never unlock next topic.
 - **Surprises / problems:** None. All 162 unit tests pass (npm test). Vite build passes cleanly (npm run build).
 - **Next task:** RPT-05 / RPT-06 (Report preview page and export helpers in src/lib/ and src/pages/).
+### 2026-11-04 · @kilo · agent
+- **Finished:** QUIZ-14 (CSV import UI + template wired into QuizBuilder)
+- **In progress:** none
+- **Decisions / assumptions:** Added CheckIcon to src/components/Icons.jsx (lms branch lacked it; needed for import validity badge). QuestionImport.jsx rewritten to the design system: token-based qi-* classes in src/index.css, per-row invalid flags + row-level issues, icon + text state (no colour-only state), ria-disabled on blocked confirm, no inline styles/raw hex, template download retained. Import available only in built-in quiz mode (uploaded mode has no questions). QuizBuilder.jsx renders QuestionImport only when quiz.mode === 'built' with onImported reloading the question list.
+- **Surprises / problems:** docs/lms/ (HK-10 canonical) diverges from stale PLANS/ duplicate (lacks Phase 09, different totals); used docs/lms/ as canonical and did not commit the stale PLANS/ planning doc. lms HEAD carries 9 pre-existing lint errors in ttempts.service.js, UploadSubmission.jsx, GradingQueue.jsx (UI-01 files not on lms) - recorded as pre-existing, not fixed. CheckIcon missing on lms Icons.jsx (added it). Hand-synced docs/lms/checklists/PROGRESS.md because 
+pm run docs:progress targets the stale PLANS/ copy on this branch.
+- **Next task:** UPL-11 (student status display in TopicView) - completes phase 05.
+

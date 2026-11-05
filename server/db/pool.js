@@ -7,6 +7,15 @@ const { Pool } = pg;
 
 let pool;
 let poolError;
+let queryCount = 0;
+
+export function resetQueryCount() {
+  queryCount = 0;
+}
+
+export function getQueryCount() {
+  return queryCount;
+}
 
 const createPool = () => {
   try {
@@ -54,7 +63,10 @@ export function getPool() {
   return pool;
 }
 
-export const dbQuery = (text, params = []) => getPool().query(text, params);
+export const dbQuery = (text, params = []) => {
+  queryCount++;
+  return getPool().query(text, params);
+};
 
 export async function withTransaction(work) {
   const client = await getPool().connect();

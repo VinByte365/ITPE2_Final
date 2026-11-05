@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import StatusBadge from './StatusBadge';
 
 export default function TopicCard({ topic, isStudent }) {
-  const isScheduled = topic.state === 'scheduled' || (topic.status === 'published' && new Date(topic.availableFrom) > new Date());
+  const isScheduled = topic.state === 'scheduled' || (topic.status === 'published' && topic.state !== 'open' && topic.state !== 'failed' && topic.state !== 'pending_review' && topic.state !== 'completed' && topic.state !== 'locked' && new Date(topic.availableFrom) > new Date());
   const isLocked = topic.state === 'locked';
   const isBlocked = isStudent && (isScheduled || isLocked);
 

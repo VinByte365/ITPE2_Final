@@ -12,15 +12,18 @@
     "db:schema": "node server/scripts/apply-schema.js",
     "db:migrate": "node server/scripts/migrate.js",
     "db:seed": "node server/scripts/seed.js",
+    "db:seed:lms": "node server/scripts/seed-lms.js",
     "make:admin": "node server/scripts/make-admin.js",
     "storage:setup": "node server/scripts/setup-storage.js",
+    "storage:cleanup": "node server/scripts/cleanup-orphans.js",
     "build": "vite build",
     "test": "node --test",
     "docs:progress": "node PLANS/progress.mjs",
     "lint": "eslint .",
     "preview": "vite preview",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist"
+    "deploy": "gh-pages -d dist",
+    "db:seed:test-users": "node server/scripts/create-test-users.js"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",

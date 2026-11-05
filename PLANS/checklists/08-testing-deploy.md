@@ -2,7 +2,7 @@
 
 Depends on: 07. Specs: `../specs/06-security-storage.md`, `../PLAN.md` (definition of done), DEC-22, DEC-24, OQ-01, OQ-03.
 
-- [ ] QA-01 Dev seed script
+- [x] QA-01 Dev seed script (@kilo, 2026-11-04)
   - Files: `server/scripts/seed-lms.js`, `package.json` (`db:seed:lms`) · Done when: creates 1 approved faculty, 1 pending faculty, about 12 students (names with `Ñ` and hyphens), 1 subject, 8 topics (mixed past/future dates), a built quiz (12 questions), an uploaded quiz, sample attempts; refuses to run when `NODE_ENV=production`; documented
 - [ ] QA-02 Manual QA matrix executed and recorded
   - Files: this file (tick the sub-items) · Done when: every item below passes and failures are logged in `HANDOFF-LOG.md`

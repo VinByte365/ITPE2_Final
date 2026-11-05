@@ -10,27 +10,27 @@ Depends on: 06. Specs: `../specs/05-reports.md`, `../specs/03-business-rules.md`
   - Files: service, routes · Done when: returns each quiz with every attempt (date, score, total, percent, source, result) and best; only for the owning faculty
 - [x] RPT-03 Student own grades endpoint
   - Files: service, routes · Done when: only the student's own data; no answer keys; includes average and remark
-- [ ] RPT-04 Performance check
+- [x] RPT-04 Performance check (@kilo, 2026-11-04)
   - Files: repository, migrations (indexes if needed) · Done when: 100 students × 16 quizzes responds in under 1 s locally; `EXPLAIN` shows indexes used
 
 ## Frontend
 
-- [ ] RPT-05 Shared pure helpers
+- [x] RPT-05 Shared pure helpers (@kilo, 2026-11-04)
   - Files: `src/lib/reportTable.js`, `reportTable.test.js` (use `node --test`) · Done when: `toTable(report, options)` and the live pass/fail recompute function exist and are tested; same logic is used by preview and every exporter
-- [ ] RPT-06 Report preview page
-  - Files: `src/pages/faculty/Report.jsx`, `src/api/reports.js` · Done when: header block, sort controls (surname/score, asc/desc), passing % control with live recompute, column picker, failed shown with color plus symbol, footer totals, loading/empty/error states
-- [ ] RPT-07 Print
-  - Files: `src/lib/printReport.js`, `src/index.css` (`@media print`) · Done when: A4 landscape; controls and site chrome hidden; header repeats on each page; rows do not split; verified in Chrome and Firefox print preview
-- [ ] RPT-08 PDF export
+- [x] RPT-06 Report preview page (@kilo, 2026-11-04)
+  - Files: `src/pages/faculty/Report.jsx`, `src/api/reports.js`, `src/App.jsx`, `src/index.css` · Done when: header block, sort controls (surname/score, asc/desc), passing % control with live recompute, column picker, failed shown with color plus symbol, footer totals, loading/empty/error states
+- [x] RPT-07 Print (@kilo, 2026-11-04)
+  - Files: `src/index.css` (`@media print`) · Done when: A4 landscape; controls and site chrome hidden; header repeats on each page; rows do not split; verified in Chrome and Firefox print preview
+- [x] RPT-08 PDF export (@kilo, 2026-11-04)
   - Files: `src/lib/exportPdf.js` · Done when: lazy-loaded; same columns and order as the preview; failed in red; page numbers; file name per spec; opens correctly
-- [ ] RPT-09 Spreadsheet export (and CSV)
+- [x] RPT-09 Spreadsheet export (and CSV) (@kilo, 2026-11-04)
   - Files: `src/lib/exportXlsx.js`, `src/lib/exportCsv.js` · Done when: lazy-loaded; numbers stored as numbers; frozen header; failed fill; CSV has UTF-8 BOM and `ñ` survives; opens correctly in Excel and LibreOffice
-- [ ] RPT-10 Per-student summary page
+- [x] RPT-10 Per-student summary page (@kilo, 2026-11-04)
   - Files: `src/pages/faculty/StudentScores.jsx` · Done when: all quizzes and attempts for one student; Print, PDF and Excel buttons reuse the exporters; reachable from the roster and the report
-- [ ] RPT-11 Student grades page
+- [x] RPT-11 Student grades page (@kilo, 2026-11-04)
   - Files: `src/pages/student/Grades.jsx` · Done when: own scores, best per quiz, pass/fail, average and remark
-- [ ] RPT-12 Export tests
-  - Files: `*.test.js` · Done when: row arrays for report and per-student exports are covered; exports contain no ids or answer keys
+- [x] RPT-12 Export tests (@kilo, 2026-11-04)
+  - Files: `src/lib/export.test.js` · Done when: row arrays for report and per-student exports are covered; exports contain no ids or answer keys
 
 ## Phase verification
 

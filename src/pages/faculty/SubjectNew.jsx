@@ -3,7 +3,8 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createSubject } from '../../api/subjects';
 
-const TERMS = ['1st Semester', '2nd Semester', 'Summer'];
+const TERMS = ['1st Semester', '2nd Semester', '3rd Semester', 'Summer'];
+const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 export default function SubjectNew() {
   const navigate = useNavigate();
@@ -13,6 +14,8 @@ export default function SubjectNew() {
   const [term, setTerm] = useState('1st Semester');
   const [schoolYear, setSchoolYear] = useState('');
   const [passingPercent, setPassingPercent] = useState(75);
+  const [startDate, setStartDate] = useState('');
+  const [meetingDay, setMeetingDay] = useState('1');
   const [error, setError] = useState('');
   const [fieldErrors, setFieldErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
@@ -30,6 +33,8 @@ export default function SubjectNew() {
         term,
         schoolYear,
         passingPercent: Number(passingPercent),
+        startDate: startDate || null,
+        meetingDay: startDate ? Number(meetingDay) : null,
       });
       navigate(`/faculty/subjects/${result.id}`, { replace: true });
     } catch (err) {
@@ -79,6 +84,16 @@ export default function SubjectNew() {
           Passing percent
           <input type="number" min="1" max="100" value={passingPercent} onChange={(e) => setPassingPercent(e.target.value)} />
           {fieldErrors.passingPercent && <span className="field-error">{fieldErrors.passingPercent}</span>}
+        </label>
+        <label>
+          Term start date (Week 1)
+          <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+        </label>
+        <label>
+          Meeting day
+          <select value={meetingDay} onChange={(e) => setMeetingDay(e.target.value)}>
+            {WEEKDAYS.map((d, i) => <option key={d} value={i}>{d}</option>)}
+          </select>
         </label>
         <button type="submit" disabled={submitting}>
           {submitting ? 'Creating...' : 'Create subject'}

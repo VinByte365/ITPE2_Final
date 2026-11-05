@@ -3,7 +3,17 @@ import { Link, useParams, useNavigate } from "react-router-dom";
 import MarkdownView from "../../components/MarkdownView";
 import SlidesEmbed from "../../components/SlidesEmbed";
 import StatusBadge from "../../components/StatusBadge";
-import { getStudentTopic, listStudentTopicContent, completeTopic } from "../../api/topics";
+import { ArrowLeft, CheckIcon, CloseIcon, HourglassIcon, LockIcon, RotateIcon } from "../../components/Icons";
+import {
+  getStudentTopic,
+  listStudentTopicContent,
+  completeTopic,
+} from "../../api/topics";
+
+function percentOf(score, total) {
+  if (!total || total <= 0) return 0;
+  return Math.round((score / total) * 100 * 100) / 100;
+}
 
 export default function TopicView() {
   const { id } = useParams();
@@ -12,7 +22,7 @@ export default function TopicView() {
   const [blocks, setBlocks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [blockedState, setBlockedState] = useState(null); // { type: 'scheduled' | 'locked', reason, availableFrom, blockedByTopicId }
+  const [blockedState, setBlockedState] = useState(null);
   const [completing, setCompleting] = useState(false);
   const [completed, setCompleted] = useState(false);
 
@@ -66,35 +76,39 @@ export default function TopicView() {
     }
   };
 
+  const latestGradedAttempt =
+    topic?.attempts?.find((a) => a.status === "graded") ?? null;
+
   if (loading) {
     return (
       <div className="page-shell">
-        <p>Loading topic...</p>
+        <p>Loading topic…</p>
       </div>
     );
   }
 
-  // GATE-11: Friendly handling of blocked direct URLs
   if (blockedState) {
     return (
-      <div className="page-shell" style={{ maxWidth: 640, margin: "40px auto", textAlign: "center" }}>
-        <div style={{ fontSize: 48, marginBottom: 16 }}>
-          {blockedState.type === "scheduled" ? "⏳" : "🔒"}
+      <div className="page-shell tv-blocked">
+        <div className="tv-glyph">
+          {blockedState.type === "scheduled" ? (
+            <HourglassIcon />
+          ) : (
+            <LockIcon />
+          )}
         </div>
-        <h1 style={{ fontSize: 24, marginBottom: 8 }}>
+        <h1 className="tv-title">
           {blockedState.type === "scheduled" ? "Topic Not Available Yet" : "Topic Locked"}
         </h1>
-        <p style={{ color: "#4b5563", fontSize: 16, marginBottom: 16 }}>
-          {blockedState.message}
-        </p>
+        <p className="tv-lead">{blockedState.message}</p>
 
         {blockedState.availableFrom && (
-          <p style={{ fontSize: 14, color: "#6b7280", marginBottom: 24 }}>
+          <p className="tv-scheduled">
             Scheduled to open on: <strong>{new Date(blockedState.availableFrom).toLocaleString()}</strong>
           </p>
         )}
 
-        <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
+        <div className="tv-actions">
           {blockedState.blockedByTopicId && (
             <Link
               to={`/student/topics/${blockedState.blockedByTopicId}`}
@@ -119,7 +133,7 @@ export default function TopicView() {
     return (
       <div className="page-shell">
         <div className="auth-error" role="alert">{error}</div>
-        <div style={{ marginTop: 16 }}>
+        <div className="tv-back">
           <button type="button" className="btn" onClick={() => navigate(-1)}>
             Go Back
           </button>
@@ -130,16 +144,19 @@ export default function TopicView() {
 
   return (
     <div className="page-shell" id="content">
-      <div style={{ marginBottom: 16 }}>
-        <Link to={`/student/subjects/${topic?.subjectId}`} style={{ fontSize: 14, textDecoration: "none", color: "#4f46e5" }}>
-          ← Back to subject
+      <div className="tv-back">
+        <Link
+          to={`/student/subjects/${topic?.subjectId}`}
+          className="tv-back-link"
+        >
+          <ArrowLeft /> Back to subject
         </Link>
       </div>
 
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12, flexWrap: "wrap", marginBottom: 12 }}>
+      <div className="tv-meta">
         <div>
-          <h1 style={{ margin: "0 0 6px" }}>{topic?.title}</h1>
-          <p style={{ fontSize: 13, color: "#6b7280", margin: 0 }}>
+          <h1 className="tv-topic-title">{topic?.title}</h1>
+          <p className="tv-available">
             Available from: {topic ? new Date(topic.availableFrom).toLocaleDateString() : ""}
           </p>
         </div>
@@ -147,80 +164,187 @@ export default function TopicView() {
       </div>
 
       {topic?.description && (
-        <p style={{ fontSize: 15, color: "#374151", marginBottom: 20 }}>{topic.description}</p>
+        <p className="tv-description">{topic.description}</p>
       )}
 
-      {/* Content Blocks */}
-      <div style={{ display: "flex", flexDirection: "column", gap: 16, marginBottom: 24 }}>
+      <div className="tv-blocks">
         {blocks.map((b) => (
-          <div
-            key={b.id}
-            style={{
-              padding: 16,
-              border: "1px solid #e5e7eb",
-              borderRadius: 8,
-              background: "#fff",
-            }}
-          >
-            {b.title && <h3 style={{ marginTop: 0, marginBottom: 12 }}>{b.title}</h3>}
+          <div key={b.id} className="tv-block">
+            {b.title && <h3 className="tv-block-title">{b.title}</h3>}
             {b.type === "presentation" && (
-              <SlidesEmbed
-                url={b.url}
-                fileUrl={b.filePath ? `/api/v1/student/content/${b.id}/download-url` : null}
-                fileName={b.fileName}
-                title={b.title}
-              />
+              <section className="media-block">
+                <div className="block-head">
+                  <p className="block-label">
+                    <span className="block-index">01</span>
+                    Presentation
+                  </p>
+                  {(b.url || b.filePath) && (
+                    <a href={b.url || '#'} target="_blank" rel="noreferrer" className="block-link">Open</a>
+                  )}
+                </div>
+                <div className="frame">
+                  <div className="frame-bar">
+                    <span className="frame-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+                    <span>Slides / Embedded</span>
+                  </div>
+                  <div className="frame-body">
+                    <SlidesEmbed
+                      url={b.url}
+                      fileUrl={b.filePath ? `/api/v1/student/content/${b.id}/download-url` : null}
+                      fileName={b.fileName}
+                      title={b.title}
+                    />
+                  </div>
+                </div>
+              </section>
             )}
             {b.type === "video" && b.url && (
-              <p style={{ margin: 0 }}>
-                <a href={b.url} target="_blank" rel="noopener noreferrer">
-                  ▶ Watch video
-                </a>
-              </p>
+              <section className="media-block">
+                <div className="block-head">
+                  <p className="block-label">
+                    <span className="block-index">02</span>
+                    Video discussion
+                  </p>
+                  <a href={b.url} target="_blank" rel="noreferrer" className="block-link">Watch on YouTube</a>
+                </div>
+                <div className="frame">
+                  <div className="frame-bar">
+                    <span className="frame-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+                    <span>Video</span>
+                  </div>
+                  <div className="frame-body">
+                    <iframe
+                      src={b.url.includes('youtu') || b.url.includes('youtube') ? 
+                        (function(){
+                          try{
+                            const u=new URL(b.url);
+                            if(u.hostname.includes('youtu.be')) return 'https://www.youtube.com/embed/'+u.pathname.slice(1);
+                            if(u.hostname.includes('youtube.com')){
+                              if(u.pathname.startsWith('/embed/')) return b.url;
+                              if(u.pathname.startsWith('/shorts/')) return 'https://www.youtube.com/embed/'+u.pathname.split('/')[2];
+                              const v=u.searchParams.get('v'); if(v) return 'https://www.youtube.com/embed/'+v;
+                            }
+                          }catch{}
+                          return b.url;
+                        })() : b.url}
+                      title={b.title || "Video"}
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                      allowFullScreen
+                      loading="lazy"
+                    />
+                  </div>
+                </div>
+              </section>
             )}
-            {b.body && <MarkdownView content={b.body} />}
-            {b.type === "presentation" && b.url && !b.body && (
-              <p style={{ margin: "8px 0 0" }}>
-                <a href={b.url} target="_blank" rel="noopener noreferrer">
-                  Open presentation link
-                </a>
+            {b.type === "file" && b.filePath && (
+              <section className="media-block">
+                <div className="block-head">
+                  <p className="block-label">
+                    <span className="block-index">03</span>
+                    File
+                  </p>
+                </div>
+                <div className="file-preview">
+                  <div className="file-preview-row">
+                    <div>
+                      <div className="file-name">{b.title || b.fileName || "File"}</div>
+                      {b.fileName && <div className="file-meta">{b.fileName}</div>}
+                    </div>
+                    <button type="button" className="btn btn-solid" onClick={async (e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      try {
+                        const res = await fetch(`/api/v1/student/content/${b.id}/download-url`, { credentials: 'include' });
+                        const json = await res.json();
+                        const url = json?.data?.url;
+                        if (url) {
+                          window.open(url, '_blank', 'noopener,noreferrer');
+                        }
+                      } catch {}
+                    }}>Download</button>
+                  </div>
+                </div>
+              </section>
+            )}
+            {false && b.type === "presentation" && b.url && !b.body && (
+              <p className="tv-presentation-link">
+                Open presentation link
               </p>
             )}
           </div>
         ))}
       </div>
 
-      {/* Topic Completion or Quiz Action */}
-      <div
-        style={{
-          marginTop: 24,
-          padding: 20,
-          background: "#f9fafb",
-          border: "1px solid #e5e7eb",
-          borderRadius: 8,
-        }}
-      >
+      <div className="tv-completion">
         {topic?.quiz ? (
-          <div>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-              <h2 style={{ fontSize: 18, margin: 0 }}>Quiz: {topic.quiz.title}</h2>
-              <span style={{ fontSize: 13, color: "#6b7280" }}>
+          <div className="tv-quiz">
+            <div className="tv-quiz-head">
+              <h2 className="tv-quiz-title">Quiz: {topic.quiz.title}</h2>
+              <span className="tv-quiz-mode">
                 {topic.quiz.mode === "uploaded" ? "Manual Review" : "Built-in"}
               </span>
             </div>
 
             {topic.quiz.instructions && (
-              <p style={{ fontSize: 14, color: "#4b5563", marginBottom: 12 }}>
-                {topic.quiz.instructions}
-              </p>
+              <p className="tv-lead">{topic.quiz.instructions}</p>
+            )}
+
+            {topic.state === "pending_review" && (
+              <div>
+                <StatusBadge status="pending_review" />
+                <p className="tv-pending-text">
+                  Waiting for your instructor to grade.
+                </p>
+              </div>
+            )}
+
+            {topic.attempts && (
+              <div>
+                {topic.state === "completed" && (
+                  <div className="qr-result-panel qr-result-passed">
+                    <div className="qr-result-glyph">
+                      <CheckIcon />
+                    </div>
+                    <h2 className="qr-result-title qr-result-title-passed">Passed</h2>
+                    <p className="qr-result-score">
+                      {latestGradedAttempt.score}/{latestGradedAttempt.total}{" "}
+                      ({percentOf(latestGradedAttempt.score, latestGradedAttempt.total)}%)
+                    </p>
+                    {latestGradedAttempt.feedback && (
+                      <div className="tv-feedback">
+                        <p className="tv-feedback-label">Feedback</p>
+                        <p className="tv-feedback-text">{latestGradedAttempt.feedback}</p>
+                      </div>
+                    )}
+                  </div>
+                )}
+                {topic.state === "failed" && (
+                  <div className="qr-result-panel qr-result-failed">
+                    <div className="qr-result-glyph">
+                      <RotateIcon />
+                    </div>
+                    <h2 className="qr-result-title qr-result-title-failed">Repeat Topic</h2>
+                    <p className="qr-result-score">
+                      {latestGradedAttempt.score}/{latestGradedAttempt.total}{" "}
+                      ({percentOf(latestGradedAttempt.score, latestGradedAttempt.total)}%)
+                    </p>
+                    <p className="qr-result-note">Score below passing mark. Retake allowed.</p>
+                    {latestGradedAttempt.feedback && (
+                      <div className="tv-feedback">
+                        <p className="tv-feedback-label">Feedback</p>
+                        <p className="tv-feedback-text">{latestGradedAttempt.feedback}</p>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
             )}
 
             {topic.quiz.mode === "built" ? (
-              <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+              <div className="tv-actions">
                 <Link
                   to={`/student/topics/${topic.id}/quiz`}
                   className="btn btn-solid"
-                  style={{ textDecoration: "none" }}
                 >
                   {topic.state === "completed"
                     ? "Retake Quiz"
@@ -228,48 +352,56 @@ export default function TopicView() {
                     ? "Repeat Quiz"
                     : "Take Quiz"}
                 </Link>
-                {topic.state === "completed" && (
-                  <span style={{ color: "#065f46", fontWeight: 600, fontSize: 14 }}>
-                    ✓ Passed
-                  </span>
-                )}
-                {topic.state === "failed" && (
-                  <span style={{ color: "#991b1b", fontWeight: 600, fontSize: 14 }}>
-                    ↺ Score below passing mark. Retake allowed.
-                  </span>
-                )}
               </div>
             ) : (
-              /* Uploaded Quiz mode link/notice */
-              <div>
+              <div className="tv-actions">
                 <Link
                   to={`/student/topics/${topic.id}/quiz`}
                   className="btn btn-solid"
-                  style={{ textDecoration: "none" }}
                 >
                   Submit Quiz Image
                 </Link>
               </div>
             )}
+
+            {topic.attempts && topic.attempts.length > 1 && (
+              <div className="qr-history">
+                <h3>Attempts</h3>
+                <ul className="qr-review-list">
+                  {topic.attempts.map((a) => (
+                    <li key={a.id} className="qr-review-item">
+                      <span>Attempt {a.attemptNo}</span>
+                      <span>
+                        {a.status === "graded"
+                          ? `${a.score}/${a.total} (${percentOf(a.score, a.total)}%)`
+                          : a.status === "pending_review"
+                          ? "Pending review"
+                          : a.status}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
         ) : (
-          /* Quiz-less topic */
           <div>
-            <h2 style={{ fontSize: 18, margin: "0 0 8px" }}>Topic Completion</h2>
-            <p style={{ fontSize: 14, color: "#4b5563", margin: "0 0 16px" }}>
+            <h2 className="tv-completion-heading">Topic Completion</h2>
+            <p className="tv-completion-text">
               This topic has no quiz. Mark it as done when you have reviewed all the material.
             </p>
             {completed ? (
-              <p style={{ color: "#065f46", fontWeight: 600, margin: 0 }}>
-                ✓ You have completed this topic.
+              <p className="tv-completed">
+                <CheckIcon /> You have completed this topic.
               </p>
             ) : (
               <button
                 className="btn btn-solid"
                 onClick={handleComplete}
                 disabled={completing}
+                aria-disabled={completing}
               >
-                {completing ? "Saving..." : "Mark as done"}
+                {completing ? "Saving…" : "Mark as done"}
               </button>
             )}
           </div>
@@ -277,7 +409,7 @@ export default function TopicView() {
       </div>
 
       {error && (
-        <div className="auth-error" role="alert" style={{ marginTop: 16 }}>
+        <div className="tv-error auth-error" role="alert">
           {error}
         </div>
       )}

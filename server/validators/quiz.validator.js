@@ -14,8 +14,8 @@ export const choiceQuestionSchema = z
   .object({
     type: z.literal('choice'),
     prompt: promptSchema,
-    options: z.array(optionSchema).min(2, 'Choice needs at least 2 options.').max(6, 'Choice needs at most 6 options.'),
-    correctOptionIndex: z.coerce.number().int().min(0),
+    options: z.array(optionSchema).length(4, 'Multiple choice must have exactly 4 options.'),
+    correctOptionIndex: z.coerce.number().int().min(0).max(3),
     points: pointsSchema.optional(),
   })
   .strict()
@@ -40,8 +40,8 @@ export const createQuestionSchema = questionSchema;
 export const updateQuestionSchema = z
   .object({
     prompt: promptSchema.optional(),
-    options: z.array(optionSchema).min(2).max(6).optional(),
-    correctOptionIndex: z.coerce.number().int().min(0).optional(),
+    options: z.array(optionSchema).length(4).optional(),
+    correctOptionIndex: z.coerce.number().int().min(0).max(3).optional(),
     acceptedAnswers: z.array(z.string().trim().min(1)).min(1).optional(),
     points: pointsSchema.optional(),
   })
@@ -85,6 +85,7 @@ export const uploadUrlSchema = z
     fileName: z.string().trim().min(1, 'File name is required.'),
     mime: z.string().trim().min(1, 'MIME type is required.'),
     size: z.coerce.number().int().positive('Size must be positive.'),
+    kind: z.string().optional(),
   })
   .strict();
 

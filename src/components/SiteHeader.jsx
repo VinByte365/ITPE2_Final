@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
 import { useContent } from '../data/ContentContext';
 import { ArrowUpRight } from './Icons';
+import { PRODUCT_NAME } from '../lib/product-name';
 
 const navItems = [
   { index: '01', label: 'Home', to: '/', match: (path) => path === '/' },
@@ -52,14 +53,14 @@ export default function SiteHeader() {
         <Link
           to="/"
           className="brand"
-          aria-label="Systems Index — BSIT-NS-3A home"
+          aria-label={PRODUCT_NAME + " � BSIT-NS-3A home"}
           onClick={() => setMenuOpen(false)}
         >
           <span className="brand-mark" aria-hidden="true">
             <span>3A</span>
           </span>
           <span className="brand-copy">
-            <span className="brand-name">Systems Index</span>
+            <span className="brand-name">{PRODUCT_NAME}</span>
             <span className="brand-sub">BSIT-NS-3A · TUP Taguig</span>
           </span>
         </Link>

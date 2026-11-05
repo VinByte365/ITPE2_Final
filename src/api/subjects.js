@@ -34,8 +34,20 @@ export async function getRoster(id) {
   return get(`/faculty/subjects/${id}/students`);
 }
 
+export async function getFacultyProgress(id) {
+  return get(`/faculty/subjects/${id}/progress`);
+}
+
 export async function removeStudent(subjectId, studentId) {
   return del(`/faculty/subjects/${subjectId}/students/${studentId}`);
+}
+
+export async function getStudentScores(subjectId, studentId) {
+  return get(`/faculty/subjects/${subjectId}/students/${studentId}/scores`);
+}
+
+export async function getStudentGrades(subjectId) {
+  return get(`/student/subjects/${subjectId}/grades`);
 }
 
 export async function enroll(joinCode) {

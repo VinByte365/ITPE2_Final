@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Systems Index — design system
+   Class LMS — design system
    A warm editorial field guide for the BSIT-NS-3A ITPE final project.
    ========================================================================== */
 
@@ -590,6 +590,89 @@ main:focus {
   flex-wrap: wrap;
   gap: 0.5rem;
   margin-bottom: 1.75rem;
+}
+
+/* ==========================================================================
+   Faculty progress grid (Roster / progress view)
+   Students as rows, topics as columns, each cell a state badge.
+   ========================================================================== */
+
+.rv-grid {
+  display: grid;
+  grid-template-columns: 220px repeat(auto-fill, minmax(140px, 1fr));
+  gap: 8px;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  background: var(--paper-2);
+  margin-top: 12px;
+  overflow-x: auto;
+}
+
+.rv-cell {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--line);
+  font-size: 0.88rem;
+  line-height: 1.4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rv-cell.rv-header {
+  position: -webkit-sticky;
+  position: sticky;
+  left: 0;
+  background: var(--paper-2);
+  z-index: 1;
+  border-bottom: 2px solid var(--line-strong);
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.rv-cell.rv-topic {
+  background: var(--paper-2);
+  border-bottom: 2px solid var(--line-strong);
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  min-width: 140px;
+}
+
+.rv-row {
+  border-bottom: 1px solid var(--line);
+  display: contents;
+}
+
+.rv-row:last-child {
+  border-bottom: none;
+}
+
+.rv-cell.rv-student {
+  background: var(--paper);
+  font-weight: 600;
+  color: var(--ink);
+  min-width: 220px;
+}
+
+.rv-cell.rv-state {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px 8px;
+  cursor: default;
+}
+
+.rv-state-empty {
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
 }
 
 .input {
@@ -3185,6 +3268,67 @@ main:focus {
   font-size: 18px;
 }
 
+.qb-forms {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.qb-form-card {
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  background: var(--paper);
+  padding: 12px;
+}
+
+.qb-form-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.qb-form-index {
+  font-weight: 700;
+  min-width: 20px;
+}
+
+.qb-form-type-static {
+  max-width: 180px;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  background: var(--surface);
+  font-size: 14px;
+  display: inline-block;
+}
+
+.qb-form-points {
+  width: 72px;
+}
+
+.qb-form-save {
+  font-size: 12px;
+  color: var(--muted);
+  min-width: 56px;
+}
+
+.qb-form-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.qb-form-prompt {
+  font-weight: 600;
+}
+
+.qb-add-row {
+  margin-top: 4px;
+}
+
 .qb-delete {
   min-height: 0;
   padding: 2px 8px;
@@ -3454,6 +3598,291 @@ main:focus {
     opacity: 1;
     transform: none;
   }
+}
+
+/* ==========================================================================
+   Question import
+   CSV question import used inside QuizBuilder (built-in mode only).
+   ========================================================================== */
+
+.qi-panel {
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  background: var(--paper);
+  margin-bottom: 24px;
+}
+
+.qi-panel h2 {
+  margin: 0 0 16px;
+  font-size: 18px;
+}
+
+.qi-head {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.qi-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.qi-file {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.qi-label {
+  display: block;
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.qi-file-input {
+  width: 100%;
+  min-height: 46px;
+  padding: 0.7rem 0.85rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 2px;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.qi-file-input:focus {
+  outline: none;
+  border-color: var(--accent-ink);
+}
+
+.qi-hint {
+  margin: 0;
+  font-size: 0.92rem;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.qi-mono {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+}
+
+.qi-summary {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 12px;
+  font-size: 13px;
+}
+
+.qi-count {
+  color: var(--ink);
+}
+
+.qi-count-invalid {
+  color: var(--accent-ink);
+  font-weight: 600;
+}
+
+.qi-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  margin-bottom: 12px;
+}
+
+.qi-table th,
+.qi-table td {
+  text-align: left;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+}
+
+.qi-table thead {
+  background: var(--paper-2);
+}
+
+.qi-table th {
+  font-weight: 600;
+  color: var(--ink-soft);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.72rem;
+  font-family: var(--font-mono);
+}
+
+.qi-th-num,
+.qi-td-num {
+  width: 24px;
+}
+
+.qi-td-prompt {
+  max-width: 46ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.qi-row-valid .qi-td {
+  background: var(--paper);
+}
+
+.qi-row-invalid .qi-td {
+  background: var(--accent-soft);
+}
+
+.qi-ok {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--ink);
+}
+
+.qi-issues {
+  margin: 0;
+  padding: 0 0 0 16px;
+  color: var(--ink-soft);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.qi-issues li {
+  margin-bottom: 2px;
+}
+
+.qi-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.qi-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 8px;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+.qi-badge-valid {
+  color: var(--ink);
+}
+
+.qi-badge-invalid {
+  border-color: var(--line-strong);
+  color: var(--accent-ink);
+}
+
+.qi-btn-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ==========================================================================
+   Report preview page
+   Header block, controls, table, footer, legend.
+   ========================================================================== */
+
+.rv-report-header-block {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.rv-report-controls {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  background: var(--paper-2);
+}
+
+.rv-report-table-wrap {
+  overflow-x: auto;
+  margin-bottom: 1.5rem;
+}
+
+.rv-report-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+  background: var(--paper);
+}
+
+.rv-report-th,
+.rv-report-td {
+  text-align: left;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  white-space: nowrap;
+}
+
+.rv-report-th {
+  background: var(--paper-2);
+  font-weight: 600;
+  color: var(--ink-soft);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.72rem;
+  font-family: var(--font-mono);
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+.rv-report-td {
+  background: var(--paper);
+}
+
+.rv-report-row {
+  border-bottom: 1px solid var(--line);
+}
+
+.rv-report-row:last-child {
+  border-bottom: none;
+}
+
+.rv-report-td-quiz {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+}
+
+.rv-report-td-failed {
+  background: var(--accent-soft);
+}
+
+.rv-report-footer {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
+  font-size: 0.92rem;
 }
 
 /* ==========================================================================
@@ -4058,4 +4487,1159 @@ main:focus {
     opacity: 1;
     transform: none;
   }
+}
+
+/* ==========================================================================
+   Print (RPT-07)
+   A4 landscape; hide site chrome and controls; repeat table header on every
+   page; rows do not split across pages.
+   ========================================================================== */
+
+@page {
+  size: A4 landscape;
+  margin: 12mm 10mm 12mm 10mm;
+}
+
+@media print {
+  /* Hide site chrome and interactive controls on paper. */
+  .site-header,
+  .site-footer,
+  .menu-toggle,
+  .print-hide,
+  button,
+  input,
+  select,
+  .rv-report-controls .btn {
+    display: none !important;
+  }
+
+  /* Keep the header block, table, footer, and legend on paper. */
+  .print-show {
+    display: block !important;
+  }
+
+  body {
+    background: var(--paper) !important;
+    color: var(--ink) !important;
+    font-size: 9pt;
+    line-height: 1.4;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .page-shell {
+    width: 100% !important;
+    max-width: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+
+  .rv-report-header-block {
+    page-break-after: avoid;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .rv-report-table-wrap {
+    overflow: visible !important;
+  }
+
+  .rv-report-table {
+    width: 100% !important;
+    font-size: 8pt;
+  }
+
+  .rv-report-th,
+  .rv-report-td {
+    border: 1px solid var(--line) !important;
+    padding: 5px 7px;
+    white-space: normal !important;
+  }
+
+  /* Repeat table header on every printed page. */
+  .rv-report-table thead {
+    display: table-header-group;
+  }
+
+  /* Do not split table rows across pages. */
+  .rv-report-row {
+    page-break-inside: avoid;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .rv-report-footer {
+    page-break-before: avoid;
+    margin-top: 1rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--line);
+    font-size: 8pt;
+  }
+
+  /* Failed cells keep their accent background in print. */
+  .rv-report-td-failed {
+    background: var(--accent-soft) !important;
+  }
+
+  .status-badge {
+    border: 1px solid var(--line) !important;
+  }
+}
+
+/* Print-only utility classes. */
+.print-only {
+  display: none;
+}
+
+@media print {
+  .print-only {
+    display: block;
+  }
+}
+
+/* ==========================================================================
+   TopicView (student topic page)
+   ========================================================================== */
+
+.tv-blocked {
+  max-width: 42rem;
+  margin: 3rem auto;
+  text-align: center;
+}
+
+.tv-glyph {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  margin: 0 0 1rem;
+}
+
+.tv-glyph svg {
+  width: 2rem;
+  height: 2rem;
+  color: var(--muted);
+}
+
+.tv-title {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  margin: 0 0 0.5rem;
+}
+
+.tv-lead {
+  color: var(--muted);
+  font-size: 1rem;
+  line-height: 1.6;
+  margin: 0 0 1rem;
+}
+
+.tv-scheduled {
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin: 0 0 1.5rem;
+}
+
+.tv-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.tv-back {
+  margin-bottom: 1rem;
+}
+
+.tv-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--accent-ink);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+
+.tv-back-link svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.tv-meta {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.tv-meta h1 {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  margin: 0 0 0.25rem;
+}
+
+.tv-available {
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.tv-description {
+  color: var(--ink-soft);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin: 0 0 1.5rem;
+}
+
+.tv-blocks {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.tv-block {
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  background: var(--paper-2);
+}
+
+.tv-block-title {
+  margin: 0 0 0.75rem;
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+.tv-video-link,
+.tv-presentation-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--ink);
+  text-decoration: none;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.tv-video-link svg,
+.tv-presentation-link svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.tv-completion {
+  margin-top: 1.5rem;
+  padding: 1.25rem;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  background: var(--paper-2);
+}
+
+.tv-quiz-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.tv-quiz-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--ink);
+  margin: 0;
+}
+
+.tv-quiz-mode {
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-family: var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.tv-pending-text {
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+  margin: 0.5rem 0 0;
+}
+
+.tv-feedback {
+  margin-top: 0.75rem;
+  text-align: left;
+}
+
+.tv-feedback-label {
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin: 0 0 0.25rem;
+}
+
+.tv-feedback-text {
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+  white-space: pre-wrap;
+  margin: 0;
+}
+
+.tv-completion-heading {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--ink);
+  margin: 0 0 0.5rem;
+}
+
+.tv-completion-text {
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin: 0 0 1rem;
+}
+
+.tv-completed {
+  color: var(--ink);
+  font-weight: 600;
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.tv-completed svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.tv-error {
+  margin-top: 1rem;
+}
+
+/* ==========================================================================
+   TopicEditor (faculty topic content editor)
+   ========================================================================== */
+
+.te-details-form {
+  margin-bottom: 1.5rem;
+  padding: 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+}
+
+.te-block-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1rem;
+}
+
+.te-block-item {
+  padding: 0.625rem;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  margin-bottom: 0.5rem;
+}
+
+.te-block-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.te-block-visibility {
+  margin-left: auto;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.te-block-body {
+  margin-top: 0.375rem;
+}
+
+.te-block-pre {
+  white-space: pre-wrap;
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--ink-soft);
+}
+
+.te-block-link {
+  margin-top: 0.375rem;
+  margin: 0;
+}
+
+.te-block-link a {
+  color: var(--ink);
+  text-decoration: underline;
+}
+
+.te-block-actions {
+  margin-top: 0.375rem;
+  display: flex;
+  gap: 0.375rem;
+}
+
+.te-add-block {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+}
+
+.te-file-upload {
+  margin-top: 0.5rem;
+}
+
+.te-add-btn {
+  margin-top: 0.5rem;
+}
+
+/* ==========================================================================
+   FacultyTopics (faculty topic list)
+   ========================================================================== */
+
+.ft-actions {
+  margin-bottom: 0.75rem;
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.ft-add-form,
+.ft-bulk-form {
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+}
+
+.ft-weekday-label {
+  margin-right: 0.5rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.ft-preview-list {
+  max-height: 7.5rem;
+  overflow-y: auto;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.ft-save-btn {
+  margin-top: 0.5rem;
+}
+
+.ft-topic-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.ft-topic-item {
+  padding: 0.625rem;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+}
+
+.ft-topic-position {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.ft-topic-content {
+  flex: 1;
+}
+
+.ft-topic-title {
+  margin: 0;
+}
+
+.ft-topic-meta {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+/* ==========================================================================
+   JoinSubject (student join subject)
+   ========================================================================== */
+
+.js-code-input {
+  text-transform: uppercase;
+}
+
+/* Disabled button state (aria-disabled). */
+button[aria-disabled="true"] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ==========================================================================
+   GradingQueue (faculty manual grading page)
+   ========================================================================== */
+
+.gq-shell {
+  max-width: 88rem;
+  margin-inline: auto;
+}
+
+.gq-back {
+  margin-bottom: 1rem;
+}
+
+.gq-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--accent-ink);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+
+.gq-back-link svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.gq-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.gq-header-left {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.gq-header-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+.gq-header-sub {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.gq-header-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.gq-pending-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  font-family: var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.gq-pending-badge.gq-pending-has {
+  background: var(--accent-soft);
+  color: var(--accent-ink);
+}
+
+.gq-pending-badge.gq-pending-none {
+  background: var(--paper-2);
+  color: var(--ink);
+}
+
+.gq-error {
+  margin: 0 0 1rem;
+}
+
+.gq-success {
+  padding: 0.75rem 1rem;
+  border-radius: 2px;
+  background: var(--accent-soft);
+  color: var(--accent-ink);
+  font-size: 0.9rem;
+  margin: 0 0 1rem;
+}
+
+.gq-filters {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.gq-filter-group {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.gq-search-form {
+  display: flex;
+  gap: 0.5rem;
+  flex: 1;
+  min-width: 200px;
+}
+
+.gq-search-input {
+  flex: 1;
+  padding: 0.5rem 0.85rem;
+  font-size: 0.85rem;
+}
+
+.gq-layout {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 1.25rem;
+  align-items: start;
+}
+
+.gq-list-card {
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  background: var(--paper);
+  max-height: 40rem;
+  overflow-y: auto;
+}
+
+.gq-empty {
+  padding: 2rem;
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.gq-submission-item {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--line);
+  cursor: pointer;
+  background: transparent;
+  transition: background-color 0.2s var(--ease);
+}
+
+.gq-submission-item.selected {
+  background: var(--accent-soft);
+  border-left: 4px solid var(--accent-ink);
+}
+
+.gq-submission-item:not(.selected):hover {
+  background: var(--paper-2);
+}
+
+.gq-sub-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.gq-student-name {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--ink);
+  margin: 0;
+}
+
+.gq-student-meta {
+  color: var(--muted);
+  font-size: 0.8rem;
+  margin: 0 0 0.25rem;
+}
+
+.gq-sub-footer {
+  font-size: 0.8rem;
+  color: var(--muted-2);
+  margin: 0;
+}
+
+.gq-score {
+  margin-left: 0.5rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.gq-detail-card {
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  background: var(--paper);
+  padding: 1.25rem;
+}
+
+.gq-detail-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.gq-detail-left {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.gq-detail-name {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.gq-detail-meta {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.gq-image-wrapper {
+  margin-bottom: 1rem;
+}
+
+.gq-form-card {
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  background: var(--paper-2);
+}
+
+.gq-form-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--ink);
+  margin: 0 0 0.75rem;
+}
+
+.gq-form-grid {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.gq-score-field,
+.gq-feedback-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.gq-score-label,
+.gq-feedback-label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--ink);
+  margin: 0 0 0.25rem;
+}
+
+.gq-score-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.gq-score-total {
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.gq-feedback-input {
+  width: 100%;
+  padding: 0.5rem 0.85rem;
+  font-size: 0.9rem;
+}
+
+.gq-save-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.gq-no-selection {
+  padding: 2.5rem;
+  text-align: center;
+  border: 1px dashed var(--line);
+  border-radius: 2px;
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+/* ==========================================================================
+   QuizRun (student quiz taking page)
+   ========================================================================== */
+
+.qr-narrow {
+  max-width: 42rem;
+  margin-inline: auto;
+}
+
+.qr-glyph {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  margin: 0 0 1rem;
+}
+
+.qr-glyph svg {
+  width: 2rem;
+  height: 2rem;
+  color: var(--muted);
+}
+
+.qr-title {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  margin: 0 0 0.5rem;
+}
+
+.qr-lead {
+  color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin: 0 0 1.5rem;
+}
+
+.qr-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.qr-result {
+  max-width: 42rem;
+  margin-inline: auto;
+}
+
+.qr-result-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 2rem 1.5rem;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  background: var(--paper-2);
+  text-align: center;
+}
+
+.qr-result-panel.qr-result-passed {
+  border-color: var(--accent-ink);
+}
+
+.qr-result-panel.qr-result-failed {
+  border-color: var(--accent-ink);
+}
+
+.qr-result-glyph {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+}
+
+.qr-result-glyph svg {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.qr-result-title {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  margin: 0;
+}
+
+.qr-result-title.qr-result-title-passed {
+  color: var(--ink);
+}
+
+.qr-result-title.qr-result-title-failed {
+  color: var(--ink);
+}
+
+.qr-result-score {
+  color: var(--muted);
+  font-size: 1rem;
+  font-family: var(--font-mono);
+  margin: 0;
+}
+
+.qr-result-note {
+  color: var(--muted-2);
+  font-size: 0.85rem;
+  font-family: var(--font-mono);
+  margin: 0.25rem 0 0;
+}
+
+.qr-cta-top {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1rem;
+}
+
+.qr-quiz {
+  max-width: 42rem;
+  margin-inline: auto;
+}
+
+.qr-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--muted-2);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: none;
+  margin-bottom: 1rem;
+}
+
+.qr-back-link svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.qr-meta {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.qr-meta h1 {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  margin: 0;
+}
+
+.qr-unanswered {
+  color: var(--accent-ink);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.qr-all-answered {
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.qr-error {
+  margin: 0 0 1rem;
+}
+
+.qr-question {
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  background: var(--paper);
+  margin-bottom: 1rem;
+}
+
+.qr-question legend {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  padding: 0 0.5rem;
+}
+
+.qr-question-prompt {
+  color: var(--ink-soft);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin: 0.5rem 0 1rem;
+}
+
+.qr-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.qr-option {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 0.8rem;
+  border-radius: 2px;
+  background: transparent;
+  cursor: pointer;
+  font-size: 0.95rem;
+  color: var(--ink);
+  transition: background-color 0.2s var(--ease);
+}
+
+.qr-option.selected {
+  background: var(--accent-soft);
+}
+
+.qr-option input {
+  margin: 0;
+}
+
+.qr-text-input {
+  width: 100%;
+  min-height: 46px;
+  padding: 0.7rem 0.85rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 2px;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+}
+
+.qr-text-input:focus {
+  outline: none;
+  border-color: var(--accent-ink);
+}
+
+.qr-submit {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.qr-review {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  background: var(--paper);
+}
+
+.qr-review h3 {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  margin: 0 0 0.75rem;
+}
+
+.qr-review-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.qr-review-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--line);
+  font-size: 0.9rem;
+  color: var(--ink);
+}
+
+.qr-review-item:last-child {
+  border-bottom: none;
+}
+
+.qr-review-item .qr-review-status {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.qr-history {
+  margin-top: 1.5rem;
+}
+
+.qr-history h3 {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  margin: 0 0 0.5rem;
+}
+
+.qr-history-meta {
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-family: var(--font-mono);
+  line-height: 1.5;
 }
