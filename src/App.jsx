@@ -17,6 +17,7 @@ import PendingApprovalPage from "./auth/pages/PendingApprovalPage";
 import Placeholder from "./auth/pages/Placeholder";
 import FacultyDashboard from "./pages/faculty/Dashboard";
 import SubjectNew from "./pages/faculty/SubjectNew";
+import SubjectSettings from "./pages/faculty/SubjectSettings";
 import Roster from "./pages/faculty/Roster";
 import Report from "./pages/faculty/Report";
 import FacultyTopics from "./pages/faculty/Topics";
@@ -81,8 +82,8 @@ export default function App() {
 
             <Route path="/faculty" element={<ProtectedRoute roles={["faculty"]}><FacultyDashboard /></ProtectedRoute>} />
             <Route path="/faculty/subjects/new" element={<ProtectedRoute roles={["faculty"]}><SubjectNew /></ProtectedRoute>} />
-            <Route path="/faculty/subjects/:id" element={<ProtectedRoute roles={["faculty"]}><Placeholder title="Subject overview" /></ProtectedRoute>} />
-            <Route path="/faculty/subjects/:id/settings" element={<ProtectedRoute roles={["faculty"]}><Placeholder title="Subject settings" /></ProtectedRoute>} />
+            <Route path="/faculty/subjects/:id" element={<ProtectedRoute roles={["faculty"]}><FacultyTopics /></ProtectedRoute>} />
+            <Route path="/faculty/subjects/:id/settings" element={<ProtectedRoute roles={["faculty"]}><SubjectSettings /></ProtectedRoute>} />
             <Route path="/faculty/subjects/:id/students" element={<ProtectedRoute roles={["faculty"]}><Roster /></ProtectedRoute>} />
             <Route path="/faculty/subjects/:id/topics" element={<ProtectedRoute roles={["faculty"]}><FacultyTopics /></ProtectedRoute>} />
             <Route path="/faculty/topics/:id" element={<ProtectedRoute roles={["faculty"]}><TopicEditor /></ProtectedRoute>} />

@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { ArrowUpRight } from './Icons';
+import { PRODUCT_NAME } from '../lib/product-name';
 
 export default function SiteFooter() {
   const year = new Date().getFullYear();
@@ -13,7 +14,7 @@ export default function SiteFooter() {
               <span className="footer-mark" aria-hidden="true">
                 3A
               </span>
-              <span>Systems Index</span>
+              <span>{PRODUCT_NAME}</span>
             </Link>
             <p>
               Sixteen modules on the hardware, software, and platforms that run

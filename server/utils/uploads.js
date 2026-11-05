@@ -7,6 +7,20 @@ const ALLOWED = {
     mimes: ['application/pdf', 'application/vnd.openxmlformats-officedocument.presentationml.presentation'],
     maxSizeMb: () => env.storage.maxFileMb,
   },
+  file: {
+    extensions: ['.pdf', '.pptx', '.doc', '.docx', '.txt', '.png', '.jpg', '.jpeg', '.webp'],
+    mimes: [
+      'application/pdf',
+      'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'text/plain',
+      'image/png',
+      'image/jpeg',
+      'image/webp',
+    ],
+    maxSizeMb: () => env.storage.maxFileMb,
+  },
   'quiz-attachment': {
     extensions: ['.pdf', '.pptx', '.txt', '.jpg', '.jpeg', '.png', '.webp'],
     mimes: [

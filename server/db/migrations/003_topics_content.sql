@@ -43,7 +43,7 @@ create table if not exists public.topic_content (
   id uuid primary key default gen_random_uuid(),
   topic_id uuid not null references public.topics(id) on delete cascade,
   type text not null
-    check (type in ('text', 'summary', 'notes', 'presentation', 'video')),
+    check (type in ('text', 'summary', 'notes', 'presentation', 'video', 'file')),
   title text,
   body text,                                           -- markdown for text/summary/notes
   url text,                                            -- Google Slides / video link
@@ -53,6 +53,8 @@ create table if not exists public.topic_content (
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
   check (type <> 'presentation' or url is not null or file_path is not null),
+  check (type <> 'video' or url is not null),
+  check (type <> 'file' or file_path is not null),
   check (type not in ('text', 'summary', 'notes') or body is not null)
 );
 

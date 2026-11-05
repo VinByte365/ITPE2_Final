@@ -13,7 +13,7 @@ import {
   updateTopic,
 } from "../../api/topics";
 
-const BLOCK_TYPES = ["text", "summary", "notes", "presentation", "video"];
+const BLOCK_TYPES = ["text", "summary", "notes", "presentation", "video", "file"];
 
 export default function TopicEditor() {
   const { id: topicId } = useParams();
@@ -94,13 +94,15 @@ export default function TopicEditor() {
     } catch (err) { setError(err?.message || "Reorder failed."); }
   };
 
-  const handleUpload = async (path) => {
+  const handleUpload = async (path, file) => {
     try {
       await createContentBlock(topicId, {
-        type: "presentation",
-        title: newTitle || null,
+        type: newType === "presentation" ? "presentation" : "file",
+        title: newTitle || file?.name || null,
         filePath: path,
-        fileName: newTitle || "file",
+        fileName: file?.name || newTitle || "file",
+        fileMime: file?.type,
+        fileSize: file?.size,
         visibleToStudents: newVisible,
       });
       load();
@@ -135,9 +137,10 @@ export default function TopicEditor() {
                 {b.visibleToStudents ? "students" : "faculty-only"}
               </span>
             </div>
-            {b.body && (
+            {b.type === "file" && (
               <div className="te-block-body">
-                {preview ? <MarkdownView content={b.body} /> : <pre className="te-block-pre">{b.body}</pre>}
+                <p><strong>{b.title || b.fileName}</strong> {b.fileName && b.title !== b.fileName ? `(${b.fileName})` : ''}</p>
+                {b.filePath && <a href="#" onClick={(e) => { e.preventDefault(); /* faculty can see info */ }}>File uploaded</a>}
               </div>
             )}
             {b.url && <p className="te-block-link"><a href={b.url} target="_blank" rel="noopener noreferrer">{b.url}</a></p>}
@@ -176,19 +179,29 @@ export default function TopicEditor() {
         )}
         <div><label><input type="checkbox" checked={newVisible} onChange={(e) => setNewVisible(e.target.checked)} /> Visible to students</label></div>
 
-        {newType === "presentation" && (
+        {newType === "file" && (
           <div className="te-file-upload">
             <FileUpload
-              accept=".pdf,.pptx"
+              accept=".pdf,.pptx,.doc,.docx,.txt,.png,.jpg,.jpeg,.webp"
               maxSizeMb={25}
-              getUploadUrl={(info) => getUploadUrl(topicId, { ...info, kind: "presentation" })}
+              getUploadUrl={(info) => getUploadUrl(topicId, { ...info, kind: "file" })}
               onUploaded={handleUpload}
               onError={setError}
             />
           </div>
         )}
 
-        {!(newType === "presentation") && (
+        {newType === "presentation" && (
+          <div>
+            <button type="button" className="btn te-add-btn" onClick={handleAddBlock}>Add presentation link</button>
+          </div>
+        )}
+
+        {newType === "video" && (
+          <button type="button" className="btn te-add-btn" onClick={handleAddBlock}>Add video link</button>
+        )}
+
+        {!["presentation", "video", "file"].includes(newType) && (
           <button type="button" className="btn te-add-btn" onClick={handleAddBlock}>Add block</button>
         )}
       </div>

@@ -14,6 +14,7 @@ import {
   removeEnrollment,
   updateSubject as updateSubjectRepo,
 } from '../repositories/subjects.repository.js';
+import { rescheduleTopicsFromStart } from './topics.service.js';
 
 const MAX_JOIN_CODE_RETRIES = 5;
 
@@ -37,6 +38,8 @@ export async function createSubject(facultyId, data) {
     schoolYear: data.schoolYear,
     joinCode,
     passingPercent: data.passingPercent,
+    startDate: data.startDate || null,
+    meetingDay: data.meetingDay === undefined || data.meetingDay === null ? null : Number(data.meetingDay),
   });
   return subject;
 }
@@ -63,6 +66,20 @@ export async function updateSubject(facultyId, subjectId, data, isAdmin) {
 
   // Check for duplicate (code, term, schoolYear) if any of those are changing
   const updated = await updateSubjectRepo(subjectId, data);
+
+  // Temporary: when startDate (week 1) changes, reschedule succeeding topic dates automatically
+  const nextStart = data.startDate !== undefined ? data.startDate : updated.startDate;
+  const nextMeetingDay = data.meetingDay !== undefined ? data.meetingDay : updated.meetingDay;
+  const startChanged = data.startDate !== undefined && String(data.startDate || '') !== String(subject.startDate || '');
+  const dayChanged = data.meetingDay !== undefined && String(data.meetingDay ?? '') !== String(subject.meetingDay ?? '');
+  if (nextStart && (startChanged || dayChanged)) {
+    try {
+      await rescheduleTopicsFromStart(facultyId, subjectId, String(nextStart).split('T')[0], nextMeetingDay, isAdmin);
+    } catch {
+      // Non-fatal; subject update still succeeds
+    }
+  }
+
   return updated;
 }
 

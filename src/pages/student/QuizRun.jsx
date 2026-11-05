@@ -4,6 +4,10 @@ import { ArrowLeft, ArrowRight, CheckIcon, CloseIcon, HourglassIcon, LockIcon } 
 import { startAttempt, submitAttempt, getAttemptHistory } from "../../api/quizzes";
 import { getStudentTopic } from "../../api/topics";
 
+function answersStorageKey(quizId, attemptId) {
+  return `quiz_answers:${quizId}:${attemptId}`;
+}
+
 export default function QuizRun() {
   const { id: paramId } = useParams();
   const navigate = useNavigate();
@@ -57,15 +61,27 @@ export default function QuizRun() {
       setAttempt(started.attempt);
       setQuestions(Array.isArray(started.questions) ? started.questions : []);
 
+      // Prefill: server-saved answers take precedence; merge with local draft for unsaved refreshes
+      const prefilled = {};
       if (started.attempt?.answers && Array.isArray(started.attempt.answers)) {
-        const prefilled = {};
         for (const a of started.attempt.answers) {
           if (a?.questionId) {
             prefilled[a.questionId] = a.optionId !== undefined ? a.optionId : a.text;
           }
         }
-        setAnswers(prefilled);
       }
+      try {
+        const raw = localStorage.getItem(answersStorageKey(resolvedQuizId, started.attempt?.id));
+        if (raw) {
+          const local = JSON.parse(raw);
+          if (local && typeof local === "object") {
+            Object.assign(prefilled, local);
+          }
+        }
+      } catch {
+        // ignore
+      }
+      setAnswers(prefilled);
 
       const h = await getAttemptHistory(resolvedQuizId);
       setHistory(h);
@@ -99,7 +115,8 @@ export default function QuizRun() {
   }).length;
 
   const handleSubmit = async () => {
-    if (unanswered > 0 && !window.confirm(`You have ${unanswered} unanswered question(s). Submit anyway?`)) {
+    if (unanswered > 0) {
+      setError(`Please answer all questions before submitting. ${unanswered} unanswered.`);
       return;
     }
     setSubmitting(true);
@@ -110,6 +127,7 @@ export default function QuizRun() {
         ...(q.type === "choice" ? { optionId: answers[q.id] } : { text: answers[q.id] || "" }),
       }));
       const r = await submitAttempt(attempt.id, payload);
+      try { localStorage.removeItem(answersStorageKey(actualQuizId, attempt.id)); } catch {}
       setResult(r);
       if (actualQuizId) {
         const h = await getAttemptHistory(actualQuizId);
@@ -120,6 +138,20 @@ export default function QuizRun() {
     } finally {
       setSubmitting(false);
     }
+  };
+
+  const updateAnswer = (questionId, value) => {
+    setAnswers((prev) => {
+      const next = { ...prev, [questionId]: value };
+      try {
+        if (actualQuizId && attempt?.id) {
+          localStorage.setItem(answersStorageKey(actualQuizId, attempt.id), JSON.stringify(next));
+        }
+      } catch {
+        // ignore
+      }
+      return next;
+    });
   };
 
   if (loading) {
@@ -281,18 +313,22 @@ export default function QuizRun() {
 
           {q.type === "choice" && (
             <div className="qr-options">
-              {(q.options || []).map((opt) => (
-                <label key={opt.id} className={`qr-option ${answers[q.id] === opt.id ? "selected" : ""}`}>
-                  <input
-                    type="radio"
-                    name={q.id}
-                    value={opt.id}
-                    checked={answers[q.id] === opt.id}
-                    onChange={() => setAnswers({ ...answers, [q.id]: opt.id })}
-                  />
-                  <span>{opt.label}</span>
-                </label>
-              ))}
+              {(q.options || []).map((opt, optIdx) => {
+                const optionId = opt?.id ?? opt?.optionId ?? `opt-${q.id}-${optIdx}`;
+                const selected = Object.prototype.hasOwnProperty.call(answers, q.id) && String(answers[q.id]) === String(optionId);
+                return (
+                  <label key={String(optionId)} className={`qr-option ${selected ? "selected" : ""}`}>
+                    <input
+                      type="radio"
+                      name={String(q.id)}
+                      value={String(optionId)}
+                      checked={selected}
+                      onChange={() => updateAnswer(q.id, optionId)}
+                    />
+                    <span>{opt?.label ?? ""}</span>
+                  </label>
+                );
+              })}
             </div>
           )}
 
@@ -302,8 +338,9 @@ export default function QuizRun() {
                 type="text"
                 className="input qr-text-input"
                 placeholder="Type your answer here…"
-                value={answers[q.id] || ""}
-                onChange={(e) => setAnswers({ ...answers, [q.id]: e.target.value })}
+                value={answers[q.id] ?? ""}
+                onChange={(e) => updateAnswer(q.id, e.target.value)}
+                required
               />
             </div>
           )}

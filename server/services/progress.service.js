@@ -82,9 +82,13 @@ export function computeTopicStates({
   for (let i = 0; i < topics.length; i++) {
     const topic = topics[i];
     const availableFrom = new Date(topic.availableFrom);
+    const startOfDay = new Date(availableFrom);
+    startOfDay.setHours(0, 0, 0, 0);
+    const endOfDay = new Date(availableFrom);
+    endOfDay.setHours(23, 59, 59, 999);
 
     // Order 1: scheduled
-    if (now < availableFrom) {
+    if (now < startOfDay) {
       results.push({
         ...topic,
         state: 'scheduled',

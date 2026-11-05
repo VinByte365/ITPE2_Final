@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const termSchema = z.enum(['1st Semester', '2nd Semester', 'Summer']);
+export const termSchema = z.enum(['1st Semester', '2nd Semester', 'Summer', '3rd Semester']);
 
 export const schoolYearSchema = z
   .string()
@@ -32,6 +32,8 @@ export const createSubjectSchema = z
     term: termSchema,
     schoolYear: schoolYearSchema,
     passingPercent: passingPercentSchema.optional().default(75),
+    startDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional().nullable(),
+    meetingDay: z.coerce.number().int().min(0).max(6).optional().nullable(),
   })
   .strict();
 
@@ -44,6 +46,8 @@ export const updateSubjectSchema = z
     passingPercent: passingPercentSchema.optional(),
     enrollmentOpen: z.boolean().optional(),
     status: z.enum(['active', 'archived']).optional(),
+    startDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional().nullable(),
+    meetingDay: z.coerce.number().int().min(0).max(6).optional().nullable(),
   })
   .strict()
   .refine((data) => Object.keys(data).length > 0, {

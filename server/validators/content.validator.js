@@ -4,7 +4,7 @@ import { httpUrlSchema } from './common.js';
 
 export const contentBlockSchema = z
   .object({
-    type: z.enum(['text', 'summary', 'notes', 'presentation', 'video']),
+    type: z.enum(['text', 'summary', 'notes', 'presentation', 'video', 'file']),
     title: z.string().trim().max(200).optional().nullable(),
     body: z.string().max(50000).optional().nullable(),
     url: httpUrlSchema.optional().nullable(),
@@ -36,6 +36,13 @@ export const contentBlockSchema = z
         code: z.ZodIssueCode.custom,
         path: ['url'],
         message: 'Video blocks require a URL.',
+      });
+    }
+    if (data.type === 'file' && !data.filePath) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['filePath'],
+        message: 'File blocks require a file.',
       });
     }
   });

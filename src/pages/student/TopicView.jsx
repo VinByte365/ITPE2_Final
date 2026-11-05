@@ -172,20 +172,101 @@ export default function TopicView() {
           <div key={b.id} className="tv-block">
             {b.title && <h3 className="tv-block-title">{b.title}</h3>}
             {b.type === "presentation" && (
-              <SlidesEmbed
-                url={b.url}
-                fileUrl={b.filePath ? `/api/v1/student/content/${b.id}/download-url` : null}
-                fileName={b.fileName}
-                title={b.title}
-              />
+              <section className="media-block">
+                <div className="block-head">
+                  <p className="block-label">
+                    <span className="block-index">01</span>
+                    Presentation
+                  </p>
+                  {(b.url || b.filePath) && (
+                    <a href={b.url || '#'} target="_blank" rel="noreferrer" className="block-link">Open</a>
+                  )}
+                </div>
+                <div className="frame">
+                  <div className="frame-bar">
+                    <span className="frame-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+                    <span>Slides / Embedded</span>
+                  </div>
+                  <div className="frame-body">
+                    <SlidesEmbed
+                      url={b.url}
+                      fileUrl={b.filePath ? `/api/v1/student/content/${b.id}/download-url` : null}
+                      fileName={b.fileName}
+                      title={b.title}
+                    />
+                  </div>
+                </div>
+              </section>
             )}
             {b.type === "video" && b.url && (
-              <p className="tv-video-link">
-                <RotateIcon /> Watch video
-              </p>
+              <section className="media-block">
+                <div className="block-head">
+                  <p className="block-label">
+                    <span className="block-index">02</span>
+                    Video discussion
+                  </p>
+                  <a href={b.url} target="_blank" rel="noreferrer" className="block-link">Watch on YouTube</a>
+                </div>
+                <div className="frame">
+                  <div className="frame-bar">
+                    <span className="frame-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+                    <span>Video</span>
+                  </div>
+                  <div className="frame-body">
+                    <iframe
+                      src={b.url.includes('youtu') || b.url.includes('youtube') ? 
+                        (function(){
+                          try{
+                            const u=new URL(b.url);
+                            if(u.hostname.includes('youtu.be')) return 'https://www.youtube.com/embed/'+u.pathname.slice(1);
+                            if(u.hostname.includes('youtube.com')){
+                              if(u.pathname.startsWith('/embed/')) return b.url;
+                              if(u.pathname.startsWith('/shorts/')) return 'https://www.youtube.com/embed/'+u.pathname.split('/')[2];
+                              const v=u.searchParams.get('v'); if(v) return 'https://www.youtube.com/embed/'+v;
+                            }
+                          }catch{}
+                          return b.url;
+                        })() : b.url}
+                      title={b.title || "Video"}
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                      allowFullScreen
+                      loading="lazy"
+                    />
+                  </div>
+                </div>
+              </section>
             )}
-            {b.body && <MarkdownView content={b.body} />}
-            {b.type === "presentation" && b.url && !b.body && (
+            {b.type === "file" && b.filePath && (
+              <section className="media-block">
+                <div className="block-head">
+                  <p className="block-label">
+                    <span className="block-index">03</span>
+                    File
+                  </p>
+                </div>
+                <div className="file-preview">
+                  <div className="file-preview-row">
+                    <div>
+                      <div className="file-name">{b.title || b.fileName || "File"}</div>
+                      {b.fileName && <div className="file-meta">{b.fileName}</div>}
+                    </div>
+                    <button type="button" className="btn btn-solid" onClick={async (e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      try {
+                        const res = await fetch(`/api/v1/student/content/${b.id}/download-url`, { credentials: 'include' });
+                        const json = await res.json();
+                        const url = json?.data?.url;
+                        if (url) {
+                          window.open(url, '_blank', 'noopener,noreferrer');
+                        }
+                      } catch {}
+                    }}>Download</button>
+                  </div>
+                </div>
+              </section>
+            )}
+            {false && b.type === "presentation" && b.url && !b.body && (
               <p className="tv-presentation-link">
                 Open presentation link
               </p>

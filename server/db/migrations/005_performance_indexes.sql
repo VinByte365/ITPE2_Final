@@ -1,4 +1,4 @@
-﻿-- 005_performance_indexes.sql
+-- 005_performance_indexes.sql
 -- Performance indexes for reports/progress (RPT-04).
 
 -- Ensure foreign keys used in joins are indexed

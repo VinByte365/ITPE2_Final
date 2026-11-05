@@ -6,12 +6,12 @@ import { CheckIcon, CloseIcon } from "./Icons";
 function rowToQuestion(row) {
   const type = (row.type || "").trim().toLowerCase();
   if (type === "choice") {
-    const options = ["A", "B", "C", "D", "E", "F"]
+    const options = ["A", "B", "C", "D"]
       .map((l) => row[`option${l}`])
       .filter((v) => v !== undefined && v !== null && String(v).trim() !== "")
       .map((label) => ({ label: String(label).trim() }));
     const correctLetter = String(row.correct || "").trim().toUpperCase();
-    const correctIndex = "ABCDEF".indexOf(correctLetter);
+    const correctIndex = "ABCD".indexOf(correctLetter);
     return {
       type: "choice",
       prompt: String(row.question || "").trim(),
@@ -39,12 +39,11 @@ function validateRow(q) {
   const issues = [];
   if (!q.prompt) issues.push("Question prompt is required.");
   if (q.type === "choice") {
-    if (!q.options || q.options.length < 2) issues.push("Choice questions need at least 2 options.");
-    else if (q.options.length > 6) issues.push("Choice questions allow at most 6 options.");
-    if (!Number.isInteger(q.correctOptionIndex) || q.correctOptionIndex < 0 || q.correctOptionIndex >= (q.options || []).length) {
-      issues.push("Select the correct option (A-F).");
+    if (!q.options || q.options.length !== 4) issues.push("Multiple choice questions must have exactly 4 options (A-D).");
+    if (!Number.isInteger(q.correctOptionIndex) || q.correctOptionIndex < 0 || q.correctOptionIndex > 3) {
+      issues.push("Select the correct option (A-D).");
     }
-    q.options.forEach((o) => { if (!o.label) issues.push("Every option needs a label."); });
+    (q.options || []).forEach((o) => { if (!o.label) issues.push("Every option needs a label."); });
   }
   if (q.type === "text") {
     if (!q.acceptedAnswers || q.acceptedAnswers.length === 0) issues.push("Text questions need at least one accepted answer.");
@@ -114,9 +113,9 @@ export default function QuestionImport({ quizId, onImported }) {
           <span>CSV file</span>
           <input type="file" accept=".csv" onChange={handleFile} className="qi-file-input" />
         </label>
-        <p className="qi-hint">
-          Columns: <span className="qi-mono">type,question,optionA..optionF,correct,acceptedAnswers,points</span>
-        </p>
+          <p className="qi-hint">
+            Columns: <span className="qi-mono">type,question,optionA..optionD,correct,acceptedAnswers,points</span>
+          </p>
       </div>
 
       {error && <div className="auth-error" role="alert">{error}</div>}

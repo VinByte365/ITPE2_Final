@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import {
   getFacultyQuiz,
@@ -6,6 +6,7 @@ import {
   updateQuizStatus,
   listQuestions,
   createQuestion,
+  updateQuestion,
   deleteQuestion,
   regradeQuiz,
   getQuizAttachmentUploadUrl,
@@ -13,10 +14,56 @@ import {
 import { uploadToSignedUrl } from "../../api/client";
 import QuestionImport from "../../components/QuestionImport";
 
+function defaultChoiceOptions() {
+  return ["", "", "", ""];
+}
+
+function isDefaultOptionLabel(label, index) {
+  if (!label) return true;
+  const n = index + 1;
+  const letter = String.fromCharCode(65 + index);
+  return label === `Option ${n}` || label === `Option ${letter}`;
+}
+
+function isDefaultPrompt(prompt) {
+  return !prompt || prompt === "Untitled question";
+}
+
+function questionToForm(q) {
+  if (q.type === "choice") {
+    const opts = (q.options || []).map((o, i) => {
+      const label = o?.label ?? "";
+      return isDefaultOptionLabel(label, i) ? "" : label;
+    });
+    while (opts.length < 4) opts.push("");
+    return {
+      id: q.id,
+      type: "choice",
+      prompt: isDefaultPrompt(q.prompt) ? "" : (q.prompt || ""),
+      options: opts.slice(0, 4),
+      correctOptionIndex: Math.max(0, Math.min(3, (q.options || []).findIndex((o) => o.id === q.correctOptionId))),
+      points: q.points ?? 1,
+      saving: false,
+      saved: false,
+    };
+  }
+  return {
+    id: q.id,
+    type: "text",
+    prompt: isDefaultPrompt(q.prompt) ? "" : (q.prompt || ""),
+    options: defaultChoiceOptions(),
+    correctOptionIndex: 0,
+    acceptedAnswers: (q.acceptedAnswers || []).join(", "),
+    points: q.points ?? 1,
+    saving: false,
+    saved: false,
+  };
+}
+
 export default function QuizBuilder() {
   const { id: topicId } = useParams();
   const [quiz, setQuiz] = useState(null);
-  const [questions, setQuestions] = useState([]);
+  const [questionForms, setQuestionForms] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -32,13 +79,7 @@ export default function QuizBuilder() {
   const [attachment, setAttachment] = useState(null);
   const [uploadingAttachment, setUploadingAttachment] = useState(false);
 
-  // New question form (for built-in mode)
-  const [qType, setQType] = useState("choice");
-  const [qPrompt, setQPrompt] = useState("");
-  const [qOptions, setQOptions] = useState(["", ""]);
-  const [qCorrect, setQCorrect] = useState(0);
-  const [qAccepted, setQAccepted] = useState("");
-  const [qPoints, setQPoints] = useState(1);
+  const saveTimers = useRef({});
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -62,10 +103,12 @@ export default function QuizBuilder() {
         }
         if (q.mode === "built") {
           const qs = await listQuestions(q.id);
-          setQuestions(Array.isArray(qs) ? qs : []);
+          setQuestionForms(Array.isArray(qs) ? qs.map(questionToForm) : []);
+        } else {
+          setQuestionForms([]);
         }
       } else {
-        setQuestions([]);
+        setQuestionForms([]);
       }
     } catch (err) {
       setError(err?.message || "Failed to load quiz.");
@@ -77,6 +120,54 @@ export default function QuizBuilder() {
   useEffect(() => {
     load();
   }, [load]);
+
+  useEffect(() => () => {
+    Object.values(saveTimers.current).forEach(clearTimeout);
+  }, []);
+
+  const scheduleSave = (id, buildPayload) => {
+    if (saveTimers.current[id]) clearTimeout(saveTimers.current[id]);
+    saveTimers.current[id] = setTimeout(async () => {
+      const form = questionFormsRef.current.find((f) => f.id === id);
+      if (!form) return;
+      try {
+        setQuestionForms((prev) => prev.map((f) => (f.id === id ? { ...f, saving: true, saved: false } : f)));
+        await updateQuestion(id, buildPayload(form));
+        setQuestionForms((prev) => prev.map((f) => (f.id === id ? { ...f, saving: false, saved: true } : f)));
+        setTimeout(() => {
+          setQuestionForms((prev) => prev.map((f) => (f.id === id ? { ...f, saved: false } : f)));
+        }, 1200);
+      } catch (err) {
+        setQuestionForms((prev) => prev.map((f) => (f.id === id ? { ...f, saving: false } : f)));
+        setError(err?.message || "Auto-save failed.");
+      }
+    }, 600);
+  };
+
+  const questionFormsRef = useRef(questionForms);
+  questionFormsRef.current = questionForms;
+
+  const updateForm = (id, patch) => {
+    setQuestionForms((prev) => prev.map((f) => (f.id === id ? { ...f, ...patch } : f)));
+  };
+
+  const buildPayload = (form) => {
+    if (form.type === "choice") {
+      return {
+        prompt: String(form.prompt || "").trim() || "Untitled question",
+        options: (form.options || []).slice(0, 4).map((label, i) => ({
+          label: String(label || "").trim() || `Option ${String.fromCharCode(65 + i)}`,
+        })),
+        correctOptionIndex: Math.max(0, Math.min(3, Number(form.correctOptionIndex) || 0)),
+        points: Number(form.points) || 1,
+      };
+    }
+    return {
+      prompt: String(form.prompt || "").trim() || "Untitled question",
+      acceptedAnswers: String(form.acceptedAnswers || "").split(",").map((s) => s.trim()).filter(Boolean),
+      points: Number(form.points) || 1,
+    };
+  };
 
   const handleCreateQuiz = async () => {
     setError("");
@@ -154,31 +245,18 @@ export default function QuizBuilder() {
     }
   };
 
-  const handleAddQuestion = async (e) => {
-    e.preventDefault();
+  const handleAddQuestion = async () => {
     if (!quiz) return;
     setError("");
     try {
-      const payload =
-        qType === "choice"
-          ? {
-              type: "choice",
-              prompt: qPrompt,
-              options: qOptions.filter((o) => o.trim()).map((label) => ({ label })),
-              correctOptionIndex: qCorrect,
-              points: Number(qPoints),
-            }
-          : {
-              type: "text",
-              prompt: qPrompt,
-              acceptedAnswers: qAccepted.split(",").map((s) => s.trim()).filter(Boolean),
-              points: Number(qPoints),
-            };
-      await createQuestion(quiz.id, payload);
-      setQPrompt("");
-      setQOptions(["", ""]);
-      setQAccepted("");
-      load();
+      const created = await createQuestion(quiz.id, {
+        type: "choice",
+        prompt: "Untitled question",
+        options: [{ label: "Option A" }, { label: "Option B" }, { label: "Option C" }, { label: "Option D" }],
+        correctOptionIndex: 0,
+        points: 1,
+      });
+      setQuestionForms((prev) => [...prev, questionToForm(created)]);
     } catch (err) {
       setError(err?.message || "Add question failed.");
     }
@@ -189,7 +267,7 @@ export default function QuizBuilder() {
     setError("");
     try {
       await deleteQuestion(id);
-      load();
+      setQuestionForms((prev) => prev.filter((f) => f.id !== id));
     } catch (err) {
       setError(err?.message || "Delete failed.");
     }
@@ -254,116 +332,53 @@ export default function QuizBuilder() {
 
         <div className="qb-stack">
           <div>
-            <label className="qb-label">
-              Quiz Title
-            </label>
-            <input
-              type="text"
-              className="input"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-            />
+            <label className="qb-label">Quiz Title</label>
+            <input type="text" className="input" value={title} onChange={(e) => setTitle(e.target.value)} />
           </div>
 
           <div>
-            <label className="qb-label">
-              Delivery Mode
-            </label>
-            <select
-              value={mode}
-              onChange={(e) => setMode(e.target.value)}
-              className="input"
-            >
+            <label className="qb-label">Delivery Mode</label>
+            <select value={mode} onChange={(e) => setMode(e.target.value)} className="input">
               <option value="built">Built-in Interactive Quiz (Questions auto-graded)</option>
               <option value="uploaded">Uploaded Quiz (Student submits image, faculty grades)</option>
             </select>
           </div>
 
           <div>
-            <label className="qb-label">
-              Instructions / Description
-            </label>
-            <textarea
-              className="input"
-              rows={3}
-              placeholder="Guidelines or instructions for students..."
-              value={instructions}
-              onChange={(e) => setInstructions(e.target.value)}
-            />
+            <label className="qb-label">Instructions / Description</label>
+            <textarea className="input" rows={3} placeholder="Guidelines or instructions for students..." value={instructions} onChange={(e) => setInstructions(e.target.value)} />
           </div>
 
           <div className="qb-grid">
             {mode === "uploaded" && (
               <div>
-                <label className="qb-label">
-                  Total Items / Maximum Score *
-                </label>
-                <input
-                  type="number"
-                  min={1}
-                  max={1000}
-                  className="input"
-                  value={totalItems}
-                  onChange={(e) => setTotalItems(e.target.value)}
-                  required
-                />
+                <label className="qb-label">Total Items / Maximum Score *</label>
+                <input type="number" min={1} max={1000} className="input" value={totalItems} onChange={(e) => setTotalItems(e.target.value)} required />
               </div>
             )}
 
             <div>
-              <label className="qb-label">
-                Max Attempts (leave blank for unlimited)
-              </label>
-              <input
-                type="number"
-                min={1}
-                className="input"
-                placeholder="Unlimited"
-                value={maxAttempts}
-                onChange={(e) => setMaxAttempts(e.target.value)}
-              />
+              <label className="qb-label">Max Attempts (leave blank for unlimited)</label>
+              <input type="number" min={1} className="input" placeholder="Unlimited" value={maxAttempts} onChange={(e) => setMaxAttempts(e.target.value)} />
             </div>
           </div>
 
           {mode === "uploaded" && (
             <div className="qb-stack-tight">
               <div>
-                <label className="qb-label">
-                  External Quiz Link (Optional)
-                </label>
-                <input
-                  type="url"
-                  className="input"
-                  placeholder="https://forms.google.com/..."
-                  value={externalUrl}
-                  onChange={(e) => setExternalUrl(e.target.value)}
-                />
+                <label className="qb-label">External Quiz Link (Optional)</label>
+                <input type="url" className="input" placeholder="https://forms.google.com/..." value={externalUrl} onChange={(e) => setExternalUrl(e.target.value)} />
               </div>
 
               <div>
-                <label className="qb-label">
-                  Quiz Attachment (PDF, PPTX, Text or Image ≤ 25 MB)
-                </label>
-                {attachment && (
-                  <p className="qb-note-ok">
-                    Current attachment: <strong>{attachment.name}</strong>
-                  </p>
-                )}
+                <label className="qb-label">Quiz Attachment (PDF, PPTX, Text or Image ≤ 25 MB)</label>
+                {attachment && <p className="qb-note-ok">Current attachment: <strong>{attachment.name}</strong></p>}
                 {quiz ? (
-                  <input
-                    type="file"
-                    accept=".pdf,.pptx,.txt,.jpg,.jpeg,.png,.webp"
-                    onChange={handleAttachmentUpload}
-                    disabled={uploadingAttachment}
-                  />
+                  <input type="file" accept=".pdf,.pptx,.txt,.jpg,.jpeg,.png,.webp" onChange={handleAttachmentUpload} disabled={uploadingAttachment} />
                 ) : (
-                  <p className="qb-muted-note">
-                    Create quiz first to attach a file.
-                  </p>
+                  <p className="qb-muted-note">Create quiz first to attach a file.</p>
                 )}
-                {uploadingAttachment && (
-                  <span className="qb-uploading">Uploading...</span>
-                )}
+                {uploadingAttachment && <span className="qb-uploading">Uploading...</span>}
               </div>
             </div>
           )}
@@ -371,32 +386,20 @@ export default function QuizBuilder() {
           {mode === "built" && (
             <div>
               <label className="qb-check">
-                <input
-                  type="checkbox"
-                  checked={showAnswers}
-                  onChange={(e) => setShowAnswers(e.target.checked)}
-                />
-                <span className="qb-check-label">
-                  Show answer review to students after submission
-                </span>
+                <input type="checkbox" checked={showAnswers} onChange={(e) => setShowAnswers(e.target.checked)} />
+                <span className="qb-check-label">Show answer review to students after submission</span>
               </label>
             </div>
           )}
 
           <div className="qb-actions">
             {!quiz ? (
-              <button type="button" className="btn btn-solid" onClick={handleCreateQuiz}>
-                Create Quiz
-              </button>
+              <button type="button" className="btn btn-solid" onClick={handleCreateQuiz}>Create Quiz</button>
             ) : (
               <>
-                <button type="button" className="btn btn-solid" onClick={handleSaveMeta}>
-                  Save Settings
-                </button>
+                <button type="button" className="btn btn-solid" onClick={handleSaveMeta}>Save Settings</button>
                 {quiz.mode === "built" && (
-                  <button type="button" className="btn" onClick={handleRegrade}>
-                    Regrade All Attempts
-                  </button>
+                  <button type="button" className="btn" onClick={handleRegrade}>Regrade All Attempts</button>
                 )}
               </>
             )}
@@ -408,113 +411,99 @@ export default function QuizBuilder() {
       {quiz && quiz.mode === "built" && (
         <div className="qb-panel">
           <div className="qb-head-row">
-            <h2>Questions ({questions.length} / 20)</h2>
-            <span className={`qb-count ${questions.length >= 10 ? "qb-count-ready" : "qb-count-pending"}`}>
-              {questions.length >= 10 ? "✓ Ready to publish" : "Needs at least 10 questions to publish"}
+            <h2>Questions ({questionForms.length} / 20)</h2>
+            <span className={`qb-count ${questionForms.length >= 10 ? "qb-count-ready" : "qb-count-pending"}`}>
+              {questionForms.length >= 10 ? "✓ Ready to publish" : "Needs at least 10 questions to publish"}
             </span>
           </div>
 
-          <ul className="qb-list">
-            {questions.map((q, idx) => (
-              <li key={q.id} className="qb-question">
-                <div>
-                  <strong className="qb-question-prompt">{idx + 1}.</strong>
-                  <span>{q.prompt}</span>
-                  <span className="qb-question-meta">
-                    ({q.type}, {q.points} {q.points === 1 ? "pt" : "pts"})
-                  </span>
-                </div>
-                <button
-                  type="button"
-                  className="btn qb-delete"
-                  onClick={() => handleDeleteQuestion(q.id)}
-                >
-                  Delete
-                </button>
-              </li>
-            ))}
-          </ul>
-
-          {questions.length < 20 && (
-            <form onSubmit={handleAddQuestion} className="qb-add-form">
-              <h3>Add New Question</h3>
-
-              <div className="qb-add-stack">
-                <div className="qb-add-grid">
-                  <div>
-                    <label className="qb-add-label">Type</label>
-                    <select
-                      className="input"
-                      value={qType}
-                      onChange={(e) => setQType(e.target.value)}
-                    >
-                      <option value="choice">Multiple Choice</option>
-                      <option value="text">Short Text</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="qb-add-label">Points</label>
-                    <input type="number" min={1} className="input" value={qPoints} onChange={(e) => setQPoints(e.target.value)} />
-                  </div>
+          <div className="qb-forms">
+            {questionForms.map((form, idx) => (
+              <div key={form.id} className="qb-form-card">
+                <div className="qb-form-head">
+                  <span className="qb-form-index">{idx + 1}</span>
+                  <span className="qb-form-type qb-form-type-static">Multiple Choice</span>
+                  <input
+                    type="number"
+                    min={1}
+                    className="input qb-form-points"
+                    value={form.points}
+                    onChange={(e) => {
+                      updateForm(form.id, { points: e.target.value });
+                      scheduleSave(form.id, buildPayload);
+                    }}
+                    aria-label="Points"
+                  />
+                  <span className="qb-form-save">{form.saving ? "Saving…" : form.saved ? "Saved" : ""}</span>
+                  <button type="button" className="btn qb-delete" onClick={() => handleDeleteQuestion(form.id)}>Delete</button>
                 </div>
 
-                <div>
-                  <label className="qb-add-label">Question Prompt</label>
-                  <input type="text" className="input" value={qPrompt} onChange={(e) => setQPrompt(e.target.value)} placeholder="Enter question text..." required />
-                </div>
+                <div className="qb-form-body">
+                  <input
+                    type="text"
+                    className="input qb-form-prompt"
+                    value={form.prompt}
+                    onChange={(e) => {
+                      updateForm(form.id, { prompt: e.target.value });
+                      scheduleSave(form.id, buildPayload);
+                    }}
+                    placeholder="Question"
+                  />
 
-                {qType === "choice" && (
-                  <div>
-                    <label className="qb-add-label">
-                      Options (Select the correct option)
-                    </label>
+                  {form.type === "choice" && (
                     <div className="qb-options">
-                      {qOptions.map((opt, i) => (
-                        <div key={i} className="qb-option-row">
+                      {(form.options || []).slice(0, 4).map((opt, i) => (
+                        <label key={i} className="qb-option-row">
                           <input
                             type="radio"
-                            name="correctOpt"
-                            checked={qCorrect === i}
-                            onChange={() => setQCorrect(i)}
+                            name={`correct-${form.id}`}
+                            checked={Number(form.correctOptionIndex) === i}
+                            onChange={() => {
+                              updateForm(form.id, { correctOptionIndex: i });
+                              scheduleSave(form.id, buildPayload);
+                            }}
                           />
                           <input
                             type="text"
                             className="input"
                             value={opt}
                             onChange={(e) => {
-                              const n = [...qOptions];
+                              const n = [...(form.options || defaultChoiceOptions())];
                               n[i] = e.target.value;
-                              setQOptions(n);
+                              updateForm(form.id, { options: n });
+                              scheduleSave(form.id, buildPayload);
                             }}
-                            placeholder={`Option ${i + 1}`}
+                            placeholder={`Option ${String.fromCharCode(65 + i)}`}
                           />
-                        </div>
+                        </label>
                       ))}
                     </div>
-                    {qOptions.length < 6 && (
-                      <button type="button" className="btn" onClick={() => setQOptions([...qOptions, ""])}>
-                        + Add Option
-                      </button>
-                    )}
-                  </div>
-                )}
+                  )}
 
-                {qType === "text" && (
-                  <div>
-                    <label className="qb-add-label">
-                      Accepted Answers (comma-separated)
-                    </label>
-                    <input type="text" className="input" value={qAccepted} onChange={(e) => setQAccepted(e.target.value)} placeholder="e.g. Paris, paris, city of light" />
-                  </div>
-                )}
-
-                <div>
-                  <button type="submit" className="btn btn-solid">
-                    Add Question
-                  </button>
+                  {form.type === "text" && (
+                    <div>
+                      <label className="qb-add-label">Accepted Answers (comma-separated)</label>
+                      <input
+                        type="text"
+                        className="input"
+                        value={form.acceptedAnswers}
+                        onChange={(e) => {
+                          updateForm(form.id, { acceptedAnswers: e.target.value });
+                          scheduleSave(form.id, buildPayload);
+                        }}
+                        placeholder="e.g. Paris, paris"
+                      />
+                    </div>
+                  )}
                 </div>
               </div>
-            </form>
+            ))}
+          </div>
+
+          {questionForms.length < 20 && (
+            <div className="qb-add-row">
+              <button type="button" className="btn btn-solid" onClick={handleAddQuestion}>+ Add question</button>
+            </div>
           )}
         </div>
       )}

@@ -12,7 +12,7 @@ create table if not exists public.subjects (
   code text not null,                                    -- "IT101", stored upper-case
   name text not null,
   description text,
-  term text not null check (term in ('1st Semester', '2nd Semester', 'Summer')),
+  term text not null check (term in ('1st Semester', '2nd Semester', '3rd Semester', 'Summer')),
   school_year text not null check (school_year ~ '^\d{4}-\d{4}$'),
   join_code text not null unique,                        -- 8 chars, see BR-12
   passing_percent integer not null default 75

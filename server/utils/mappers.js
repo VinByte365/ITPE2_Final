@@ -75,6 +75,8 @@ export function mapSubject(row) {
     enrollmentOpen: row.enrollment_open,
     status: row.status,
     timezone: row.timezone,
+    startDate: row.start_date,
+    meetingDay: row.meeting_day,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };

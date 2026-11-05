@@ -1,4 +1,4 @@
-import rateLimit from 'express-rate-limit';
+import rateLimit, { ipKeyGenerator } from 'express-rate-limit';
 
 export const registerLimiter = rateLimit({
   windowMs: 60 * 60 * 1000,
@@ -55,7 +55,7 @@ export const passwordResetLimiter = rateLimit({
 export const uploadUrlLimiter = rateLimit({
   windowMs: 10 * 60 * 1000,
   limit: 30,
-  keyGenerator: (req) => req.auth?.profile?.id || req.ip,
+  keyGenerator: (req) => req.auth?.profile?.id || ipKeyGenerator(req),
   standardHeaders: 'draft-7',
   legacyHeaders: false,
   message: {
@@ -69,7 +69,7 @@ export const uploadUrlLimiter = rateLimit({
 export const submissionsLimiter = rateLimit({
   windowMs: 60 * 60 * 1000,
   limit: 20,
-  keyGenerator: (req) => req.auth?.profile?.id || req.ip,
+  keyGenerator: (req) => req.auth?.profile?.id || ipKeyGenerator(req),
   standardHeaders: 'draft-7',
   legacyHeaders: false,
   message: {
