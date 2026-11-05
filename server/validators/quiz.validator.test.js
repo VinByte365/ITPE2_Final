@@ -7,7 +7,7 @@ test('choice: needs 2-6 options and one correct', () => {
   const ok = choiceQuestionSchema.safeParse({
     type: 'choice',
     prompt: 'Pick one',
-    options: [{ label: 'A' }, { label: 'B' }],
+    options: [{ label: 'A' }, { label: 'B' }, { label: 'C' }, { label: 'D' }],
     correctOptionIndex: 0,
   });
   assert.equal(ok.success, true);
@@ -23,7 +23,7 @@ test('choice: needs 2-6 options and one correct', () => {
   const badIndex = choiceQuestionSchema.safeParse({
     type: 'choice',
     prompt: 'Pick one',
-    options: [{ label: 'A' }, { label: 'B' }],
+    options: [{ label: 'A' }, { label: 'B' }, { label: 'C' }, { label: 'D' }],
     correctOptionIndex: 5,
   });
   assert.equal(badIndex.success, false);
@@ -46,7 +46,7 @@ test('text: needs at least one accepted answer', () => {
 });
 
 test('questionSchema discriminated union', () => {
-  const c = questionSchema.safeParse({ type: 'choice', prompt: 'p', options: [{ label: 'a' }, { label: 'b' }], correctOptionIndex: 1 });
+  const c = questionSchema.safeParse({ type: 'choice', prompt: 'p', options: [{ label: 'a' }, { label: 'b' }, { label: 'c' }, { label: 'd' }], correctOptionIndex: 1 });
   assert.equal(c.success, true);
   const t = questionSchema.safeParse({ type: 'text', prompt: 'p', acceptedAnswers: ['x'] });
   assert.equal(t.success, true);
@@ -57,7 +57,7 @@ test('questionSchema discriminated union', () => {
 test('importPayloadSchema: row-level validation via array', () => {
   const ok = importPayloadSchema.safeParse({
     questions: [
-      { type: 'choice', prompt: 'p', options: [{ label: 'a' }, { label: 'b' }], correctOptionIndex: 0 },
+      { type: 'choice', prompt: 'p', options: [{ label: 'a' }, { label: 'b' }, { label: 'c' }, { label: 'd' }], correctOptionIndex: 0 },
     ],
   });
   assert.equal(ok.success, true);
@@ -75,7 +75,7 @@ test('points must be positive', () => {
   const bad = choiceQuestionSchema.safeParse({
     type: 'choice',
     prompt: 'p',
-    options: [{ label: 'a' }, { label: 'b' }],
+    options: [{ label: 'a' }, { label: 'b' }, { label: 'c' }, { label: 'd' }],
     correctOptionIndex: 0,
     points: 0,
   });

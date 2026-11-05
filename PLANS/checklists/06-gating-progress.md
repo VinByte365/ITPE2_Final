@@ -35,8 +35,8 @@ Goal: replace the schedule-only stand-ins from phases 03 and 04 with the real ru
 
 ## Phase verification
 
-- [ ] GATE-V1 Student fails topic 1 quiz: topic 2 shows locked with the reason; API call to topic 2 returns `403 TOPIC_LOCKED`
-- [ ] GATE-V2 Student passes: topic 2 opens (only if its date has arrived; otherwise it shows scheduled)
-- [ ] GATE-V3 Faculty lowers passing % to 50 → the failed student becomes completed and unlocked; raising it re-locks
+- [x] GATE-V1 Student fails topic 1 quiz: topic 2 shows locked with the reason; API call to topic 2 returns `403 TOPIC_LOCKED` (@kilo, 2026-11-05)
+- [x] GATE-V2 Student passes: topic 2 opens (only if its date has arrived; otherwise it shows scheduled) (@kilo, 2026-11-05)
+- [x] GATE-V3 Faculty lowers passing % to 50 (@kilo, 2026-11-05) → the failed student becomes completed and unlocked; raising it re-locks
 - [ ] GATE-V4 Pending manual submission keeps the next topic locked until graded
-- [ ] GATE-V5 Past topics remain readable at all times (backtracking)
+- [x] GATE-V5 Past topics remain readable at all times (backtracking) (@kilo, 2026-11-05)

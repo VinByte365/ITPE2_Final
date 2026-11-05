@@ -44,6 +44,13 @@ export default function HomePage() {
               </Link>
             </div>
 
+            <p className="hero-lead" style={{ marginTop: 12 }}>
+              Running a class?{' '}
+              <Link to="/login" className="link-arrow">Sign in</Link> or{' '}
+              <Link to="/register" className="link-arrow">create an account</Link>{' '}
+              to use the Class LMS for subjects, topics, quizzes and grades.
+            </p>
+
             <dl className="hero-stats">
               <div>
                 <dt>Modules</dt>

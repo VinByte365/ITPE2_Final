@@ -16,6 +16,7 @@
     "make:admin": "node server/scripts/make-admin.js",
     "storage:setup": "node server/scripts/setup-storage.js",
     "storage:cleanup": "node server/scripts/cleanup-orphans.js",
+    "authz:sweep": "node server/scripts/authz-sweep.js",
     "build": "vite build",
     "test": "node --test",
     "docs:progress": "node PLANS/progress.mjs",

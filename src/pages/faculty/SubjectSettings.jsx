@@ -116,6 +116,7 @@ export default function SubjectSettings() {
       <h2>{subject.code} · {subject.name}</h2>
       {error && <div className='auth-error' role='alert'>{error}</div>}
 
+      {/* eslint-disable-next-line no-constant-binary-expression */}
       {false && (
       <section>
         <h3>Schedule (temporary)</h3>

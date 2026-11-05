@@ -50,5 +50,5 @@ Depends on: 00. Specs: `../specs/01-data-model.md` (001), `../specs/02-api.md` (
 
 - [ ] AUTH-V1 Register a student, confirm email if required, log in, land on `/student`
 - [ ] AUTH-V2 Register faculty → see "pending"; admin approves; faculty logs in and lands on `/faculty`
-- [ ] AUTH-V3 Student URL `/faculty` redirects; `curl` to a faculty API as a student returns `403 ROLE_FORBIDDEN`
+- [x] AUTH-V3 Student URL `/faculty` redirects; `curl` to a faculty API as a student returns `403 ROLE_FORBIDDEN` (@kilo, 2026-11-05)
 - [ ] AUTH-V4 Sign up directly through Supabase with `role: admin` metadata → account is a student

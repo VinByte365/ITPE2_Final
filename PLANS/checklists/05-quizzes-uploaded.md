@@ -32,7 +32,7 @@ Flow: the student takes the quiz elsewhere, uploads an image showing the score, 
   - Files: `TopicView.jsx`, `StatusBadge.jsx` · Done when: Pending review, Graded (score, percent, pass/fail, feedback), history of attempts
 - [x] UPL-12 Faculty grading queue `/faculty/subjects/:id/grading`
   - Files: `src/pages/faculty/GradingQueue.jsx`, `src/components/ImageViewer.jsx` · Done when: pending badge count; viewer with zoom, rotate and open-full-size; score field with total shown and validated; Save, then "Save and next"; feedback optional; already graded items can be corrected
-- [ ] UPL-13 Docs
+- [x] UPL-13 Docs (@kilo, 2026-11-05)
   - Files: specs and `docs/API.md` · Done when: match the implementation
 
 ## Phase verification

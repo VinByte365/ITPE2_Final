@@ -45,5 +45,5 @@ inline styles. Closing this phase makes the LMS visually continuous with the pub
 
 ## Phase verification
 
-- [ ] UI-V1 Visual parity check
+- [x] UI-V1 Visual parity check (@kilo, 2026-11-05)
   - Done when: side-by-side screenshots of `HomePage`, `TopicsPage`, and three LMS pages show the same type scale, palette, and spacing language

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import StatusBadge from "../../components/StatusBadge";
 import { listFacultyTopics, createTopic, reorderTopics, updateTopic, deleteTopic } from "../../api/topics";

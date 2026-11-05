@@ -14,7 +14,7 @@ function toSlidesEmbedUrl(value) {
 
 export default function SlidesEmbed({ url, fileUrl, fileName, title }) {
   const isGoogleSlides = url && url.includes('docs.google.com/presentation');
-  const isPdf = (fileName && fileName.toLowerCase().endsWith('.pdf')) ||
+  const _isPdf = (fileName && fileName.toLowerCase().endsWith('.pdf')) ||
     (fileUrl && fileUrl.toLowerCase().includes('.pdf'));
 
   if (url && !isGoogleSlides) {

@@ -224,7 +224,7 @@ export default function TopicView() {
                               if(u.pathname.startsWith('/shorts/')) return 'https://www.youtube.com/embed/'+u.pathname.split('/')[2];
                               const v=u.searchParams.get('v'); if(v) return 'https://www.youtube.com/embed/'+v;
                             }
-                          }catch{}
+                          } catch { void 0; }
                           return b.url;
                         })() : b.url}
                       title={b.title || "Video"}
@@ -260,17 +260,13 @@ export default function TopicView() {
                         if (url) {
                           window.open(url, '_blank', 'noopener,noreferrer');
                         }
-                      } catch {}
+                      } catch { void 0; }
                     }}>Download</button>
                   </div>
                 </div>
               </section>
             )}
-            {false && b.type === "presentation" && b.url && !b.body && (
-              <p className="tv-presentation-link">
-                Open presentation link
-              </p>
-            )}
+
           </div>
         ))}
       </div>

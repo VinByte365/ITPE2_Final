@@ -127,7 +127,7 @@ export default function QuizRun() {
         ...(q.type === "choice" ? { optionId: answers[q.id] } : { text: answers[q.id] || "" }),
       }));
       const r = await submitAttempt(attempt.id, payload);
-      try { localStorage.removeItem(answersStorageKey(actualQuizId, attempt.id)); } catch {}
+      try { localStorage.removeItem(answersStorageKey(actualQuizId, attempt.id)); } catch { void 0; }
       setResult(r);
       if (actualQuizId) {
         const h = await getAttemptHistory(actualQuizId);

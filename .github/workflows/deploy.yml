@@ -1,4 +1,8 @@
-name: Deploy to GitHub Pages
+# NOTE: This workflow publishes only the static frontend (legacy/bundled content) to
+# GitHub Pages. The LMS requires the Express API (server/) hosted separately with
+# production env (COOKIE_SECURE=true, TRUST_PROXY=true, exact CORS_ORIGIN) and the
+# frontend built with VITE_API_BASE_URL pointing at that API.
+name: Deploy static site to GitHub Pages (legacy)
 
 on:
   push:

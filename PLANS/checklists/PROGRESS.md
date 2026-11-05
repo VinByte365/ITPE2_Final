@@ -7,16 +7,16 @@ Stretch tasks are listed separately and do not count toward the total.
 | Phase | Done | Progress | In progress | Blocked | Stretch |
 | --- | --- | --- | --- | --- | --- |
 | [Phase 00 · Housekeeping](00-housekeeping.md) | 11/11 | 100% ██████████ | 0 | 0 | 0/0 |
-| [Phase 01 · Auth and Roles (R1)](01-auth-roles.md) | 19/23 | 83% ████████░░ | 0 | 0 | 0/0 |
-| [Phase 02 · Subjects and Enrollment (R2, X1)](02-subjects-enrollment.md) | 14/18 | 78% ████████░░ | 0 | 0 | 0/0 |
-| [Phase 03 · Topics and Content (R3, R4, X3)](03-topics-content.md) | 17/21 | 81% ████████░░ | 0 | 0 | 0/0 |
-| [Phase 04 · Built-in Quizzes (R5)](04-quizzes-builtin.md) | 17/22 | 77% ████████░░ | 0 | 0 | 0/0 |
-| [Phase 05 · Uploaded Quizzes with Manual Grading (R5, confirmed flow)](05-quizzes-uploaded.md) | 12/17 | 71% ███████░░░ | 0 | 0 | 0/0 |
-| [Phase 06 · Gating and Progress (R3, X1, X2)](06-gating-progress.md) | 10/15 | 67% ███████░░░ | 0 | 0 | 0/2 |
-| [Phase 07 · Reports and Exports (R6, R7)](07-reports-exports.md) | 12/16 | 75% ████████░░ | 0 | 0 | 0/0 |
-| [Phase 08 · Testing, Security and Deployment](08-testing-deploy.md) | 1/12 | 8% █░░░░░░░░░ | 0 | 0 | 0/0 |
-| [Phase 09 · UI Alignment and Lint Health](09-ui-alignment.md) | 9/10 | 90% █████████░ | 0 | 0 | 0/0 |
-| **Total** | **122/165** | **74%** | | | |
+| [Phase 01 · Auth and Roles (R1)](01-auth-roles.md) | 20/23 | 87% █████████░ | 0 | 0 | 0/0 |
+| [Phase 02 · Subjects and Enrollment (R2, X1)](02-subjects-enrollment.md) | 15/18 | 83% ████████░░ | 0 | 0 | 0/0 |
+| [Phase 03 · Topics and Content (R3, R4, X3)](03-topics-content.md) | 18/21 | 86% █████████░ | 0 | 0 | 0/0 |
+| [Phase 04 · Built-in Quizzes (R5)](04-quizzes-builtin.md) | 19/22 | 86% █████████░ | 0 | 0 | 0/0 |
+| [Phase 05 · Uploaded Quizzes with Manual Grading (R5, confirmed flow)](05-quizzes-uploaded.md) | 13/17 | 76% ████████░░ | 0 | 0 | 0/0 |
+| [Phase 06 · Gating and Progress (R3, X1, X2)](06-gating-progress.md) | 14/15 | 93% █████████░ | 0 | 0 | 0/2 |
+| [Phase 07 · Reports and Exports (R6, R7)](07-reports-exports.md) | 13/16 | 81% ████████░░ | 0 | 0 | 0/0 |
+| [Phase 08 · Testing, Security and Deployment](08-testing-deploy.md) | 12/12 | 100% ██████████ | 0 | 0 | 0/0 |
+| [Phase 09 · UI Alignment and Lint Health](09-ui-alignment.md) | 10/10 | 100% ██████████ | 0 | 0 | 0/0 |
+| **Total** | **145/165** | **88%** | | | |
 <!-- progress:end -->
 
 ## Where to continue

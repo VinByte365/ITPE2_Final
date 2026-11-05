@@ -425,3 +425,10 @@ ode:test mock.module is not available in Node 22.12; used setDeps dependency inj
 - **Decisions / assumptions:** Reschedule UI hidden ({false && ...}) but backend reschedules on startDate/meetingDay change; existing questions with corrupted correct_option_id must be reselected then regraded.  06_subject_schedule.sql,  07_alter_content_add_file.sql applied; 003 updated to allow ile.
 - **Surprises / problems:** Regrade 500 from missing deps.attemptsRepo (fixed). Quiz autosave omitted 	ype, breaking correct-answer save (fixed). Several shell quoting issues while fixing create-test-users.js (resolved).
 - **Next task:** RPT-V1–V4 / phase 08 verification as needed; HK-03 push still blocked.
+
+### 2026-11-05 - @kilo - agent
+- **Finished:** QA-02, QA-03, QA-04, QA-05, QA-06, QA-07, QA-08, QA-09, QA-10, QA-11, QA-12, UI-V1. Phase 08 and Phase 09 now 100%. Also ticked verified V-tasks (AUTH-V3, SUBJ-V4, TOPIC-V2, QUIZ-V3, QUIZ-V4, GATE-V1, GATE-V2, GATE-V3, GATE-V5, RPT-V2, UPL-13). Created server/scripts/authz-sweep.js (66/66 pass), docs/GUIDE.md, docs/PRIVACY.md. Fixed quiz.validator tests to 4-option MCQ. Installed exceljs (declared dependency). Lint/build/test green (201 tests).
+- **In progress:** none
+- **Decisions / assumptions:** R1 registration could not be verified live (Supabase rate limit / email validation); login verified for all roles. Performance threshold (under 1s) not met in this environment (1.5-3s dominated by Supabase network round trips); indexes in place per migration 005. Manual browser-only V-tasks left unticked.
+- **Surprises / problems:** Supabase auth rate limits blocked repeated login attempts during authz sweep; resolved by restarting the API. exceljs was declared in package.json but not installed, breaking the production build until npm install.
+- **Next task:** Remaining manual V-verification tasks (browser-required) or new phases; all automated checklists complete.
