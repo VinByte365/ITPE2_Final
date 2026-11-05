@@ -26,7 +26,9 @@ import {
   completeTopic,
   getStudentTopic,
   listStudentTopics,
+  assertTopicAccessible,
 } from '../services/student-topics.service.js';
+import { getStudentQuizAttachmentDownloadUrl } from '../services/quizzes.service.js';
 
 const router = Router();
 
@@ -197,6 +199,20 @@ router.get(
   asyncHandler(async (req, res) => {
     const attemptId = uuidSchema.parse(req.params.id);
     const result = await getStudentAttemptImageUrl(req.auth.profile.id, attemptId);
+    res.json({ data: result });
+  }),
+);
+
+// GET /student/quizzes/:id/attachment/download-url (UPL uploaded quiz attachment)
+router.get(
+  '/quizzes/:id/attachment/download-url',
+  asyncHandler(async (req, res) => {
+    const quizId = uuidSchema.parse(req.params.id);
+    const result = await getStudentQuizAttachmentDownloadUrl(
+      req.auth.profile.id,
+      quizId,
+      assertTopicAccessible,
+    );
     res.json({ data: result });
   }),
 );

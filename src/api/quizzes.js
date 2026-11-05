@@ -90,3 +90,7 @@ export async function deletePendingAttempt(attemptId) {
 export async function getAttemptImageUrl(attemptId) {
   return get(`/student/attempts/${attemptId}/image-url`);
 }
+
+export async function getStudentQuizAttachmentUrl(quizId) {
+  return get(`/student/quizzes/${quizId}/attachment/download-url`);
+}

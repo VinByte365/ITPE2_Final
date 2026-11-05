@@ -3,6 +3,7 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import { ArrowLeft, ArrowRight, CheckIcon, CloseIcon, HourglassIcon, LockIcon } from "../../components/Icons";
 import { startAttempt, submitAttempt, getAttemptHistory } from "../../api/quizzes";
 import { getStudentTopic } from "../../api/topics";
+import UploadSubmission from "../../components/UploadSubmission";
 
 function answersStorageKey(quizId, attemptId) {
   return `quiz_answers:${quizId}:${attemptId}`;
@@ -22,12 +23,14 @@ export default function QuizRun() {
   const [result, setResult] = useState(null);
   const [history, setHistory] = useState(null);
   const [submitting, setSubmitting] = useState(false);
+  const [uploadedQuiz, setUploadedQuiz] = useState(null);
 
   const load = useCallback(async () => {
     setLoading(true);
     setError("");
     setBlockedState(null);
     setResult(null);
+    setUploadedQuiz(null);
 
     try {
       let resolvedQuizId = paramId;
@@ -56,6 +59,19 @@ export default function QuizRun() {
       }
 
       setActualQuizId(resolvedQuizId);
+
+      if (loadedTopic?.quiz?.mode === "uploaded") {
+        setUploadedQuiz({
+          id: loadedTopic.quiz.id,
+          title: loadedTopic.quiz.title || "Quiz",
+          instructions: loadedTopic.quiz.instructions || "",
+          externalUrl: loadedTopic.quiz.externalUrl || null,
+          attachmentPath: loadedTopic.quiz.attachmentPath || null,
+          attachmentName: loadedTopic.quiz.attachmentName || null,
+          attachmentMime: loadedTopic.quiz.attachmentMime || null,
+        });
+        return;
+      }
 
       const started = await startAttempt(resolvedQuizId);
       setAttempt(started.attempt);
@@ -209,6 +225,22 @@ export default function QuizRun() {
             Go Back
           </button>
         </div>
+      </div>
+    );
+  }
+
+  if (uploadedQuiz) {
+    return (
+      <div className="page-shell qr-quiz">
+        <div className="page-back">
+          <Link
+            to={topic ? `/student/topics/${topic.id}` : -1}
+            className="page-back-link"
+          >
+            <ArrowLeft /> Back to topic
+          </Link>
+        </div>
+        <UploadSubmission quiz={uploadedQuiz} onStatusChange={load} />
       </div>
     );
   }

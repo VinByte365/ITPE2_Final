@@ -5,6 +5,7 @@ import {
   deletePendingAttempt,
   getAttemptImageUrl,
   getAttemptHistory,
+  getStudentQuizAttachmentUrl,
 } from "../api/quizzes";
 import { uploadToSignedUrl } from "../api/client";
 import StatusBadge from "./StatusBadge";
@@ -187,137 +188,139 @@ export default function UploadSubmission({ quiz, onStatusChange }) {
     }
   };
 
-  return (
-    <div style={{ padding: 20, background: "#fff", border: "1px solid #e5e7eb", borderRadius: 8 }}>
-      <h2 style={{ fontSize: 18, marginTop: 0, marginBottom: 12 }}>
-        Quiz: {quiz.title} (Manual Submission)
-      </h2>
+  const handleOpenAttachment = async () => {
+    setError("");
+    try {
+      const { url } = await getStudentQuizAttachmentUrl(quiz.id);
+      if (url) window.open(url, "_blank", "noopener,noreferrer");
+    } catch (err) {
+      setError(err?.message || "Could not open the quiz attachment.");
+    }
+  };
 
-      {/* Instructions & Links */}
+  return (
+    <div className="upload-submission">
+      <div className="upload-submission-head">
+        <h2 className="upload-submission-title">{quiz.title}</h2>
+        <span className="upload-submission-badge">Manual submission</span>
+      </div>
+
       {quiz.instructions && (
-        <div style={{ fontSize: 14, color: "#374151", marginBottom: 14, lineHeight: 1.5 }}>
-          {quiz.instructions}
-        </div>
+        <p className="upload-submission-instructions">{quiz.instructions}</p>
       )}
 
       {(quiz.externalUrl || quiz.attachmentPath) && (
-        <div style={{ display: "flex", gap: 16, flexWrap: "wrap", marginBottom: 16, padding: "10px 14px", background: "#f8fafc", borderRadius: 6 }}>
+        <div className="upload-submission-links">
           {quiz.externalUrl && (
             <a
               href={quiz.externalUrl}
               target="_blank"
               rel="noopener noreferrer"
-              style={{ fontWeight: 600, color: "#4f46e5", textDecoration: "none" }}
+              className="btn btn-line upload-submission-link"
             >
-              🔗 Open Quiz Assignment Link ↗
+              Open assignment link ↗
             </a>
           )}
           {quiz.attachmentPath && (
-            <span style={{ fontSize: 13, color: "#4b5563" }}>
-              📎 Attachment: <strong>{quiz.attachmentName || "Quiz Document"}</strong>
-            </span>
+            <button
+              type="button"
+              className="btn btn-line upload-submission-link"
+              onClick={handleOpenAttachment}
+            >
+              Open {quiz.attachmentName || "quiz attachment"}
+            </button>
           )}
         </div>
       )}
 
-      {error && <div className="auth-error" role="alert" style={{ marginBottom: 12 }}>{error}</div>}
-      {success && <div style={{ padding: 10, background: "#ecfdf5", color: "#065f46", borderRadius: 6, marginBottom: 12 }}>{success}</div>}
+      {error && <div className="auth-error upload-submission-alert" role="alert">{error}</div>}
+      {success && <div className="upload-submission-success" role="status">{success}</div>}
 
-      {/* Current State / History */}
       {pendingAttempt ? (
-        <div style={{ padding: 16, background: "#fef9c3", border: "1px solid #fde047", borderRadius: 8, marginBottom: 16 }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-            <span style={{ fontWeight: 600, color: "#854d0e" }}>
-              ⏳ Submission Pending Review
-            </span>
+        <div className="upload-submission-panel upload-submission-pending">
+          <div className="upload-submission-row">
+            <div>
+              <p className="upload-submission-status">Submission pending review</p>
+              <p className="upload-submission-meta">
+                Submitted {new Date(pendingAttempt.submittedAt || pendingAttempt.startedAt).toLocaleString()}
+              </p>
+            </div>
             <button
               type="button"
-              className="btn"
-              style={{ fontSize: 12, padding: "4px 8px" }}
+              className="btn btn-line upload-submission-action"
               onClick={handleDeletePending}
               disabled={submitting}
             >
-              Remove / Replace Submission
+              Remove / replace
             </button>
           </div>
-          <p style={{ fontSize: 13, color: "#713f12", margin: "0 0 10px" }}>
-            Submitted at: {new Date(pendingAttempt.submittedAt || pendingAttempt.startedAt).toLocaleString()}
-          </p>
           {serverImageUrl && (
-            <div>
-              <p style={{ fontSize: 12, color: "#713f12", marginBottom: 4 }}>Uploaded Score Proof:</p>
-              <img
-                src={serverImageUrl}
-                alt="Submitted proof"
-                style={{ maxHeight: 200, maxWidth: "100%", borderRadius: 6, border: "1px solid #e5e7eb" }}
-              />
+            <div className="upload-submission-proof">
+              <p className="upload-submission-proof-label">Uploaded proof</p>
+              <img src={serverImageUrl} alt="Submitted proof" className="upload-submission-image" />
             </div>
           )}
         </div>
       ) : latestGraded ? (
-        <div style={{ padding: 16, background: latestGraded.score / latestGraded.total >= (history?.passingPercent || 75) / 100 ? "#ecfdf5" : "#fef2f2", borderRadius: 8, marginBottom: 16, border: "1px solid rgba(0,0,0,0.06)" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
-            <span style={{ fontSize: 16, fontWeight: 700 }}>
+        <div className={`upload-submission-panel ${history?.passed ? "upload-submission-passed" : "upload-submission-failed"}`}>
+          <div className="upload-submission-row">
+            <p className="upload-submission-score">
               Grade: {latestGraded.score} / {latestGraded.total}
-            </span>
+            </p>
             <StatusBadge status={history?.passed ? "completed" : "failed"} />
           </div>
           {latestGraded.feedback && (
-            <p style={{ fontSize: 14, color: "#374151", margin: "6px 0" }}>
-              <strong>Instructor Feedback:</strong> {latestGraded.feedback}
+            <p className="upload-submission-feedback">
+              <strong>Instructor feedback:</strong> {latestGraded.feedback}
             </p>
           )}
-          <p style={{ fontSize: 12, color: "#6b7280", margin: "4px 0 0" }}>
-            Graded on: {new Date(latestGraded.gradedAt).toLocaleString()}
+          <p className="upload-submission-meta">
+            Graded {latestGraded.gradedAt ? new Date(latestGraded.gradedAt).toLocaleString() : ""}
           </p>
         </div>
       ) : null}
 
-      {/* Upload New Submission Form (only when no pending submission) */}
       {!pendingAttempt && (
-        <div style={{ marginTop: 12 }}>
-          <label style={{ display: "block", fontWeight: 600, fontSize: 14, marginBottom: 6 }}>
-            Upload Score Screenshot / Photo (JPG, PNG, WebP ≤ 5 MB)
+        <div className="upload-submission-form">
+          <label className="upload-submission-label" htmlFor="quiz-proof-upload">
+            Upload score screenshot or photo (JPG, PNG, WebP, up to 5 MB)
           </label>
 
           <input
+            id="quiz-proof-upload"
             type="file"
             accept="image/jpeg,image/png,image/webp"
             capture="environment"
             onChange={handleFileSelect}
             disabled={submitting}
-            style={{ marginBottom: 12 }}
+            className="upload-submission-file"
           />
 
           {previewUrl && (
-            <div style={{ marginBottom: 16 }}>
-              <p style={{ fontSize: 13, fontWeight: 600, marginBottom: 4 }}>Preview:</p>
-              <img
-                src={previewUrl}
-                alt="Preview"
-                style={{ maxHeight: 240, maxWidth: "100%", borderRadius: 6, border: "1px solid #d1d5db" }}
-              />
+            <div className="upload-submission-proof">
+              <p className="upload-submission-proof-label">Preview</p>
+              <img src={previewUrl} alt="Upload preview" className="upload-submission-image" />
             </div>
           )}
 
           {uploadProgress !== null && (
-            <div style={{ marginBottom: 12 }}>
-              <div style={{ height: 8, width: "100%", background: "#e5e7eb", borderRadius: 4, overflow: "hidden" }}>
-                <div style={{ height: "100%", width: `${uploadProgress}%`, background: "#4f46e5", transition: "width 0.2s" }} />
+            <div className="upload-submission-progress" aria-live="polite">
+              <div className="upload-submission-progress-track">
+                <div className="upload-submission-progress-bar" style={{ width: `${uploadProgress}%` }} />
               </div>
-              <span style={{ fontSize: 12, color: "#4f46e5" }}>Uploading: {uploadProgress}%</span>
+              <span className="upload-submission-progress-text">Uploading: {uploadProgress}%</span>
             </div>
           )}
 
           {selectedFile && (
-            <div>
+            <div className="upload-submission-actions">
               <button
                 type="button"
                 className="btn btn-solid"
                 onClick={handleUploadSubmit}
                 disabled={submitting}
               >
-                {submitting ? "Uploading..." : "Submit for Grading"}
+                {submitting ? "Uploading..." : "Submit for grading"}
               </button>
             </div>
           )}

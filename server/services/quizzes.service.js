@@ -314,3 +314,15 @@ export async function getQuizAttachmentUploadUrl(facultyId, quizId, fileInfo, is
   const uploadInfo = await deps.storage.createUploadUrl("topic-files", path);
   return { ...uploadInfo, path };
 }
+
+export async function getStudentQuizAttachmentDownloadUrl(studentId, quizId, topicAccess) {
+  const quiz = await deps.quizzesRepo.findQuizById(quizId);
+  if (!quiz) throw new AppError(404, "NOT_FOUND", "Quiz not found.");
+  if (quiz.status !== "published") throw new AppError(404, "NOT_FOUND", "Quiz not found.");
+  if (!quiz.attachmentPath) throw new AppError(404, "NOT_FOUND", "Quiz attachment not found.");
+
+  await topicAccess(studentId, quiz.topicId);
+
+  const url = await deps.storage.createDownloadUrl("topic-files", quiz.attachmentPath, 120);
+  return { url, expiresAt: new Date(Date.now() + 120 * 1000).toISOString() };
+}

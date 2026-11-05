@@ -6334,3 +6334,143 @@ button[aria-disabled="true"] {
 .topic-card-desc{margin:0 0 .45rem;font-size:13px;color:var(--muted);min-height:1.2em;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .topic-card-helper{margin:0;font-size:12px;color:var(--ink);font-weight:500;min-height:1.2em;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .topic-card-helper.is-muted{color:var(--muted)}
+/* Manual quiz submission */
+.upload-submission {
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--paper) 92%, white);
+  padding: 18px;
+  display: grid;
+  gap: 14px;
+}
+.upload-submission-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.upload-submission-title {
+  margin: 0;
+  font-size: clamp(1.15rem, 2.2vw, 1.45rem);
+  line-height: 1.15;
+}
+.upload-submission-badge {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  border: 1px solid var(--line);
+  padding: 3px 8px;
+}
+.upload-submission-instructions,
+.upload-submission-feedback {
+  margin: 0;
+  color: var(--ink-soft);
+  line-height: 1.6;
+}
+.upload-submission-links {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 12px;
+  border: 1px solid var(--line);
+  background: var(--paper-2);
+}
+.upload-submission-link {
+  font-size: 13px;
+  padding: 8px 12px;
+}
+.upload-submission-alert { margin: 0; }
+.upload-submission-success {
+  padding: 10px 12px;
+  border: 1px solid rgba(63, 120, 74, 0.28);
+  background: rgba(63, 120, 74, 0.08);
+  color: #285131;
+  font-size: 14px;
+}
+.upload-submission-panel {
+  border: 1px solid var(--line);
+  padding: 14px;
+  display: grid;
+  gap: 10px;
+}
+.upload-submission-pending {
+  border-color: rgba(157, 116, 28, 0.35);
+  background: rgba(157, 116, 28, 0.08);
+}
+.upload-submission-passed {
+  border-color: rgba(63, 120, 74, 0.28);
+  background: rgba(63, 120, 74, 0.06);
+}
+.upload-submission-failed {
+  border-color: rgba(194, 70, 29, 0.26);
+  background: rgba(194, 70, 29, 0.05);
+}
+.upload-submission-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.upload-submission-status,
+.upload-submission-score {
+  margin: 0;
+  font-weight: 700;
+  color: var(--ink);
+}
+.upload-submission-meta {
+  margin: 3px 0 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+.upload-submission-action { font-size: 13px; padding: 6px 10px; }
+.upload-submission-form { display: grid; gap: 10px; }
+.upload-submission-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-2);
+}
+.upload-submission-file {
+  font: inherit;
+  font-size: 14px;
+  color: var(--ink-soft);
+  max-width: 100%;
+}
+.upload-submission-proof { display: grid; gap: 6px; }
+.upload-submission-proof-label {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.upload-submission-image {
+  display: block;
+  max-width: min(100%, 560px);
+  max-height: 320px;
+  width: auto;
+  height: auto;
+  border: 1px solid var(--line);
+  background: var(--paper);
+}
+.upload-submission-progress { display: grid; gap: 6px; }
+.upload-submission-progress-track {
+  height: 8px;
+  border: 1px solid var(--line);
+  background: var(--paper-2);
+  overflow: hidden;
+}
+.upload-submission-progress-bar {
+  height: 100%;
+  background: var(--accent);
+  transition: width 0.2s var(--ease);
+}
+.upload-submission-progress-text {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--accent-ink);
+}
+.upload-submission-actions { display: flex; gap: 10px; flex-wrap: wrap; }
