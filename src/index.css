@@ -198,6 +198,19 @@ main:focus {
   animation: loading-spin 0.8s linear infinite;
 }
 
+.empty-state {
+  margin-top: 1.5rem;
+  padding: 1.2rem 1.4rem;
+  border: 1px dashed var(--line-strong);
+  border-radius: 2px;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-align: center;
+}
+
 .loading-label {
   font-family: var(--font-mono);
   font-size: 0.72rem;

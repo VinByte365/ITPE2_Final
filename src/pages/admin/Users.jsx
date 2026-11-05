@@ -62,7 +62,7 @@ export default function AdminUsers() {
   if (loading) return <Loading label="Loading users" />;
 
   return (
-    <div className="auth-page">
+    <div className="page-shell">
       <h1>Users</h1>
       {error && <div className="auth-error" role="alert">{error}</div>}
       <div className="filters">
@@ -114,6 +114,9 @@ export default function AdminUsers() {
           ))}
         </tbody>
       </table>
+      {profiles.length === 0 && (
+        <p className="empty-state">No users match the current filters.</p>
+      )}
     </div>
   );
 }

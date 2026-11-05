@@ -1,6 +1,6 @@
 // src/auth/pages/LoginPage.jsx
 import { useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../AuthContext';
 
 export default function LoginPage() {
@@ -69,12 +69,12 @@ export default function LoginPage() {
           </div>
           {fieldErrors.password && <span className="field-error">{fieldErrors.password}</span>}
         </label>
-        <button type="submit" disabled={submitting}>
+        <button type="submit" className="btn btn-solid" disabled={submitting}>
           {submitting ? 'Signing in...' : 'Sign in'}
         </button>
       </form>
       <p>
-        <a href="/forgot-password">Forgot password?</a> · <a href="/register">Create account</a>
+        <Link to="/forgot-password">Forgot password?</Link> · <Link to="/register">Create account</Link>
       </p>
     </div>
   );
