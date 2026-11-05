@@ -3189,24 +3189,6 @@ main:focus {
   margin: 0;
 }
 
-.qb-status {
-  padding: 2px 8px;
-  border: 1px solid var(--line);
-  border-radius: 2px;
-  font-size: 12px;
-  font-weight: 600;
-}
-
-.qb-status-published {
-  background: var(--paper-2);
-  color: var(--ink);
-}
-
-.qb-status-draft {
-  background: transparent;
-  color: var(--muted);
-}
-
 .qb-success {
   padding: 12px;
   border: 1px solid var(--line);
@@ -3255,7 +3237,16 @@ main:focus {
 }
 
 .qb-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
   font-size: 13px;
+}
+
+.qb-count svg {
+  flex: 0 0 auto;
+  width: 0.9rem;
+  height: 0.9rem;
 }
 
 .qb-count-ready {
@@ -3427,7 +3418,7 @@ main:focus {
   padding: 8px 10px;
   border: 1px solid var(--line);
   border-radius: 2px;
-  background: var(--surface);
+  background: var(--paper-2);
   font-size: 14px;
   display: inline-block;
 }
@@ -3461,6 +3452,31 @@ main:focus {
   padding: 2px 8px;
   font-size: 12px;
   color: var(--accent-ink);
+}
+
+/* Layout-shaped placeholder while the builder loads. */
+.qb-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.qb-skeleton-title {
+  width: min(18rem, 60%);
+  height: 32px;
+}
+
+.qb-skeleton-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 1.25rem;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+}
+
+.qb-skeleton-panel .skeleton-line {
+  height: 34px;
 }
 
 /* ==========================================================================
@@ -5028,6 +5044,40 @@ main:focus {
   margin-top: 1rem;
 }
 
+/* Layout-shaped placeholder while the topic loads. */
+.tv-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.tv-skeleton-title {
+  width: min(20rem, 65%);
+  height: 30px;
+}
+
+.tv-skeleton-meta {
+  width: min(12rem, 40%);
+}
+
+.tv-skeleton-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  background: var(--paper-2);
+}
+
+.tv-skeleton-block .skeleton-line {
+  height: 16px;
+}
+
+.tv-skeleton-short {
+  width: min(9rem, 30%);
+}
+
 /* ==========================================================================
    TopicEditor (faculty topic content editor)
    ========================================================================== */
@@ -6159,4 +6209,33 @@ button[aria-disabled="true"] {
   font-size: 0.85rem;
   font-family: var(--font-mono);
   line-height: 1.5;
+}
+
+/* Layout-shaped placeholder while the attempt loads. */
+.qr-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.qr-skeleton-title {
+  width: min(12rem, 45%);
+  height: 30px;
+}
+
+.qr-skeleton-question {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+}
+
+.qr-skeleton-question .skeleton-line {
+  height: 16px;
+}
+
+.qr-skeleton-short {
+  width: min(10rem, 35%);
 }

@@ -30,7 +30,7 @@ export default function HomePage() {
             <p className="hero-lead">
               A field guide to the hardware, software, and platforms that run
               the modern world — assembled from sixteen module presentations by{' '}
-              <span className="nowrap">BSIT-NS-3A</span> at TUP Taguig.
+              <span className="nowrap">BSIT-NS-4A</span> at TUP Taguig.
             </p>
 
             <div className="hero-actions">
@@ -66,7 +66,7 @@ export default function HomePage() {
               </div>
               <div>
                 <dt>Class</dt>
-                <dd>NS-3A</dd>
+                <dd>NS-4A</dd>
               </div>
             </dl>
           </Reveal>
@@ -97,7 +97,7 @@ export default function HomePage() {
                 <ArrowUpRight />
               </Link>
             </div>
-            <p className="hero-note">fig. 01 — Index, BSIT-NS-3A</p>
+            <p className="hero-note">fig. 01 — Index, BSIT-NS-4A</p>
           </Reveal>
         </div>
 
@@ -163,18 +163,18 @@ export default function HomePage() {
           <Reveal className="photo-stack">
             <img
               src={classPhotoOne}
-              alt="Students of BSIT-NS-3A gathered for a class photo in a lecture hall"
+              alt="Students of BSIT-NS-4A gathered for a class photo in a lecture hall"
               className="photo-main"
               loading="lazy"
             />
             <img
               src={classPhotoTwo}
-              alt="BSIT-NS-3A students posing together after a class presentation"
+              alt="BSIT-NS-4A students posing together after a class presentation"
               className="photo-secondary"
               loading="lazy"
             />
             <span className="photo-caption">
-              fig. 02 — BSIT-NS-3A, TUP Taguig
+              fig. 02 — BSIT-NS-4A, TUP Taguig
             </span>
           </Reveal>
 
@@ -202,7 +202,7 @@ export default function HomePage() {
             </div>
 
             <Link to="/about" className="link-arrow">
-              About BSIT-NS-3A
+              About BSIT-NS-4A
               <ArrowUpRight />
             </Link>
           </Reveal>

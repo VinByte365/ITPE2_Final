@@ -82,7 +82,18 @@ export default function TopicView() {
   if (loading) {
     return (
       <div className="page-shell">
-        <p>Loading topic…</p>
+        <p className="sr-only" role="status">Loading topic…</p>
+        <div className="tv-skeleton" aria-hidden="true">
+          <span className="skeleton-line tv-skeleton-title" />
+          <span className="skeleton-line tv-skeleton-meta" />
+          {Array.from({ length: 2 }).map((_, i) => (
+            <div key={i} className="tv-skeleton-block">
+              <span className="skeleton-line tv-skeleton-short" />
+              <span className="skeleton-line" />
+              <span className="skeleton-line tv-skeleton-short" />
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
@@ -168,6 +179,11 @@ export default function TopicView() {
       )}
 
       <div className="tv-blocks">
+        {blocks.length === 0 && (
+          <div className="empty-state">
+            No lesson content has been posted for this topic yet.
+          </div>
+        )}
         {blocks.map((b) => (
           <div key={b.id} className="tv-block">
             {b.title && <h3 className="tv-block-title">{b.title}</h3>}

@@ -43,7 +43,7 @@ export default function JoinSubject() {
             className="js-code-input"
           />
         </label>
-        <button type="submit" disabled={submitting}>
+        <button type="submit" className="btn btn-solid" disabled={submitting}>
           {submitting ? 'Joining...' : 'Join'}
         </button>
       </form>

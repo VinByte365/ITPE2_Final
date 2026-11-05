@@ -156,8 +156,18 @@ export default function QuizRun() {
 
   if (loading) {
     return (
-      <div className="page-shell">
-        <p>Loading quiz…</p>
+      <div className="page-shell qr-quiz">
+        <p className="sr-only" role="status">Loading quiz…</p>
+        <div className="qr-skeleton" aria-hidden="true">
+          <span className="skeleton-line qr-skeleton-title" />
+          {Array.from({ length: 2 }).map((_, i) => (
+            <div key={i} className="qr-skeleton-question">
+              <span className="skeleton-line qr-skeleton-short" />
+              <span className="skeleton-line" />
+              <span className="skeleton-line" />
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
@@ -203,6 +213,32 @@ export default function QuizRun() {
     );
   }
 
+  if (!questions.length) {
+    return (
+      <div className="page-shell">
+        <div className="state-panel">
+          <p className="eyebrow">
+            <span className="eyebrow-dot" />
+            Quiz
+          </p>
+          <h1 className="state-panel-title">This quiz has no questions yet</h1>
+          <p className="state-panel-text">
+            There is nothing to answer right now. Check back after your instructor
+            adds the questions, or return to the topic to review the material.
+          </p>
+          <div className="state-panel-actions">
+            <Link
+              to={topic ? `/student/topics/${topic.id}` : "/student"}
+              className="btn btn-solid"
+            >
+              Back to topic
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (result) {
     return (
       <div className="page-shell qr-result">
@@ -211,7 +247,7 @@ export default function QuizRun() {
             {result.passed ? <CheckIcon /> : <CloseIcon />}
           </div>
           <h1 className={`qr-result-title ${result.passed ? "qr-result-title-passed" : "qr-result-title-failed"}`}>
-            {result.passed ? "Congratulations! You Passed" : "Needs Improvement"}
+            {result.passed ? "You passed" : "Needs improvement"}
           </h1>
           <p className="qr-result-score">
             Score: {result.score} / {result.total} ({result.percent}%)
@@ -279,7 +315,7 @@ export default function QuizRun() {
   }
 
   return (
-    <div className="page-shell qr-quiz" style={{ maxWidth: 760 }}>
+    <div className="page-shell qr-quiz">
       <div className="qr-cta-top">
         <Link
           to={topic ? `/student/topics/${topic.id}` : -1}

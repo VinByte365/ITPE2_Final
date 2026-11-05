@@ -30,7 +30,7 @@ export default function ForgotPasswordPage() {
           Email
           <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email" />
         </label>
-        <button type="submit" disabled={submitting}>
+        <button type="submit" className="btn btn-solid" disabled={submitting}>
           {submitting ? 'Sending...' : 'Send reset link'}
         </button>
       </form>

@@ -13,6 +13,8 @@ import {
 } from "../../api/quizzes";
 import { uploadToSignedUrl } from "../../api/client";
 import QuestionImport from "../../components/QuestionImport";
+import StatusBadge from "../../components/StatusBadge";
+import { CheckIcon } from "../../components/Icons";
 
 function defaultChoiceOptions() {
   return ["", "", "", ""];
@@ -299,7 +301,26 @@ export default function QuizBuilder() {
     }
   };
 
-  if (loading) return <div className="page-shell"><p>Loading quiz...</p></div>;
+  if (loading) {
+    return (
+      <div className="page-shell qb-page">
+        <p className="sr-only" role="status">Loading quiz…</p>
+        <div className="qb-skeleton" aria-hidden="true">
+          <span className="skeleton-line qb-skeleton-title" />
+          <div className="qb-skeleton-panel">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <span key={i} className="skeleton-line" />
+            ))}
+          </div>
+          <div className="qb-skeleton-panel">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <span key={i} className="skeleton-line" />
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="page-shell qb-page">
@@ -313,9 +334,7 @@ export default function QuizBuilder() {
         <h1>Quiz Configuration</h1>
         {quiz && (
           <div className="qb-head-actions">
-            <span className={`qb-status ${quiz.status === "published" ? "qb-status-published" : "qb-status-draft"}`}>
-              {quiz.status.toUpperCase()}
-            </span>
+            <StatusBadge status={quiz.status} />
             <button type="button" className="btn btn-solid" onClick={handlePublish}>
               {quiz.status === "published" ? "Unpublish to Draft" : "Publish Quiz"}
             </button>
@@ -413,9 +432,21 @@ export default function QuizBuilder() {
           <div className="qb-head-row">
             <h2>Questions ({questionForms.length} / 20)</h2>
             <span className={`qb-count ${questionForms.length >= 10 ? "qb-count-ready" : "qb-count-pending"}`}>
-              {questionForms.length >= 10 ? "✓ Ready to publish" : "Needs at least 10 questions to publish"}
+              {questionForms.length >= 10 ? (
+                <>
+                  <CheckIcon /> Ready to publish
+                </>
+              ) : (
+                "Needs at least 10 questions to publish"
+              )}
             </span>
           </div>
+
+          {questionForms.length === 0 && (
+            <div className="empty-state">
+              No questions yet. Add the first question below, or import a question set.
+            </div>
+          )}
 
           <div className="qb-forms">
             {questionForms.map((form, idx) => (

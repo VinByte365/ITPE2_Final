@@ -95,7 +95,7 @@ export default function SubjectNew() {
             {WEEKDAYS.map((d, i) => <option key={d} value={i}>{d}</option>)}
           </select>
         </label>
-        <button type="submit" disabled={submitting}>
+        <button type="submit" className="btn btn-solid" disabled={submitting}>
           {submitting ? 'Creating...' : 'Create subject'}
         </button>
       </form>
